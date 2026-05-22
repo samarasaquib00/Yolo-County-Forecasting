@@ -3,7 +3,7 @@
   <head>
     <link
       rel="stylesheet"
-      href="styles.css"
+      href="../styles.css"
     />
     <meta charset="utf-8" />
     <meta
@@ -36,6 +36,7 @@
               </p>
             </div>
           </div>
+
           <div
             class="header-meta"
             aria-label="Page context"
@@ -64,7 +65,7 @@
             >Clear Lake, Indian Valley, Solano Decree</a
           >
           <a
-            class="nav-btn is-active"
+            class="nav-btn"
             href="Irrigation Demand.html"
             >Irrigation Demand</a
           >
@@ -74,7 +75,7 @@
             >Recharge</a
           >
           <a
-            class="nav-btn"
+            class="nav-btn is-active"
             href="Outputs for YSGA.html"
             >Outputs for YSGA</a
           >
@@ -90,32 +91,20 @@
       <ul class="timeline-list">
         <li class="timeline-item">
           <a
-            href="#summary-data"
+            href="#groundwater-storage"
             class="timeline-link"
-            data-label="Summary Data"
-            aria-label="Jump to Summary Data"
+            data-label="Groundwater Storage"
+            aria-label="Jump to Groundwater Storage"
           ></a>
         </li>
         <li class="timeline-item">
           <a
-            href="#capay-dam"
+            href="#data"
             class="timeline-link"
-            data-label="Capay Dam"
-            aria-label="Jump to Capay Dam"
+            data-label="Data"
+            aria-label="Jump to Data"
           ></a>
         </li>
-        <li class="timeline-item">
-          <a
-            href="#reservoir-releases"
-            class="timeline-link"
-            data-label="Reservoir Releases"
-            aria-label="Jump to Reservoir Releases"
-          ></a>
-        </li>
-        <!-- <li class="timeline-item">
-                <a href="#reservoir-inflows" class="timeline-link" data-label="Reservoir Inflows"
-                    aria-label="Jump to Reservoir Inflows"></a>
-            </li> -->
       </ul>
       <button
         class="timeline-toggle"
@@ -143,105 +132,169 @@
       </button>
     </nav>
 
-    <!-- Fix Stacked + Non-stacked bug and add this line back -->
+    <!-- Clear Lake Precipitation -->
+    <!-- <div  
+        class="chart"
+        data-title="Clear Lake Precipitation"
+        data-subtitle="Water Year: {wyRange}"
+        data-stacked="false"
+        data-source-units="in"
+        data-units="in"
+        data-series='[
+            { "csv": "../Cumulative Precip-Clear Lake.csv", "name": "Forecast", "y": "Baseline", "type": "line"},
+            { "csv": "../1991-2020 Cumalitive Avg Precipitation.csv", "name": "1991-2020 Average", "y": "Clear Lake", "type": "area", "dashFromCurrentMonth": false}
+        ]'
+    ></div> -->
+
     <div class="layout has-timeline">
-      <div
-        id="summary-data"
-        class="container"
-      >
-        <div class="single-value-grid">
-          <div
-            class="single-value"
-            data-label="Diversions: Winters Canal"
-            data-csv="Diversions-Winters Canal.csv"
-            data-col="Sum"
-            data-sumWY="true"
-            data-units="TAF"
-          ></div>
+      <div class="container page-content">
 
-          <div
-            class="single-value"
-            data-label="Diversions: West Adams Canal"
-            data-csv="Diversions-West Adams Canal.csv"
-            data-col="Sum"
-            data-month="Apr"
-            data-sumWY="true"
-            data-units="TAF"
-          ></div>
+        <!-- Plotly -->
 
-          <div
-            class="single-value"
-            data-label="Reservoir Release: Clear Lake"
-            data-csv="Reservoir Release-Clear Lake.csv"
-            data-col="Baseline"
-            data-sumWY="true"
-            data-units="TAF"
-          ></div>
 
-          <div
-            class="single-value"
-            data-label="Reservoir Release: Indian Valley"
-            data-csv="Reservoir Release-Indian Valley.csv"
-            data-col="Baseline"
-            data-sumWY="true"
-            data-units="TAF"
-          ></div>
+        <!-- Groundwater Storage -->
+        <div
+          id="groundwater-storage"
+          class="chart"
+          data-title="Monthly Change in Groundwater Storage"
+          data-subtitle="Water Year: {wyRange}"
+          data-stacked="false"
+          data-note="Displays the change in storage from previous month. All values are simulated."
+          data-series='[
+                    { "csv": "../Groundwater Storage.csv", "name": "Storage Change", "y": "Baseline", "type": "line", "dashFromCurrentMonth": false, "monthlyChange": true }
+                ]'
+        ></div>
+
+
+        <!--  Representative Monitoring Wells - Average Depth to Water -->
+        <!-- Comment out when done -->
+        <!-- y axis name: Average Depth (ft) -->
+        <div
+          id="representative-monitoring-wells"
+          class="chart"
+          data-title="Representative Monitoring Wells - Average Depth to Water"
+          data-subtitle="Water Year: {wyRange}"
+          data-stacked="false"
+          data-inverse-y-axis="true"
+          data-y-axis-name="Depth to Water (ft)"
+          data-condition-bands="true"
+          data-note="All data is simulated."
+          data-series='[
+                    { "csv": "../RMW Avg DTW.csv", "name": "Average Groundwater Level", "y": "Depth to Water", "units": "ft", "sourceUnits": "ft", "type": "line", "dashFromCurrentMonth": false, "color": "red"}
+                ]'
+        ></div>
+
+        <!-- Table of Budget Numbers -->
+        <!-- If data-year is empty, assume current water year -->
+        <div id="data">
+          <div class="single-value-grid">
+            <div
+              class="single-value"
+              data-label="Total Ag Demand"
+              data-csv="../Total Ag Demand.csv"
+              data-col="Baseline"
+              data-units="TAF"
+            ></div>
+
+            <div
+              class="single-value"
+              data-label="Ag GW Extraction"
+              data-csv="../Ag GW Extraction.csv"
+              data-col="Baseline"
+              data-units="TAF"
+            ></div>
+
+            <div
+              class="single-value"
+              data-label="Ag SW Diversions"
+              data-csv="../Ag SW Diversions.csv"
+              data-col="Baseline"
+              data-units="TAF"
+            ></div>
+
+            <div
+              class="single-value"
+              data-label="Actual ET"
+              data-csv="../ETActual (including irrigation).csv"
+              data-col="Baseline"
+              data-units="TAF"
+            ></div>
+          </div>
+
+          <br />
+
+          <div class="single-value-grid">
+            <div
+              class="single-value"
+              data-label="Total Groundwater Extraction"
+              data-csv="../Total GW Extraction.csv"
+              data-col="Baseline"
+              data-units="TAF"
+            ></div>
+
+            <div
+              class="single-value"
+              data-label="Total SW Diversions"
+              data-csv="../Total SW Diversions.csv"
+              data-col="Baseline"
+              data-units="TAF"
+            ></div>
+
+            <div
+              class="single-value"
+              data-label="Urban GW Extractions"
+              data-csv="../Urban GW Extraction.csv"
+              data-col="Baseline"
+              data-units="TAF"
+            ></div>
+
+            <div
+              class="single-value"
+              data-label="Urban SW Diversions"
+              data-csv="../Urban SW Diversions.csv"
+              data-col="Baseline"
+              data-units="TAF"
+            ></div>
+          </div>
         </div>
       </div>
 
-      <div class="container main page-content">
+      <br /><br />
 
-        <!-- Capay Dam -->
-        <div
-          id="capay-dam"
-          class="chart"
-          data-title="Capay Dam Diversions"
-          data-subtitle="Water Year: {wyRange}"
-          data-stacked="true"
-          data-series='[
-                { "csv": "Diversions-West Adams Canal.csv", "name": "West Adams Canal", "y": "Sum", "type": "area","stack": true },
-                { "csv": "Diversions-Winters Canal.csv", "name": "Winters Canal", "y": "Sum", "type": "area","stack": true },
-                { "csv": "YCFC Farmgate Deliveries.csv", "name": "YCFC Farmgate Deliveries", "y": "Sum", "type": "line", "dashFromCurrentMonth": true, "stack": false, "color": "#ffe100" }
-            ]'
-        ></div>
+      <!-- Change in GW Storage – use Forecast Outputs\Groundwater Storage – use Sep of forecast year minus Sep of year before forecast year  -->
+      <div class="container">
+        <div class="single-value-grid">
+          <div
+            class="single-value"
+            data-key="GW_Current"
+            data-label="{year} End of Year Storage"
+            data-csv="../Groundwater Storage.csv"
+            data-col="Baseline"
+            data-month="Sep"
+            data-year="current"
+            data-units="TAF"
+          ></div>
 
-        <!-- Capay Dam Mar-Sep Diversions single value -->
-        <div
-          class="single-value"
-          data-label="Total Diversions (Mar - Sep {current})"
-          data-csv="Diversions-Capay Dam Mar-Sep.csv"
-          data-col="Sum"
-          data-year="current"
-          data-units="TAF"
-          data-in-chart="#capay-dam"
-        ></div>
+          <!-- Add Previous field for single values -->
+          <div
+            class="single-value"
+            data-key="GW_Previous"
+            data-label="{prevyear} End of Year Storage"
+            data-csv="../Groundwater Storage.csv"
+            data-col="Baseline"
+            data-month="Sep"
+            data-year="previous"
+            data-units="TAF"
+          ></div>
 
-        <!-- How to put this next to total diversions number? -->
-        <div
-          class="single-value"
-          data-label="Total Farmgate Deliveries (Mar - Sep {current})"
-          data-csv="YCFC Farmgate Deliveries Mar-Sep.csv"
-          data-col="Sum"
-          data-year="current"
-          data-units="TAF"
-          data-in-chart="#capay-dam"
-        ></div>
-
-
-
-        <!-- Reservoir Releases -->
-        <div
-          id="reservoir-releases"
-          class="chart"
-          data-title="Reservoir Releases"
-          data-subtitle="Water Year: {wyRange}"
-          data-stacked="true"
-          data-note="All values are simulated"
-          data-series='[
-                    { "csv": "Reservoir Release-Irrigation.csv", "name": "Total Reservoir Releases for Irrigation", "y": "Baseline", "type": "bar", "stack": true },
-                    { "csv": "Reservoir Release-Spill.csv", "name": "Total Reservoir Spills", "y": "Baseline", "type": "bar", "stack": true }
-                ]'
-        ></div>
+          <div
+            class="single-value"
+            data-key="diff"
+            data-label="Change in Storage"
+            data-diff="GW_Current,GW_Previous"
+            data-units="TAF"
+          ></div>
+        </div>
       </div>
     </div>
 
@@ -249,11 +302,10 @@
     <!-- </main> -->
 
     <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
-    <script src="./parse-data.js"></script>
+    <script src="../parse-data.js"></script>
 
     <!-- Timeline Active State Script -->
     <script>
-      // Highlight active section in timeline navigation
       const observerOptions = {
         root: null,
         rootMargin: "-30% 0px -30% 0px",
@@ -263,12 +315,10 @@
       const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            // Remove active class from all links
             document.querySelectorAll(".timeline-link").forEach((link) => {
               link.classList.remove("active");
             });
 
-            // Add active class to corresponding link
             const id = entry.target.getAttribute("id");
             const activeLink = document.querySelector(
               `.timeline-link[href="#${id}"]`,
@@ -280,7 +330,6 @@
         });
       }, observerOptions);
 
-      // Additional check for when scrolled to bottom (for last section)
       const handleScroll = () => {
         const scrolledToBottom =
           window.innerHeight + window.scrollY >=
@@ -290,7 +339,7 @@
             link.classList.remove("active");
           });
           const lastLink = document.querySelector(
-            '.timeline-link[href="#reservoir-releases"]',
+            '.timeline-link[href="#data"]',
           );
           if (lastLink) {
             lastLink.classList.add("active");
@@ -298,7 +347,6 @@
         }
       };
 
-      // Observe all chart sections
       document.addEventListener("DOMContentLoaded", () => {
         document
           .querySelectorAll(".chart[id], .container[id]")
@@ -306,10 +354,8 @@
             observer.observe(section);
           });
 
-        // Add scroll listener for bottom detection
         window.addEventListener("scroll", handleScroll);
 
-        // Toggle show all labels
         const timeline = document.querySelector(".chart-timeline");
         const toggleBtn = document.querySelector(".timeline-toggle");
 

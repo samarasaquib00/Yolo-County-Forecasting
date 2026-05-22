@@ -3,7 +3,7 @@
   <head>
     <link
       rel="stylesheet"
-      href="styles.css"
+      href="../styles.css"
     />
     <meta charset="utf-8" />
     <meta
@@ -57,14 +57,14 @@
       aria-label="Primary"
     >
       <div class="layout has-timeline">
-        <div class="container nav-inner">
+        <div class="container main nav-inner">
           <a
-            class="nav-btn is-active"
+            class="nav-btn"
             href="ClearLake_IndianValley_SolanoDecree.html"
             >Clear Lake, Indian Valley, Solano Decree</a
           >
           <a
-            class="nav-btn"
+            class="nav-btn is-active"
             href="Irrigation Demand.html"
             >Irrigation Demand</a
           >
@@ -98,36 +98,24 @@
         </li>
         <li class="timeline-item">
           <a
-            href="#clear-lake"
+            href="#capay-dam"
             class="timeline-link"
-            data-label="Clear Lake"
-            aria-label="Jump to Clear Lake"
+            data-label="Capay Dam"
+            aria-label="Jump to Capay Dam"
           ></a>
         </li>
         <li class="timeline-item">
           <a
-            href="#solano-decree"
+            href="#reservoir-releases"
             class="timeline-link"
-            data-label="Solano Decree"
-            aria-label="Jump to Solano Decree"
+            data-label="Reservoir Releases"
+            aria-label="Jump to Reservoir Releases"
           ></a>
         </li>
-        <li class="timeline-item">
-          <a
-            href="#indian-valley"
-            class="timeline-link"
-            data-label="Indian Valley"
-            aria-label="Jump to Indian Valley"
-          ></a>
-        </li>
-        <li class="timeline-item">
-          <a
-            href="#total-storage"
-            class="timeline-link"
-            data-label="Combined Storage"
-            aria-label="Jump to Combined Storage"
-          ></a>
-        </li>
+        <!-- <li class="timeline-item">
+                <a href="#reservoir-inflows" class="timeline-link" data-label="Reservoir Inflows"
+                    aria-label="Jump to Reservoir Inflows"></a>
+            </li> -->
       </ul>
       <button
         class="timeline-toggle"
@@ -154,10 +142,9 @@
         </svg>
       </button>
     </nav>
+
+    <!-- Fix Stacked + Non-stacked bug and add this line back -->
     <div class="layout has-timeline">
-      <!-- <br> -->
-      <!-- Pull the specified value from 2026 from the file called Storage-Indian Valley Available.csv  -->
-      <!-- If data-month is empty, it will pull the latest value in the current water year -->
       <div
         id="summary-data"
         class="container"
@@ -165,113 +152,108 @@
         <div class="single-value-grid">
           <div
             class="single-value"
-            data-key="IV_Available"
-            data-label="Indian Valley Available Supply (May 1 {curr year})"
-            data-csv="Storage-Indian Valley Available Storage.csv"
-            data-col="INV Available Storage (Thousand AF)"
+            data-label="Diversions: Winters Canal"
+            data-csv="../Diversions-Winters Canal.csv"
+            data-col="Sum"
+            data-sumWY="true"
+            data-units="TAF"
+          ></div>
+
+          <div
+            class="single-value"
+            data-label="Diversions: West Adams Canal"
+            data-csv="../Diversions-West Adams Canal.csv"
+            data-col="Sum"
             data-month="Apr"
+            data-sumWY="true"
             data-units="TAF"
           ></div>
 
           <div
             class="single-value"
-            data-key="SD_Allowable"
-            data-label="Solano Decree Supply (May 1 {curryear})"
-            data-csv="Solano Decree-Allowable Seasoanal Withdrawal.csv"
-            data-col="Allowable Seasonal Withdrawal (AF)"
+            data-label="Reservoir Release: Clear Lake"
+            data-csv="../Reservoir Release-Clear Lake.csv"
+            data-col="Baseline"
+            data-sumWY="true"
             data-units="TAF"
           ></div>
 
           <div
             class="single-value"
-            data-key="sum_IV_SD"
-            data-label="Sum of Solano Decree and Indian Valley Supply"
-            data-sum="IV_Available,SD_Allowable"
+            data-label="Reservoir Release: Indian Valley"
+            data-csv="../Reservoir Release-Indian Valley.csv"
+            data-col="Baseline"
+            data-sumWY="true"
             data-units="TAF"
           ></div>
         </div>
       </div>
 
-      <!-- { "csv": "Reservoir TOC.csv", "name": "Top of Conservation", "y": "Clear Lake", "type": "area",  "dashFromCurrentMonth": false, "adjust": -841000 }, -->
+      <div class="container main page-content">
 
-      <div class="container page-content">
-        <!-- Subtract 841000 from all values in clear lake only-->
+        <!-- Capay Dam -->
         <div
-          id="clear-lake"
+          id="capay-dam"
           class="chart"
-          data-title="Available Clear Lake Storage"
-          data-subtitle="Water Year: {wyRange}"
-          data-stacked="false"
-          data-series='[
-            { "csv": "Storage-Clear Lake.csv", "name": "Clear Lake Forecast", "y": "Modeled", "type": "line", "adjust": -841000 },
-            { "csv": "1991-2020 Avg Storage.csv", "name": "1991-2020 Average", "y": "Clear Lake", "type": "area", "dashFromCurrentMonth": false, "adjust": -841000 },
-            { "csv": "Reservoir Storage Capacity.csv", "name": "Storage Capacity", "y": "Clear Lake", "type": "area",  "dashFromCurrentMonth": false },
-            { "csv": "Storage-Clear Lake.csv", "name": "Previous Year ({prevyear})", "y": "Modeled", "type": "line", "waterYear": "previous", "adjust": -841000 } 
-          ]'
-        ></div>
-
-        <!-- Solano Decree -->
-        <div
-          id="solano-decree"
-          class="chart"
-          data-title="Solano Decree: Season Remaining Supply"
-          data-subtitle="Water Year: {wyRange}"
-          data-series='[
-            { "csv": "Solano Decree-Season Remaining.csv", "name": "Solano Decree", "y": "Rev SeasonRemaining (AF)", "type": "area", "dashFromCurrentMonth": true, "units": "TAF", "yAxisIndex": 0 },
-            { "csv": "Rumsey Gage.csv", "name": "Rumsey Gauge", "y": "Rumsey Gage (ft)", "type": "line", "dashFromCurrentMonth": true, "units": "ft", "sourceUnits": "ft", "yAxisIndex": 1 },
-            { "csv": "Rumsey Gage Allocation Thresholds.csv", "name": "Rumsey Gage Full Allocation Threshold", "y": "Full Allocation (ft)", "type": "line", "dashFromCurrentMonth": false, "units": "ft", "sourceUnits": "ft", "yAxisIndex": 1 }
-            ]'
-        ></div>
-
-        <div
-          id="indian-valley"
-          class="chart"
-          data-title="Indian Valley Storage"
-          data-subtitle="Water Year: {wyRange}"
-          data-stacked="false"
-          data-series='[
-            { "csv": "Storage-Indian Valley.csv", "name": "Indian Valley Forecast", "y": "Modeled", "type": "line" },
-            { "csv": "Reservoir TOC.csv", "name": "Top of Conservation", "y": "Indian Valley", "type": "area","dashFromCurrentMonth": false },
-            { "csv": "1991-2020 Avg Storage.csv", "name": "1991-2020 Average", "y": "Indian Valley", "type": "area", "dashFromCurrentMonth": false},
-            { "csv": "Storage-Indian Valley.csv", "name": "Previous Year ({prevyear})", "y": "Modeled", "type": "line", "waterYear": "previous" } 
-
-        ]'
-        ></div>
-
-        <!-- Subtract 841000 from all values in clear lake only-->
-        <div
-          id="total-storage"
-          class="chart"
-          data-title="Combined Storage"
+          data-title="Capay Dam Diversions"
           data-subtitle="Water Year: {wyRange}"
           data-stacked="true"
           data-series='[
-              { "csv": "Storage-Clear Lake.csv", "name": "Available Clear Lake Storage", "y": "Modeled", "type": "area", "adjust": -841000, "stack": true },
-              { "csv": "Storage-Indian Valley.csv", "name": "Indian Valley Total Storage", "y": "Modeled", "type": "area" }
-          ]'
+                { "csv": "../Diversions-West Adams Canal.csv", "name": "West Adams Canal", "y": "Sum", "type": "area","stack": true },
+                { "csv": "../Diversions-Winters Canal.csv", "name": "Winters Canal", "y": "Sum", "type": "area","stack": true },
+                { "csv": "../YCFC Farmgate Deliveries.csv", "name": "YCFC Farmgate Deliveries", "y": "Sum", "type": "line", "dashFromCurrentMonth": true, "stack": false, "color": "#ffe100" }
+            ]'
         ></div>
 
+        <!-- Capay Dam Mar-Sep Diversions single value -->
         <div
-          id="reservoir-inflows"
+          class="single-value"
+          data-label="Total Diversions (Mar - Sep {current})"
+          data-csv="../Diversions-Capay Dam Mar-Sep.csv"
+          data-col="Sum"
+          data-year="current"
+          data-units="TAF"
+          data-in-chart="#capay-dam"
+        ></div>
+
+        <!-- How to put this next to total diversions number? -->
+        <div
+          class="single-value"
+          data-label="Total Farmgate Deliveries (Mar - Sep {current})"
+          data-csv="../YCFC Farmgate Deliveries Mar-Sep.csv"
+          data-col="Sum"
+          data-year="current"
+          data-units="TAF"
+          data-in-chart="#capay-dam"
+        ></div>
+
+
+
+        <!-- Reservoir Releases -->
+        <div
+          id="reservoir-releases"
           class="chart"
-          data-title="Reservoir Inflows"
+          data-title="Reservoir Releases"
           data-subtitle="Water Year: {wyRange}"
-          data-stacked="false"
+          data-stacked="true"
+          data-note="All values are simulated"
           data-series='[
-                { "csv": "Reservoir Inflow-Clear Lake.csv", "name": "Clear Lake", "y": "Baseline", "type": "bar" },
-                { "csv": "Reservoir Inflow-Indian Valley.csv", "name": "Indian Valley", "y": "Baseline", "type": "bar" }
-            ]'
+                    { "csv": "../Reservoir Release-Irrigation.csv", "name": "Total Reservoir Releases for Irrigation", "y": "Baseline", "type": "bar", "stack": true },
+                    { "csv": "../Reservoir Release-Spill.csv", "name": "Total Reservoir Spills", "y": "Baseline", "type": "bar", "stack": true }
+                ]'
         ></div>
       </div>
     </div>
+
     <br /><br />
     <!-- </main> -->
 
     <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
-    <script src="./parse-data.js"></script>
+    <script src="../parse-data.js"></script>
 
     <!-- Timeline Active State Script -->
     <script>
+      // Highlight active section in timeline navigation
       const observerOptions = {
         root: null,
         rootMargin: "-30% 0px -30% 0px",
@@ -281,10 +263,12 @@
       const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            // Remove active class from all links
             document.querySelectorAll(".timeline-link").forEach((link) => {
               link.classList.remove("active");
             });
 
+            // Add active class to corresponding link
             const id = entry.target.getAttribute("id");
             const activeLink = document.querySelector(
               `.timeline-link[href="#${id}"]`,
@@ -296,6 +280,7 @@
         });
       }, observerOptions);
 
+      // Additional check for when scrolled to bottom (for last section)
       const handleScroll = () => {
         const scrolledToBottom =
           window.innerHeight + window.scrollY >=
@@ -305,7 +290,7 @@
             link.classList.remove("active");
           });
           const lastLink = document.querySelector(
-            '.timeline-link[href="#summary-data"]',
+            '.timeline-link[href="#reservoir-releases"]',
           );
           if (lastLink) {
             lastLink.classList.add("active");
@@ -313,6 +298,7 @@
         }
       };
 
+      // Observe all chart sections
       document.addEventListener("DOMContentLoaded", () => {
         document
           .querySelectorAll(".chart[id], .container[id]")
@@ -320,8 +306,10 @@
             observer.observe(section);
           });
 
+        // Add scroll listener for bottom detection
         window.addEventListener("scroll", handleScroll);
 
+        // Toggle show all labels
         const timeline = document.querySelector(".chart-timeline");
         const toggleBtn = document.querySelector(".timeline-toggle");
 
