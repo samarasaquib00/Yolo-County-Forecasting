@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reservoir Storage Area Chart</title>
+
+</head>
+
+<body>
+
+  
+    <header class="site-header">
+        <div class="layout has-timeline">
+            <div class="container header-inner">
+                <div class="header-left">
+                    <a href="index.html" class="logo">
+                        <img src="https://www.weap21.org/img/w.png" alt="WEAP logo" height="40">
+                    </a>
+                    <div class="header-text">
+                        <h1>Yolo County Forecasting</h1>
+                        <p class="subtitle">Reservoir storage and operational indicators for the current water year.</p>
+                    </div>
+                </div>
+                <div class="header-meta" aria-label="Page context">
+                    <div class="meta-pill" title="Water year range" data-wy-range>Water Year: {wyRange}</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+  <nav class="top-nav" aria-label="Primary">
+    <div class="layout has-timeline">
+      <div class="container nav-inner">
+        <!-- Add .is-active to the current page -->
+        <a class="nav-btn" href="ClearLake_IndianValley_SolanoDecree.html">Clear Lake, Indian Valley, Solano Decree</a>
+        <a class="nav-btn" href="Irrigation Demand.html">Irrigation Demand</a>
+        <a class="nav-btn" href="Recharge.html">Recharge</a>
+        <a class="nav-btn" href="Outputs for YSGA.html">Outputs for YSGA</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-image-wrapper">
+      <img src="https://ycfcwcd.org/wp-content/uploads/2024/06/Capay-Dam.jpg" alt="Capay Dam" class="hero-image">
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="layout has-timeline">
+      <div class="container">
+        <div class="hero-content">
+          <h2 class="hero-title">Real-Time Forecasts in Yolo County</h2>
+          <p class="hero-subtitle">This platform provides a forecast of Yolo County hydrological conditions 
+              and water supply operations for the current water year. The forecasts are constructed using NOAA 
+              climate models, reservoir operations data, and groundwater management strategies. 
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="hero-caption-bar">
+    <div class="layout has-timeline">
+      <div class="container">
+        <p class="hero-caption">Photo: Capay Dam. Credit: Yolo County Flood Control and Water Conservation District.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="layout has-timeline">
+    <div class="container">
+      <!-- Features Grid -->
+      <section class="features-section">
+        <!-- <h2>How This Forecast Works</h2> -->
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Runoff Predictions</h3>
+            <p>Constructed using meteorological information derived from the NOAA's 
+              <a href="https://www.cpc.ncep.noaa.gov/products/NMME/" target="_blank">National Multi-Model Ensemble (NMME)</a>
+              as processed by <a href="https://www.climatologylab.org/" target="_blank">UC Merced's Climatology Lab</a></p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">💧</div>
+            <h3>Operations Modeling</h3>
+            <p>Powered by the <a href="https://www.yologroundwater.org/files/b90061148/Yolo+GSP_AppendixE.pdf" target="_blank">Yolo SGA model</a> 
+              for the <a href="https://www.yologroundwater.org/" target="_blank"> Yolo Subbasin Groundwater Agency</a> 
+              Sustainable Groundwater Management Act process</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔍</div>
+            <h3>Multi-Source Data</h3>
+            <p>Integrates reservoir levels, groundwater storage, and precipitation patterns</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Overview Section -->
+      <!-- <section class="overview-section">
+        <h2>About This Tool</h2>
+        <p class="intro-text">This comprehensive forecasting platform provides real-time analysis of Yolo County hydrological conditions and water supply operations for the current water year.</p>
+      </section> -->
+    </div>
+  </div>
+
+
+
+  
+  <br><br>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <script src="./parse-data.js"></script>
+</body>
+</html>

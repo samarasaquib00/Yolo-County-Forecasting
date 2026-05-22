@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link
+      rel="stylesheet"
+      href="styles.css"
+    />
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+    <title>Yolo County Forecasting</title>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="layout has-timeline">
+        <div class="container main header-inner">
+          <div class="header-left">
+            <a
+              href="index.html"
+              class="logo"
+            >
+              <img
+                src="https://www.weap21.org/img/w.png"
+                alt="WEAP logo"
+                height="40"
+              />
+            </a>
+            <div class="header-text">
+              <h1>Yolo County Forecasting</h1>
+              <p class="subtitle">
+                Reservoir storage and operational indicators for the current
+                water year.
+              </p>
+            </div>
+          </div>
+          <div
+            class="header-meta"
+            aria-label="Page context"
+          >
+            <div
+              class="meta-pill"
+              title="Water year range"
+              data-wy-range
+            >
+              Water Year: {wyRange}
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <nav
+      class="top-nav"
+      aria-label="Primary"
+    >
+      <div class="layout has-timeline">
+        <div class="container nav-inner">
+          <a
+            class="nav-btn is-active"
+            href="ClearLake_IndianValley_SolanoDecree.html"
+            >Clear Lake, Indian Valley, Solano Decree</a
+          >
+          <a
+            class="nav-btn"
+            href="Irrigation Demand.html"
+            >Irrigation Demand</a
+          >
+          <a
+            class="nav-btn"
+            href="Recharge.html"
+            >Recharge</a
+          >
+          <a
+            class="nav-btn"
+            href="Outputs for YSGA.html"
+            >Outputs for YSGA</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <!-- Vertical Timeline Navigation -->
+    <nav
+      class="chart-timeline"
+      aria-label="Chart navigation"
+    >
+      <ul class="timeline-list">
+        <li class="timeline-item">
+          <a
+            href="#summary-data"
+            class="timeline-link"
+            data-label="Summary Data"
+            aria-label="Jump to Summary Data"
+          ></a>
+        </li>
+        <li class="timeline-item">
+          <a
+            href="#clear-lake"
+            class="timeline-link"
+            data-label="Clear Lake"
+            aria-label="Jump to Clear Lake"
+          ></a>
+        </li>
+        <li class="timeline-item">
+          <a
+            href="#solano-decree"
+            class="timeline-link"
+            data-label="Solano Decree"
+            aria-label="Jump to Solano Decree"
+          ></a>
+        </li>
+        <li class="timeline-item">
+          <a
+            href="#indian-valley"
+            class="timeline-link"
+            data-label="Indian Valley"
+            aria-label="Jump to Indian Valley"
+          ></a>
+        </li>
+        <li class="timeline-item">
+          <a
+            href="#total-storage"
+            class="timeline-link"
+            data-label="Combined Storage"
+            aria-label="Jump to Combined Storage"
+          ></a>
+        </li>
+      </ul>
+      <button
+        class="timeline-toggle"
+        aria-label="Toggle all labels"
+        title="Show/hide all labels"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+          />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+          />
+        </svg>
+      </button>
+    </nav>
+    <div class="layout has-timeline">
+      <!-- <br> -->
+      <!-- Pull the specified value from 2026 from the file called Storage-Indian Valley Available.csv  -->
+      <!-- If data-month is empty, it will pull the latest value in the current water year -->
+      <div
+        id="summary-data"
+        class="container"
+      >
+        <div class="single-value-grid">
+          <div
+            class="single-value"
+            data-key="IV_Available"
+            data-label="Indian Valley Available Supply (May 1 {curr year})"
+            data-csv="Storage-Indian Valley Available Storage.csv"
+            data-col="INV Available Storage (Thousand AF)"
+            data-month="Apr"
+            data-units="TAF"
+          ></div>
+
+          <div
+            class="single-value"
+            data-key="SD_Allowable"
+            data-label="Solano Decree Supply (May 1 {curryear})"
+            data-csv="Solano Decree-Allowable Seasoanal Withdrawal.csv"
+            data-col="Allowable Seasonal Withdrawal (AF)"
+            data-units="TAF"
+          ></div>
+
+          <div
+            class="single-value"
+            data-key="sum_IV_SD"
+            data-label="Sum of Solano Decree and Indian Valley Supply"
+            data-sum="IV_Available,SD_Allowable"
+            data-units="TAF"
+          ></div>
+        </div>
+      </div>
+
+      <!-- { "csv": "Reservoir TOC.csv", "name": "Top of Conservation", "y": "Clear Lake", "type": "area",  "dashFromCurrentMonth": false, "adjust": -841000 }, -->
+
+      <div class="container page-content">
+        <!-- Subtract 841000 from all values in clear lake only-->
+        <div
+          id="clear-lake"
+          class="chart"
+          data-title="Available Clear Lake Storage"
+          data-subtitle="Water Year: {wyRange}"
+          data-stacked="false"
+          data-series='[
+            { "csv": "Storage-Clear Lake.csv", "name": "Clear Lake Forecast", "y": "Modeled", "type": "line", "adjust": -841000 },
+            { "csv": "1991-2020 Avg Storage.csv", "name": "1991-2020 Average", "y": "Clear Lake", "type": "area", "dashFromCurrentMonth": false, "adjust": -841000 },
+            { "csv": "Reservoir Storage Capacity.csv", "name": "Storage Capacity", "y": "Clear Lake", "type": "area",  "dashFromCurrentMonth": false },
+            { "csv": "Storage-Clear Lake.csv", "name": "Previous Year ({prevyear})", "y": "Modeled", "type": "line", "waterYear": "previous", "adjust": -841000 } 
+          ]'
+        ></div>
+
+        <!-- Solano Decree -->
+        <div
+          id="solano-decree"
+          class="chart"
+          data-title="Solano Decree: Season Remaining Supply"
+          data-subtitle="Water Year: {wyRange}"
+          data-series='[
+            { "csv": "Solano Decree-Season Remaining.csv", "name": "Solano Decree", "y": "Rev SeasonRemaining (AF)", "type": "area", "dashFromCurrentMonth": true, "units": "TAF", "yAxisIndex": 0 },
+            { "csv": "Rumsey Gage.csv", "name": "Rumsey Gauge", "y": "Rumsey Gage (ft)", "type": "line", "dashFromCurrentMonth": true, "units": "ft", "sourceUnits": "ft", "yAxisIndex": 1 },
+            { "csv": "Rumsey Gage Allocation Thresholds.csv", "name": "Rumsey Gage Full Allocation Threshold", "y": "Full Allocation (ft)", "type": "line", "dashFromCurrentMonth": false, "units": "ft", "sourceUnits": "ft", "yAxisIndex": 1 }
+            ]'
+        ></div>
+
+        <div
+          id="indian-valley"
+          class="chart"
+          data-title="Indian Valley Storage"
+          data-subtitle="Water Year: {wyRange}"
+          data-stacked="false"
+          data-series='[
+            { "csv": "Storage-Indian Valley.csv", "name": "Indian Valley Forecast", "y": "Modeled", "type": "line" },
+            { "csv": "Reservoir TOC.csv", "name": "Top of Conservation", "y": "Indian Valley", "type": "area","dashFromCurrentMonth": false },
+            { "csv": "1991-2020 Avg Storage.csv", "name": "1991-2020 Average", "y": "Indian Valley", "type": "area", "dashFromCurrentMonth": false},
+            { "csv": "Storage-Indian Valley.csv", "name": "Previous Year ({prevyear})", "y": "Modeled", "type": "line", "waterYear": "previous" } 
+
+        ]'
+        ></div>
+
+        <!-- Subtract 841000 from all values in clear lake only-->
+        <div
+          id="total-storage"
+          class="chart"
+          data-title="Combined Storage"
+          data-subtitle="Water Year: {wyRange}"
+          data-stacked="true"
+          data-series='[
+              { "csv": "Storage-Clear Lake.csv", "name": "Available Clear Lake Storage", "y": "Modeled", "type": "area", "adjust": -841000, "stack": true },
+              { "csv": "Storage-Indian Valley.csv", "name": "Indian Valley Total Storage", "y": "Modeled", "type": "area" }
+          ]'
+        ></div>
+
+        <div
+          id="reservoir-inflows"
+          class="chart"
+          data-title="Reservoir Inflows"
+          data-subtitle="Water Year: {wyRange}"
+          data-stacked="false"
+          data-series='[
+                { "csv": "Reservoir Inflow-Clear Lake.csv", "name": "Clear Lake", "y": "Baseline", "type": "bar" },
+                { "csv": "Reservoir Inflow-Indian Valley.csv", "name": "Indian Valley", "y": "Baseline", "type": "bar" }
+            ]'
+        ></div>
+      </div>
+    </div>
+    <br /><br />
+    <!-- </main> -->
+
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <script src="./parse-data.js"></script>
+
+    <!-- Timeline Active State Script -->
+    <script>
+      const observerOptions = {
+        root: null,
+        rootMargin: "-30% 0px -30% 0px",
+        threshold: 0,
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            document.querySelectorAll(".timeline-link").forEach((link) => {
+              link.classList.remove("active");
+            });
+
+            const id = entry.target.getAttribute("id");
+            const activeLink = document.querySelector(
+              `.timeline-link[href="#${id}"]`,
+            );
+            if (activeLink) {
+              activeLink.classList.add("active");
+            }
+          }
+        });
+      }, observerOptions);
+
+      const handleScroll = () => {
+        const scrolledToBottom =
+          window.innerHeight + window.scrollY >=
+          document.body.offsetHeight - 100;
+        if (scrolledToBottom) {
+          document.querySelectorAll(".timeline-link").forEach((link) => {
+            link.classList.remove("active");
+          });
+          const lastLink = document.querySelector(
+            '.timeline-link[href="#summary-data"]',
+          );
+          if (lastLink) {
+            lastLink.classList.add("active");
+          }
+        }
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document
+          .querySelectorAll(".chart[id], .container[id]")
+          .forEach((section) => {
+            observer.observe(section);
+          });
+
+        window.addEventListener("scroll", handleScroll);
+
+        const timeline = document.querySelector(".chart-timeline");
+        const toggleBtn = document.querySelector(".timeline-toggle");
+
+        if (toggleBtn && timeline) {
+          toggleBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            timeline.classList.toggle("show-all-labels");
+            toggleBtn.classList.toggle("active");
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

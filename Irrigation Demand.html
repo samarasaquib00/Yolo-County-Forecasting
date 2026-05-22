@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link
+      rel="stylesheet"
+      href="styles.css"
+    />
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+    <title>Yolo County Forecasting</title>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="layout has-timeline">
+        <div class="container main header-inner">
+          <div class="header-left">
+            <a
+              href="index.html"
+              class="logo"
+            >
+              <img
+                src="https://www.weap21.org/img/w.png"
+                alt="WEAP logo"
+                height="40"
+              />
+            </a>
+            <div class="header-text">
+              <h1>Yolo County Forecasting</h1>
+              <p class="subtitle">
+                Reservoir storage and operational indicators for the current
+                water year.
+              </p>
+            </div>
+          </div>
+          <div
+            class="header-meta"
+            aria-label="Page context"
+          >
+            <div
+              class="meta-pill"
+              title="Water year range"
+              data-wy-range
+            >
+              Water Year: {wyRange}
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <nav
+      class="top-nav"
+      aria-label="Primary"
+    >
+      <div class="layout has-timeline">
+        <div class="container main nav-inner">
+          <a
+            class="nav-btn"
+            href="ClearLake_IndianValley_SolanoDecree.html"
+            >Clear Lake, Indian Valley, Solano Decree</a
+          >
+          <a
+            class="nav-btn is-active"
+            href="Irrigation Demand.html"
+            >Irrigation Demand</a
+          >
+          <a
+            class="nav-btn"
+            href="Recharge.html"
+            >Recharge</a
+          >
+          <a
+            class="nav-btn"
+            href="Outputs for YSGA.html"
+            >Outputs for YSGA</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <!-- Vertical Timeline Navigation -->
+    <nav
+      class="chart-timeline"
+      aria-label="Chart navigation"
+    >
+      <ul class="timeline-list">
+        <li class="timeline-item">
+          <a
+            href="#summary-data"
+            class="timeline-link"
+            data-label="Summary Data"
+            aria-label="Jump to Summary Data"
+          ></a>
+        </li>
+        <li class="timeline-item">
+          <a
+            href="#capay-dam"
+            class="timeline-link"
+            data-label="Capay Dam"
+            aria-label="Jump to Capay Dam"
+          ></a>
+        </li>
+        <li class="timeline-item">
+          <a
+            href="#reservoir-releases"
+            class="timeline-link"
+            data-label="Reservoir Releases"
+            aria-label="Jump to Reservoir Releases"
+          ></a>
+        </li>
+        <!-- <li class="timeline-item">
+                <a href="#reservoir-inflows" class="timeline-link" data-label="Reservoir Inflows"
+                    aria-label="Jump to Reservoir Inflows"></a>
+            </li> -->
+      </ul>
+      <button
+        class="timeline-toggle"
+        aria-label="Toggle all labels"
+        title="Show/hide all labels"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+          />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+          />
+        </svg>
+      </button>
+    </nav>
+
+    <!-- Fix Stacked + Non-stacked bug and add this line back -->
+    <div class="layout has-timeline">
+      <div
+        id="summary-data"
+        class="container"
+      >
+        <div class="single-value-grid">
+          <div
+            class="single-value"
+            data-label="Diversions: Winters Canal"
+            data-csv="Diversions-Winters Canal.csv"
+            data-col="Sum"
+            data-sumWY="true"
+            data-units="TAF"
+          ></div>
+
+          <div
+            class="single-value"
+            data-label="Diversions: West Adams Canal"
+            data-csv="Diversions-West Adams Canal.csv"
+            data-col="Sum"
+            data-month="Apr"
+            data-sumWY="true"
+            data-units="TAF"
+          ></div>
+
+          <div
+            class="single-value"
+            data-label="Reservoir Release: Clear Lake"
+            data-csv="Reservoir Release-Clear Lake.csv"
+            data-col="Baseline"
+            data-sumWY="true"
+            data-units="TAF"
+          ></div>
+
+          <div
+            class="single-value"
+            data-label="Reservoir Release: Indian Valley"
+            data-csv="Reservoir Release-Indian Valley.csv"
+            data-col="Baseline"
+            data-sumWY="true"
+            data-units="TAF"
+          ></div>
+        </div>
+      </div>
+
+      <div class="container main page-content">
+
+        <!-- Capay Dam -->
+        <div
+          id="capay-dam"
+          class="chart"
+          data-title="Capay Dam Diversions"
+          data-subtitle="Water Year: {wyRange}"
+          data-stacked="true"
+          data-series='[
+                { "csv": "Diversions-West Adams Canal.csv", "name": "West Adams Canal", "y": "Sum", "type": "area","stack": true },
+                { "csv": "Diversions-Winters Canal.csv", "name": "Winters Canal", "y": "Sum", "type": "area","stack": true },
+                { "csv": "YCFC Farmgate Deliveries.csv", "name": "YCFC Farmgate Deliveries", "y": "Sum", "type": "line", "dashFromCurrentMonth": true, "stack": false, "color": "#ffe100" }
+            ]'
+        ></div>
+
+        <!-- Capay Dam Mar-Sep Diversions single value -->
+        <div
+          class="single-value"
+          data-label="Total Diversions (Mar - Sep {current})"
+          data-csv="Diversions-Capay Dam Mar-Sep.csv"
+          data-col="Sum"
+          data-year="current"
+          data-units="TAF"
+          data-in-chart="#capay-dam"
+        ></div>
+
+        <!-- How to put this next to total diversions number? -->
+        <div
+          class="single-value"
+          data-label="Total Farmgate Deliveries (Mar - Sep {current})"
+          data-csv="YCFC Farmgate Deliveries Mar-Sep.csv"
+          data-col="Sum"
+          data-year="current"
+          data-units="TAF"
+          data-in-chart="#capay-dam"
+        ></div>
+
+
+
+        <!-- Reservoir Releases -->
+        <div
+          id="reservoir-releases"
+          class="chart"
+          data-title="Reservoir Releases"
+          data-subtitle="Water Year: {wyRange}"
+          data-stacked="true"
+          data-note="All values are simulated"
+          data-series='[
+                    { "csv": "Reservoir Release-Irrigation.csv", "name": "Total Reservoir Releases for Irrigation", "y": "Baseline", "type": "bar", "stack": true },
+                    { "csv": "Reservoir Release-Spill.csv", "name": "Total Reservoir Spills", "y": "Baseline", "type": "bar", "stack": true }
+                ]'
+        ></div>
+      </div>
+    </div>
+
+    <br /><br />
+    <!-- </main> -->
+
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <script src="./parse-data.js"></script>
+
+    <!-- Timeline Active State Script -->
+    <script>
+      // Highlight active section in timeline navigation
+      const observerOptions = {
+        root: null,
+        rootMargin: "-30% 0px -30% 0px",
+        threshold: 0,
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // Remove active class from all links
+            document.querySelectorAll(".timeline-link").forEach((link) => {
+              link.classList.remove("active");
+            });
+
+            // Add active class to corresponding link
+            const id = entry.target.getAttribute("id");
+            const activeLink = document.querySelector(
+              `.timeline-link[href="#${id}"]`,
+            );
+            if (activeLink) {
+              activeLink.classList.add("active");
+            }
+          }
+        });
+      }, observerOptions);
+
+      // Additional check for when scrolled to bottom (for last section)
+      const handleScroll = () => {
+        const scrolledToBottom =
+          window.innerHeight + window.scrollY >=
+          document.body.offsetHeight - 100;
+        if (scrolledToBottom) {
+          document.querySelectorAll(".timeline-link").forEach((link) => {
+            link.classList.remove("active");
+          });
+          const lastLink = document.querySelector(
+            '.timeline-link[href="#reservoir-releases"]',
+          );
+          if (lastLink) {
+            lastLink.classList.add("active");
+          }
+        }
+      };
+
+      // Observe all chart sections
+      document.addEventListener("DOMContentLoaded", () => {
+        document
+          .querySelectorAll(".chart[id], .container[id]")
+          .forEach((section) => {
+            observer.observe(section);
+          });
+
+        // Add scroll listener for bottom detection
+        window.addEventListener("scroll", handleScroll);
+
+        // Toggle show all labels
+        const timeline = document.querySelector(".chart-timeline");
+        const toggleBtn = document.querySelector(".timeline-toggle");
+
+        if (toggleBtn && timeline) {
+          toggleBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            timeline.classList.toggle("show-all-labels");
+            toggleBtn.classList.toggle("active");
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
