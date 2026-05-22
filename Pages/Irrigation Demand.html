@@ -153,7 +153,7 @@
           <div
             class="single-value"
             data-label="Diversions: Winters Canal"
-            data-csv="../Diversions-Winters Canal.csv"
+            data-csv="../Data/Diversions-Winters Canal.csv"
             data-col="Sum"
             data-sumWY="true"
             data-units="TAF"
@@ -162,7 +162,7 @@
           <div
             class="single-value"
             data-label="Diversions: West Adams Canal"
-            data-csv="../Diversions-West Adams Canal.csv"
+            data-csv="../Data/Diversions-West Adams Canal.csv"
             data-col="Sum"
             data-month="Apr"
             data-sumWY="true"
@@ -172,7 +172,7 @@
           <div
             class="single-value"
             data-label="Reservoir Release: Clear Lake"
-            data-csv="../Reservoir Release-Clear Lake.csv"
+            data-csv="../Data/Reservoir Release-Clear Lake.csv"
             data-col="Baseline"
             data-sumWY="true"
             data-units="TAF"
@@ -181,7 +181,7 @@
           <div
             class="single-value"
             data-label="Reservoir Release: Indian Valley"
-            data-csv="../Reservoir Release-Indian Valley.csv"
+            data-csv="../Data/Reservoir Release-Indian Valley.csv"
             data-col="Baseline"
             data-sumWY="true"
             data-units="TAF"
@@ -199,9 +199,9 @@
           data-subtitle="Water Year: {wyRange}"
           data-stacked="true"
           data-series='[
-                { "csv": "../Diversions-West Adams Canal.csv", "name": "West Adams Canal", "y": "Sum", "type": "area","stack": true },
-                { "csv": "../Diversions-Winters Canal.csv", "name": "Winters Canal", "y": "Sum", "type": "area","stack": true },
-                { "csv": "../YCFC Farmgate Deliveries.csv", "name": "YCFC Farmgate Deliveries", "y": "Sum", "type": "line", "dashFromCurrentMonth": true, "stack": false, "color": "#ffe100" }
+                { "csv": "../Data/Diversions-West Adams Canal.csv", "name": "West Adams Canal", "y": "Sum", "type": "area","stack": true },
+                { "csv": "../Data/Diversions-Winters Canal.csv", "name": "Winters Canal", "y": "Sum", "type": "area","stack": true },
+                { "csv": "../Data/YCFC Farmgate Deliveries.csv", "name": "YCFC Farmgate Deliveries", "y": "Sum", "type": "line", "dashFromCurrentMonth": true, "stack": false, "color": "#ffe100" }
             ]'
         ></div>
 
@@ -209,7 +209,7 @@
         <div
           class="single-value"
           data-label="Total Diversions (Mar - Sep {current})"
-          data-csv="../Diversions-Capay Dam Mar-Sep.csv"
+          data-csv="../Data/Diversions-Capay Dam Mar-Sep.csv"
           data-col="Sum"
           data-year="current"
           data-units="TAF"
@@ -220,7 +220,7 @@
         <div
           class="single-value"
           data-label="Total Farmgate Deliveries (Mar - Sep {current})"
-          data-csv="../YCFC Farmgate Deliveries Mar-Sep.csv"
+          data-csv="../Data/YCFC Farmgate Deliveries Mar-Sep.csv"
           data-col="Sum"
           data-year="current"
           data-units="TAF"
@@ -238,8 +238,8 @@
           data-stacked="true"
           data-note="All values are simulated"
           data-series='[
-                    { "csv": "../Reservoir Release-Irrigation.csv", "name": "Total Reservoir Releases for Irrigation", "y": "Baseline", "type": "bar", "stack": true },
-                    { "csv": "../Reservoir Release-Spill.csv", "name": "Total Reservoir Spills", "y": "Baseline", "type": "bar", "stack": true }
+                    { "csv": "../Data/Reservoir Release-Irrigation.csv", "name": "Total Reservoir Releases for Irrigation", "y": "Baseline", "type": "bar", "stack": true },
+                    { "csv": "../Data/Reservoir Release-Spill.csv", "name": "Total Reservoir Spills", "y": "Baseline", "type": "bar", "stack": true }
                 ]'
         ></div>
       </div>

@@ -141,8 +141,8 @@
         data-source-units="in"
         data-units="in"
         data-series='[
-            { "csv": "../Cumulative Precip-Clear Lake.csv", "name": "Forecast", "y": "Baseline", "type": "line"},
-            { "csv": "../1991-2020 Cumalitive Avg Precipitation.csv", "name": "1991-2020 Average", "y": "Clear Lake", "type": "area", "dashFromCurrentMonth": false}
+            { "csv": "../Data/Cumulative Precip-Clear Lake.csv", "name": "Forecast", "y": "Baseline", "type": "line"},
+            { "csv": "../Data/1991-2020 Cumalitive Avg Precipitation.csv", "name": "1991-2020 Average", "y": "Clear Lake", "type": "area", "dashFromCurrentMonth": false}
         ]'
     ></div> -->
 
@@ -161,7 +161,7 @@
           data-stacked="false"
           data-note="Displays the change in storage from previous month. All values are simulated."
           data-series='[
-                    { "csv": "../Groundwater Storage.csv", "name": "Storage Change", "y": "Baseline", "type": "line", "dashFromCurrentMonth": false, "monthlyChange": true }
+                    { "csv": "../Data/Groundwater Storage.csv", "name": "Storage Change", "y": "Baseline", "type": "line", "dashFromCurrentMonth": false, "monthlyChange": true }
                 ]'
         ></div>
 
@@ -180,7 +180,7 @@
           data-condition-bands="true"
           data-note="All data is simulated."
           data-series='[
-                    { "csv": "../RMW Avg DTW.csv", "name": "Average Groundwater Level", "y": "Depth to Water", "units": "ft", "sourceUnits": "ft", "type": "line", "dashFromCurrentMonth": false, "color": "red"}
+                    { "csv": "../Data/RMW Avg DTW.csv", "name": "Average Groundwater Level", "y": "Depth to Water", "units": "ft", "sourceUnits": "ft", "type": "line", "dashFromCurrentMonth": false, "color": "red"}
                 ]'
         ></div>
 
@@ -191,7 +191,7 @@
             <div
               class="single-value"
               data-label="Total Ag Demand"
-              data-csv="../Total Ag Demand.csv"
+              data-csv="../Data/Total Ag Demand.csv"
               data-col="Baseline"
               data-units="TAF"
             ></div>
@@ -199,7 +199,7 @@
             <div
               class="single-value"
               data-label="Ag GW Extraction"
-              data-csv="../Ag GW Extraction.csv"
+              data-csv="../Data/Ag GW Extraction.csv"
               data-col="Baseline"
               data-units="TAF"
             ></div>
@@ -207,7 +207,7 @@
             <div
               class="single-value"
               data-label="Ag SW Diversions"
-              data-csv="../Ag SW Diversions.csv"
+              data-csv="../Data/Ag SW Diversions.csv"
               data-col="Baseline"
               data-units="TAF"
             ></div>
@@ -215,7 +215,7 @@
             <div
               class="single-value"
               data-label="Actual ET"
-              data-csv="../ETActual (including irrigation).csv"
+              data-csv="../Data/ETActual (including irrigation).csv"
               data-col="Baseline"
               data-units="TAF"
             ></div>
@@ -227,7 +227,7 @@
             <div
               class="single-value"
               data-label="Total Groundwater Extraction"
-              data-csv="../Total GW Extraction.csv"
+              data-csv="../Data/Total GW Extraction.csv"
               data-col="Baseline"
               data-units="TAF"
             ></div>
@@ -235,7 +235,7 @@
             <div
               class="single-value"
               data-label="Total SW Diversions"
-              data-csv="../Total SW Diversions.csv"
+              data-csv="../Data/Total SW Diversions.csv"
               data-col="Baseline"
               data-units="TAF"
             ></div>
@@ -243,7 +243,7 @@
             <div
               class="single-value"
               data-label="Urban GW Extractions"
-              data-csv="../Urban GW Extraction.csv"
+              data-csv="../Data/Urban GW Extraction.csv"
               data-col="Baseline"
               data-units="TAF"
             ></div>
@@ -251,7 +251,7 @@
             <div
               class="single-value"
               data-label="Urban SW Diversions"
-              data-csv="../Urban SW Diversions.csv"
+              data-csv="../Data/Urban SW Diversions.csv"
               data-col="Baseline"
               data-units="TAF"
             ></div>
@@ -268,7 +268,7 @@
             class="single-value"
             data-key="GW_Current"
             data-label="{year} End of Year Storage"
-            data-csv="../Groundwater Storage.csv"
+            data-csv="../Data/Groundwater Storage.csv"
             data-col="Baseline"
             data-month="Sep"
             data-year="current"
@@ -280,7 +280,7 @@
             class="single-value"
             data-key="GW_Previous"
             data-label="{prevyear} End of Year Storage"
-            data-csv="../Groundwater Storage.csv"
+            data-csv="../Data/Groundwater Storage.csv"
             data-col="Baseline"
             data-month="Sep"
             data-year="previous"
