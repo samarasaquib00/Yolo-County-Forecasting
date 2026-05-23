@@ -23,7 +23,7 @@
   /* --timeline-gutter: 300px; space reserved so labels never touch charts */
 
   --max-content: 1500px;
-  --page-gutter: 16px; /* don’t keep this at 4px; give yourself a real base */
+  --page-gutter: clamp(36px, 3.5vw, 56px); /* shared horizontal page padding */
 
   --timeline-width: 44px;      /* line + dots */
   --timeline-label-max: 150px; /* worst-case label width */
@@ -516,6 +516,7 @@ html {
   flex-direction: column;
   justify-content: center;
   color: white;
+  padding-inline: var(--page-gutter);
 
 }
 

@@ -16,55 +16,6 @@
   <body>
     <div data-site-header-placeholder></div>
 
-    <!-- Vertical Timeline Navigation -->
-    <nav
-      class="chart-timeline"
-      aria-label="Chart navigation"
-    >
-      <ul class="timeline-list">
-        <li class="timeline-item">
-          <a
-            href="#groundwater-storage"
-            class="timeline-link"
-            data-label="Groundwater Storage"
-            aria-label="Jump to Groundwater Storage"
-          ></a>
-        </li>
-        <li class="timeline-item">
-          <a
-            href="#data"
-            class="timeline-link"
-            data-label="Data"
-            aria-label="Jump to Data"
-          ></a>
-        </li>
-      </ul>
-      <button
-        class="timeline-toggle"
-        aria-label="Toggle all labels"
-        title="Show/hide all labels"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="2"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-          />
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-          />
-        </svg>
-      </button>
-    </nav>
-
     <!-- Clear Lake Precipitation -->
     <!-- <div  
         class="chart"
@@ -79,7 +30,7 @@
         ]'
     ></div> -->
 
-    <div class="layout has-timeline">
+    <div class="layout">
       <div class="container page-content">
 
         <!-- Plotly -->
@@ -237,70 +188,5 @@
     <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
     <script src="../header-loader.js"></script>
     <script src="../parse-data.js"></script>
-
-    <!-- Timeline Active State Script -->
-    <script>
-      const observerOptions = {
-        root: null,
-        rootMargin: "-30% 0px -30% 0px",
-        threshold: 0,
-      };
-
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            document.querySelectorAll(".timeline-link").forEach((link) => {
-              link.classList.remove("active");
-            });
-
-            const id = entry.target.getAttribute("id");
-            const activeLink = document.querySelector(
-              `.timeline-link[href="#${id}"]`,
-            );
-            if (activeLink) {
-              activeLink.classList.add("active");
-            }
-          }
-        });
-      }, observerOptions);
-
-      const handleScroll = () => {
-        const scrolledToBottom =
-          window.innerHeight + window.scrollY >=
-          document.body.offsetHeight - 100;
-        if (scrolledToBottom) {
-          document.querySelectorAll(".timeline-link").forEach((link) => {
-            link.classList.remove("active");
-          });
-          const lastLink = document.querySelector(
-            '.timeline-link[href="#data"]',
-          );
-          if (lastLink) {
-            lastLink.classList.add("active");
-          }
-        }
-      };
-
-      document.addEventListener("DOMContentLoaded", () => {
-        document
-          .querySelectorAll(".chart[id], .container[id]")
-          .forEach((section) => {
-            observer.observe(section);
-          });
-
-        window.addEventListener("scroll", handleScroll);
-
-        const timeline = document.querySelector(".chart-timeline");
-        const toggleBtn = document.querySelector(".timeline-toggle");
-
-        if (toggleBtn && timeline) {
-          toggleBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            timeline.classList.toggle("show-all-labels");
-            toggleBtn.classList.toggle("active");
-          });
-        }
-      });
-    </script>
   </body>
 </html>

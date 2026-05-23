@@ -16,69 +16,8 @@
   <body>
     <div data-site-header-placeholder></div>
 
-    <!-- Vertical Timeline Navigation -->
-    <nav
-      class="chart-timeline"
-      aria-label="Chart navigation"
-    >
-      <ul class="timeline-list">
-        <li class="timeline-item">
-          <a
-            href="#summary-data"
-            class="timeline-link"
-            data-label="Summary Data"
-            aria-label="Jump to Summary Data"
-          ></a>
-        </li>
-        <li class="timeline-item">
-          <a
-            href="#capay-dam"
-            class="timeline-link"
-            data-label="Capay Dam"
-            aria-label="Jump to Capay Dam"
-          ></a>
-        </li>
-        <li class="timeline-item">
-          <a
-            href="#reservoir-releases"
-            class="timeline-link"
-            data-label="Reservoir Releases"
-            aria-label="Jump to Reservoir Releases"
-          ></a>
-        </li>
-        <!-- <li class="timeline-item">
-                <a href="#reservoir-inflows" class="timeline-link" data-label="Reservoir Inflows"
-                    aria-label="Jump to Reservoir Inflows"></a>
-            </li> -->
-      </ul>
-      <button
-        class="timeline-toggle"
-        aria-label="Toggle all labels"
-        title="Show/hide all labels"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="2"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-          />
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-          />
-        </svg>
-      </button>
-    </nav>
-
     <!-- Fix Stacked + Non-stacked bug and add this line back -->
-    <div class="layout has-timeline">
+    <div class="layout">
       <div
         id="summary-data"
         class="container"
@@ -185,77 +124,5 @@
     <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
     <script src="../header-loader.js"></script>
     <script src="../parse-data.js"></script>
-
-    <!-- Timeline Active State Script -->
-    <script>
-      // Highlight active section in timeline navigation
-      const observerOptions = {
-        root: null,
-        rootMargin: "-30% 0px -30% 0px",
-        threshold: 0,
-      };
-
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            // Remove active class from all links
-            document.querySelectorAll(".timeline-link").forEach((link) => {
-              link.classList.remove("active");
-            });
-
-            // Add active class to corresponding link
-            const id = entry.target.getAttribute("id");
-            const activeLink = document.querySelector(
-              `.timeline-link[href="#${id}"]`,
-            );
-            if (activeLink) {
-              activeLink.classList.add("active");
-            }
-          }
-        });
-      }, observerOptions);
-
-      // Additional check for when scrolled to bottom (for last section)
-      const handleScroll = () => {
-        const scrolledToBottom =
-          window.innerHeight + window.scrollY >=
-          document.body.offsetHeight - 100;
-        if (scrolledToBottom) {
-          document.querySelectorAll(".timeline-link").forEach((link) => {
-            link.classList.remove("active");
-          });
-          const lastLink = document.querySelector(
-            '.timeline-link[href="#reservoir-releases"]',
-          );
-          if (lastLink) {
-            lastLink.classList.add("active");
-          }
-        }
-      };
-
-      // Observe all chart sections
-      document.addEventListener("DOMContentLoaded", () => {
-        document
-          .querySelectorAll(".chart[id], .container[id]")
-          .forEach((section) => {
-            observer.observe(section);
-          });
-
-        // Add scroll listener for bottom detection
-        window.addEventListener("scroll", handleScroll);
-
-        // Toggle show all labels
-        const timeline = document.querySelector(".chart-timeline");
-        const toggleBtn = document.querySelector(".timeline-toggle");
-
-        if (toggleBtn && timeline) {
-          toggleBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            timeline.classList.toggle("show-all-labels");
-            toggleBtn.classList.toggle("active");
-          });
-        }
-      });
-    </script>
   </body>
 </html>
