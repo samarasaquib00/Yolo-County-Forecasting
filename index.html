@@ -8,7 +8,7 @@
 
 </head>
 
-<body>
+<body class="hero-is-loading">
   <div data-site-header-placeholder></div>
 
   <!-- Hero Section -->
@@ -80,6 +80,14 @@
   
   <br><br>
 
+  <script>
+    window.addEventListener('load', () => {
+      requestAnimationFrame(() => {
+        document.body.classList.remove('hero-is-loading');
+        document.body.classList.add('hero-is-ready');
+      });
+    });
+  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
   <script src="header-loader.js"></script>
