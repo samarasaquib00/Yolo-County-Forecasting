@@ -930,6 +930,128 @@ async function fetchText(url) {
   return res.text();
 }
 
+function getSeriesCsvUrls(cfg) {
+  if (Array.isArray(cfg.csvs) && cfg.csvs.length) return cfg.csvs;
+
+  const urls = [];
+  if (cfg.csvHistorical) urls.push(cfg.csvHistorical);
+  if (cfg.csvForecast) urls.push(cfg.csvForecast);
+  if (cfg.csv && urls.length === 0) urls.push(cfg.csv);
+
+  return urls;
+}
+
+function getMonthSerial(parsed) {
+  return parsed.year * 12 + parsed.monthIndex;
+}
+
+function formatMonthYearLabel(serial) {
+  const year = Math.floor(serial / 12);
+  const monthIndex = serial % 12;
+  const monthName = Object.keys(MONTH_INDEX).find(k => MONTH_INDEX[k] === monthIndex);
+  const prettyMonth = monthName ? monthName.charAt(0).toUpperCase() + monthName.slice(1) : "";
+  return `${prettyMonth}-${String(year).slice(-2)}`;
+}
+
+function resolveTargetWaterYear(cfg, currentWY, previousWY) {
+  const spec = String(cfg.waterYear ?? "current").trim().toLowerCase();
+  if (spec === "previous" || spec === "prev") return previousWY;
+  if (spec === "current" || spec === "curr" || !spec) return currentWY;
+  if (/^\d{4}$/.test(spec)) return Number(spec);
+  return currentWY;
+}
+
+function buildWaterYearSeriesData({ labels, values, cfg, desiredUnits, sourceUnits, targetWY }) {
+  const filtered = labels
+    .map((label, i) => ({
+      label,
+      value: values[i],
+      wy: getLabelWaterYear(label)
+    }))
+    .filter(d => {
+      // If the CSV is month-only (like for averages), keep everything
+      if (isMonthOnlyLabel(d.label)) return true;
+
+      // Otherwise do normal WY filtering
+      return d.wy === targetWY;
+    });
+
+  if (!filtered.length) return null;
+
+  const valueMap = new Map(
+    filtered
+      .map(d => {
+        const k = wyMonthOrderFromLabel(d.label);
+
+        // FIX LATER --> Doesn't work with stacked areas
+        let adjustedValue = d.value;
+        if (cfg.adjust) {
+          adjustedValue += Number(cfg.adjust);
+        }
+
+        if (k == null) {
+          // month-only fallback:
+          const mo = normalizeMonth(d.label);
+          if (!mo) return null;
+          const monthIndex = MONTH_INDEX[mo]; // 9 for Oct etc.
+          const kk = (monthIndex >= 9) ? (monthIndex - 9) : (monthIndex + 3);
+          const converted = convertForDisplay(adjustedValue, { desiredUnits, sourceUnits, colName: cfg.y });
+          return [kk, converted];
+        }
+
+        const converted = convertForDisplay(adjustedValue, { desiredUnits, sourceUnits, colName: cfg.y });
+        return [k, converted];
+      })
+      .filter(Boolean)
+  );
+
+  return {
+    labels: WY_MONTHS,
+    data: WY_MONTHS.map((_, k) => (valueMap.has(k) ? valueMap.get(k) : null))
+  };
+}
+
+function buildStitchedSeriesData({ parsedSegments, cfg, desiredUnits, sourceUnits }) {
+  const byMonth = new Map();
+
+  parsedSegments.forEach(segment => {
+    segment.labels.forEach((label, i) => {
+      const parsed = parseMonthYear(label);
+      if (!isValidMonthYear(parsed)) return;
+
+      const serial = getMonthSerial(parsed);
+      if (byMonth.has(serial)) return; // earlier CSVs win, so historical can override forecast overlaps.
+
+      let adjustedValue = segment.values[i];
+      if (cfg.adjust) {
+        adjustedValue += Number(cfg.adjust);
+      }
+
+      const converted = convertForDisplay(adjustedValue, { desiredUnits, sourceUnits, colName: cfg.y });
+      byMonth.set(serial, converted);
+    });
+  });
+
+  if (!byMonth.size) return null;
+
+  const sortedSerials = Array.from(byMonth.keys()).sort((a, b) => a - b);
+  const minSerial = sortedSerials[0];
+  const maxSerial = sortedSerials[sortedSerials.length - 1];
+  const axisLabels = [];
+  const data = [];
+
+  for (let serial = minSerial; serial <= maxSerial; serial++) {
+    axisLabels.push(formatMonthYearLabel(serial));
+    data.push(byMonth.has(serial) ? byMonth.get(serial) : null);
+  }
+
+  if (cfg.monthlyChange === true) {
+    return { labels: axisLabels, data: computeMonthlyChange(data) };
+  }
+
+  return { labels: axisLabels, data };
+}
+
 // -------------- RENDERING ---------------
 const CONDITION_COLORS = {
   "Wet": "#c7e2ff",
@@ -994,12 +1116,12 @@ function buildConditionBands(csvText, targetWY) {
   return bands;
 }
 
-function buildConditionLegendSeries() {
+function buildConditionLegendSeries(axisLabels = WY_MONTHS) {
   return Object.entries(CONDITION_COLORS).map(([name, color]) => ({
     id: `__condition_legend__${name}`,
     name,
     type: "line",
-    data: WY_MONTHS.map(() => null),
+    data: axisLabels.map(() => null),
     showSymbol: false,
     symbolSize: 0,
     silent: true,
@@ -1085,8 +1207,16 @@ function renderChart(el) {
     return;
   }
 
-  Promise.all(seriesConfig.map(s => fetchText(s.csv)))
-    .then(csvTexts => {
+  Promise.all(seriesConfig.map(async cfg => {
+    const csvUrls = getSeriesCsvUrls(cfg);
+    if (!csvUrls.length) {
+      throw new Error(`Series "${cfg.name || "unnamed"}" is missing csv, csvs, csvHistorical, or csvForecast.`);
+    }
+
+    const csvTexts = await Promise.all(csvUrls.map(fetchText));
+    return { cfg, csvUrls, csvTexts };
+  }))
+    .then(loadedSeries => {
       // check which water year to filter to (current WY by default, or previous if specified in any series)
       console.log("---------------------------------------------------")
       const currentWY = getCurrentWaterYear();
@@ -1103,78 +1233,36 @@ function renderChart(el) {
       let conditionBands = [];
       let conditionLookup = new Map();
       if (showConditionBands) {
-        conditionBands = buildConditionBands(csvTexts[0], currentWY);
-        conditionLookup = buildConditionLookup(csvTexts[0], currentWY);
+        conditionBands = buildConditionBands(loadedSeries[0].csvTexts[0], currentWY);
+        conditionLookup = buildConditionLookup(loadedSeries[0].csvTexts[0], currentWY);
       }
 
-      const series = csvTexts.flatMap((csvText, idx) => {
-      const cfg = seriesConfig[idx];
-      const { labels, values, sourceUnits: csvUnits } = parseFirstColumnAndNamedValue(csvText, cfg.y);
+      const series = loadedSeries.flatMap(({ cfg, csvUrls, csvTexts }, idx) => {
+      const parsedSegments = csvTexts.map(csvText => parseFirstColumnAndNamedValue(csvText, cfg.y));
+      const { labels, values, sourceUnits: csvUnits } = parsedSegments[0];
       // Desired units (output): per-series cfg.units OR chart-level data-units OR default TAF
       const desiredUnits = normalizeUnits(cfg.units ?? el.dataset.units, "TAF");
 
       // Source units (input): cfg.sourceUnits OR chart-level data-source-units OR CSV-detected units
       const htmlSourceUnits = normalizeUnits(el.dataset.sourceUnits, null);
       const seriesSourceUnits = normalizeUnits(cfg.sourceUnits ?? null, null);
-      const sourceUnits = seriesSourceUnits || htmlSourceUnits || csvUnits || null;
+      const segmentUnits = parsedSegments.map(segment => segment.sourceUnits).find(Boolean);
+      const sourceUnits = seriesSourceUnits || htmlSourceUnits || csvUnits || segmentUnits || null;
 
-      const targetWY = cfg.waterYear === "previous" ? previousWY : currentWY;
+      const targetWY = resolveTargetWaterYear(cfg, currentWY, previousWY);
+      const isStitched = String(cfg.stitch || "").toLowerCase() === "back-to-back" || csvTexts.length > 1;
+      const seriesData = isStitched
+        ? buildStitchedSeriesData({ parsedSegments, cfg, desiredUnits, sourceUnits })
+        : buildWaterYearSeriesData({ labels, values, cfg, desiredUnits, sourceUnits, targetWY });
 
-      const filtered = labels
-        .map((label, i) => ({
-          label,
-          value: values[i],
-          wy: getLabelWaterYear(label)
-        }))
-        .filter(d => {
-          // If the CSV is month-only (like for averages), keep everything
-          if (isMonthOnlyLabel(d.label)) return true;
+      if (!seriesData) return [];
 
-          // Otherwise do normal WY filtering
-          return d.wy === targetWY;
-        });
+      if (!xAxisLabels) xAxisLabels = seriesData.labels;
 
-      if (!filtered.length) return [];
-
-      if (!xAxisLabels) xAxisLabels = WY_MONTHS;
-
-      const valueMap = new Map(
-        filtered
-          .map(d => {
-            const k = wyMonthOrderFromLabel(d.label);
-
-            // FIX LATER --> Doesn't work with stacked areas
-            let adjustedValue = d.value;
-            if (cfg.adjust) {
-              adjustedValue += Number(cfg.adjust);
-            }
-            
-            if (k == null) {
-              // month-only fallback:
-              const mo = normalizeMonth(d.label);
-              if (!mo) return null;
-              const monthIndex = MONTH_INDEX[mo]; // 9 for Oct etc.
-              const kk = (monthIndex >= 9) ? (monthIndex - 9) : (monthIndex + 3);
-              // return [kk, adjustedValue / 1000]; // don't /1000 for inches (see note below)
-              const converted = convertForDisplay(adjustedValue, { desiredUnits, sourceUnits, colName: cfg.y });
-              return [kk, converted];
-            }
-
-
-
-
-            // return [k, adjustedValue / 1000]; // convert to TAF
-            const converted = convertForDisplay(adjustedValue, { desiredUnits, sourceUnits, colName: cfg.y });
-            return [k, converted];
-
-          })
-          .filter(Boolean)
-      );
-
-      const y = WY_MONTHS.map((_, k) => (valueMap.has(k) ? valueMap.get(k) : null));
+      let y = seriesData.data.slice();
 
       // Apply month-to-month change if monthlyChange enabled
-      if (cfg.monthlyChange === true) {
+      if (!isStitched && cfg.monthlyChange === true) {
         for (let i = 0; i < y.length; i++) {
           if (y[i] != null) {
             // convert back to base BEFORE diff? No — already converted, so diff directly
@@ -1201,11 +1289,11 @@ function renderChart(el) {
 
       // ---- Base series factory ----
       const makeSeries = (name, data, { dashed } = {}) => ({
-        id: `${cfg.name || cfg.csv}-${name}-${dashed ? "forecast" : "hist"}`, // unique
-        name: cfg.name || cfg.csv, // IMPORTANT: keep legend item as a single name
+        id: `${cfg.name || csvUrls.join("+")}-${name}-${dashed ? "forecast" : "hist"}`, // unique
+        name: cfg.name || csvUrls.join(" + "), // IMPORTANT: keep legend item as a single name
         type: isArea ? "line" : chartType,
         data,
-        connectNulls: chartType !== "bar",
+        connectNulls: isStitched ? false : chartType !== "bar",
         yAxisIndex: Number(cfg.yAxisIndex) || 0,
         // smooth: !isArea && chartType === "line",
         symbolSize: (!isArea && chartType === "line") ? 6 : 0,
@@ -1496,7 +1584,7 @@ function renderChart(el) {
       }
 
       if (showConditionBands) {
-        series.push(...buildConditionLegendSeries());
+        series.push(...buildConditionLegendSeries(xAxisLabels));
       }
 
       const hasForecastSplit = series.some(s => s.lineStyle?.type === "dashed");
@@ -1640,7 +1728,7 @@ function renderChart(el) {
           nameGap: 45,
           boundaryGap: series.some(s => s.type === "bar") ? true : false,
           data: xAxisLabels,
-          axisLabel: { interval: 0 },
+          axisLabel: { interval: xAxisLabels.length > 24 ? "auto" : 0 },
           axisTick: { alignWithLabel: true }
         },
 

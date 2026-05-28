@@ -50,9 +50,7 @@
         ></div>
 
 
-        <!--  Representative Monitoring Wells - Average Depth to Water -->
-        <!-- Comment out when done -->
-        <!-- y axis name: Average Depth (ft) -->
+        <!-- Old Representative Monitoring Wells graph - no historical stitched data -->
         <div
           id="representative-monitoring-wells"
           class="chart"
@@ -65,6 +63,24 @@
           data-note="All data is simulated."
           data-series='[
                     { "csv": "../Data/RMW Avg DTW.csv", "name": "Average Groundwater Level", "y": "Avg Depth to Water (ft)", "units": "ft", "sourceUnits": "ft", "type": "line", "dashFromCurrentMonth": false, "color": "red"}
+                ]'
+        ></div>
+
+
+
+        <!--  Representative Monitoring Wells - Average Depth to Water -->
+        <div
+          id="representative-monitoring-wells"
+          class="chart"
+          data-title="Representative Monitoring Wells - Average Depth to Water"
+          data-subtitle="Water Years 2018-2026"
+          data-stacked="false"
+          data-inverse-y-axis="true"
+          data-y-axis-name="Depth to Water (ft)"
+          data-condition-bands="true"
+          data-note="All data is simulated."
+          data-series='[
+                    { "csvHistorical": "../Data/Historical RMW Avg DTW.csv", "csvForecast": "../Data/RMW Avg DTW.csv", "stitch": "back-to-back", "name": "Average Groundwater Level", "y": "Avg Depth to Water (ft)", "units": "ft", "sourceUnits": "ft", "type": "line", "dashFromCurrentMonth": false, "color": "red"}
                 ]'
         ></div>
 

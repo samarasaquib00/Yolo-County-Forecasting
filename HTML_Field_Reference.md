@@ -39,9 +39,10 @@
 | Field | What it does |
 |---|---|
 | `csv` | CSV file path to load |
+| `csvs` | Array of CSV file paths to stitch in order; earlier files take priority on overlapping months |
 | `csvHistorical` | CSV file for the historical portion (stitched mode only) |
 | `csvForecast` | CSV file for the forecast portion (stitched mode only) |
-| `stitch` | Set to `"back-to-back"` to join historical + forecast CSVs into one continuous line |
+| `stitch` | Set to `"back-to-back"` to join multiple CSVs into one continuous line; missing months remain as gaps |
 | `name` | Legend label for this series |
 | `y` | Column name in the CSV to use as Y values |
 | `type` | Series render style: `"line"`, `"area"`, or `"bar"` |
