@@ -70,6 +70,8 @@
 | `color` | Line/fill color override |
 | `fillColor` | Fill color override for area series (separate from line color) |
 | `width` | Line width in pixels |
+| `showSymbol` | `false` hides point markers on line charts |
+| `symbolSize` | Point marker size in pixels for line charts when markers are shown |
 | `monthlyChange` | `true` to display month-over-month change instead of raw values |
 
 ---

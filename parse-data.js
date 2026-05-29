@@ -1590,6 +1590,8 @@ function renderChart(el) {
       const color = cfg.color;
       const fillColor = cfg.fillColor;
       const width = Number(cfg.width) || 3;
+      const showLineSymbols = cfg.showSymbol !== false && cfg.symbols !== false;
+      const lineSymbolSize = Number.isFinite(Number(cfg.symbolSize)) ? Number(cfg.symbolSize) : 6;
 
       // ---- Base series factory ----
       const makeSeries = (name, data, { dashed } = {}) => ({
@@ -1600,8 +1602,8 @@ function renderChart(el) {
         connectNulls: isStitched ? false : chartType !== "bar",
         yAxisIndex: Number(cfg.yAxisIndex) || 0,
         // smooth: !isArea && chartType === "line",
-        symbolSize: (!isArea && chartType === "line") ? 6 : 0,
-        showSymbol: (!isArea && chartType === "line"),
+        symbolSize: (!isArea && chartType === "line" && showLineSymbols) ? lineSymbolSize : 0,
+        showSymbol: (!isArea && chartType === "line" && showLineSymbols),
 
 
 
