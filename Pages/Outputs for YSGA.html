@@ -60,13 +60,12 @@
           data-inverse-y-axis="true"
           data-y-axis-name="Depth to Water (ft)"
           data-condition-bands="true"
+          data-condition-bands-csv="../Data/Water Year Types.csv"
           data-note="All data is simulated."
           data-series='[
                     { "csv": "../Data/RMW Avg DTW.csv", "name": "Average Groundwater Level", "y": "Avg Depth to Water (ft)", "units": "ft", "sourceUnits": "ft", "type": "line", "dashFromCurrentMonth": false, "color": "red"}
                 ]'
         ></div>
-
-
 
         <!--  Representative Monitoring Wells - Average Depth to Water -->
         <div
@@ -78,11 +77,34 @@
           data-inverse-y-axis="true"
           data-y-axis-name="Depth to Water (ft)"
           data-condition-bands="true"
+          data-condition-bands-csv="../Data/Water Year Types.csv"
           data-note="All data is simulated."
           data-series='[
                     { "csvHistorical": "../Data/Historical RMW Avg DTW.csv", "csvForecast": "../Data/RMW Avg DTW.csv", "stitch": "back-to-back", "name": "Average Groundwater Level", "y": "Avg Depth to Water (ft)", "units": "ft", "sourceUnits": "ft", "type": "line", "dashFromCurrentMonth": false, "color": "red"}
                 ]'
         ></div>
+
+        <!-- Example of multiple series stitched -->
+        <!-- Rule: files are applied in order. If dates overlap, the earlier file wins. -->
+        <!-- data-series='[
+          {
+            "csvs": [
+              "../Data/Older Historical RMW Avg DTW.csv",
+              "../Data/Historical RMW Avg DTW.csv",
+              "../Data/RMW Avg DTW.csv"
+            ],
+            "stitch": "back-to-back",
+            "name": "Average Groundwater Level",
+            "y": "Avg Depth to Water (ft)",
+            "units": "ft",
+            "sourceUnits": "ft",
+            "type": "line",
+            "dashFromCurrentMonth": false,
+            "color": "red"
+          }
+        ]' -->
+
+
 
         <!-- Table of Budget Numbers -->
         <!-- If data-year is empty, assume current water year -->

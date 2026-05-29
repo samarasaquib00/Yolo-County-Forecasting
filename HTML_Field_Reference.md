@@ -12,6 +12,8 @@
 | `data-units` | Chart-level default output units (e.g. `"TAF"`) — overridden by per-series `units` |
 | `data-source-units` | Chart-level input units override; overrides auto-detection from CSV |
 | `data-note` | Optional footnote/note text rendered below the chart |
+| `data-condition-bands` | `"true"` to show water year type background bands |
+| `data-condition-bands-csv` | CSV file to read condition bands from, such as `"../Data/Water Year Types.csv"` |
 
 ---
 

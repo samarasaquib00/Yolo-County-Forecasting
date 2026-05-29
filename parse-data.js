@@ -1061,7 +1061,7 @@ const CONDITION_COLORS = {
   "Critical": "#eadad0"
 };
 
-function buildConditionBands(csvText, targetWY) {
+function parseConditionRows(csvText) {
   const rows = csvText
     .split(/\r?\n/)
     .map(l => l.trim())
@@ -1084,11 +1084,62 @@ function buildConditionBands(csvText, targetWY) {
     index: header.findIndex(h => h === name)
   }));
 
+  return rows.slice(headerIndex + 1)
+    .map(row => {
+      const label = row[0];
+      if (!label) return null;
+
+      const active = conditionCols.find(c => c.index !== -1 && row[c.index]);
+      if (!active) return null;
+
+      return { label, conditionName: active.name };
+    })
+    .filter(Boolean);
+}
+
+function buildConditionBands(csvText, targetWY, axisLabels = WY_MONTHS) {
+  const conditionRows = parseConditionRows(csvText);
   const bands = [];
 
-  rows.slice(headerIndex + 1).forEach(row => {
-    const label = row[0];
-    if (!label) return;
+  if (!conditionRows.length) return bands;
+
+  const axisHasYears = axisLabels.some(label => isValidMonthYear(parseMonthYear(label)));
+
+  if (axisHasYears) {
+    const bySerial = new Map();
+
+    conditionRows.forEach(row => {
+      const parsed = parseMonthYear(row.label);
+      if (!isValidMonthYear(parsed)) return;
+      bySerial.set(getMonthSerial(parsed), row.conditionName);
+    });
+
+    axisLabels.forEach((axisLabel, index) => {
+      const parsed = parseMonthYear(axisLabel);
+      if (!isValidMonthYear(parsed)) return;
+
+      const conditionName = bySerial.get(getMonthSerial(parsed));
+      if (!conditionName) return;
+
+      bands.push([
+        {
+          xAxis: index - 0.5,
+          itemStyle: {
+            color: CONDITION_COLORS[conditionName],
+            opacity: 0.75
+          }
+        },
+        {
+          xAxis: index + 0.5
+        }
+      ]);
+    });
+
+    return bands;
+  }
+
+  conditionRows.forEach(row => {
+    const label = row.label;
 
     const wy = getLabelWaterYear(label);
     if (wy !== targetWY) return;
@@ -1096,14 +1147,11 @@ function buildConditionBands(csvText, targetWY) {
     const monthOrder = wyMonthOrderFromLabel(label);
     if (monthOrder == null) return;
 
-    const active = conditionCols.find(c => c.index !== -1 && row[c.index]);
-    if (!active) return;
-
     bands.push([
       {
         xAxis: monthOrder - 0.5,
         itemStyle: {
-          color: CONDITION_COLORS[active.name],
+          color: CONDITION_COLORS[row.conditionName],
           opacity: 0.75
         }
       },
@@ -1139,34 +1187,36 @@ function buildConditionLegendSeries(axisLabels = WY_MONTHS) {
 }
 
 // Condition bands for legend and tooltip
-function buildConditionLookup(csvText, targetWY) {
-  const rows = csvText
-    .split(/\r?\n/)
-    .map(l => l.trim())
-    .filter(Boolean)
-    .map(line => line.split(/\t|,/).map(s => s.trim().replace(/^"|"$/g, "")));
-
-  const headerIndex = rows.findIndex(r =>
-    r.includes("Wet") &&
-    r.includes("Above Normal") &&
-    r.includes("Below Normal") &&
-    r.includes("Dry") &&
-    r.includes("Critical")
-  );
-
-  if (headerIndex === -1) return new Map();
-
-  const header = rows[headerIndex];
-  const conditionCols = Object.keys(CONDITION_COLORS).map(name => ({
-    name,
-    index: header.findIndex(h => h === name)
-  }));
-
+function buildConditionLookup(csvText, targetWY, axisLabels = WY_MONTHS) {
+  const conditionRows = parseConditionRows(csvText);
   const lookup = new Map();
 
-  rows.slice(headerIndex + 1).forEach(row => {
-    const label = row[0];
-    if (!label) return;
+  if (!conditionRows.length) return lookup;
+
+  const axisHasYears = axisLabels.some(label => isValidMonthYear(parseMonthYear(label)));
+
+  if (axisHasYears) {
+    const bySerial = new Map();
+
+    conditionRows.forEach(row => {
+      const parsed = parseMonthYear(row.label);
+      if (!isValidMonthYear(parsed)) return;
+      bySerial.set(getMonthSerial(parsed), row.conditionName);
+    });
+
+    axisLabels.forEach(axisLabel => {
+      const parsed = parseMonthYear(axisLabel);
+      if (!isValidMonthYear(parsed)) return;
+
+      const conditionName = bySerial.get(getMonthSerial(parsed));
+      if (conditionName) lookup.set(axisLabel, conditionName);
+    });
+
+    return lookup;
+  }
+
+  conditionRows.forEach(row => {
+    const label = row.label;
 
     const wy = getLabelWaterYear(label);
     if (wy !== targetWY) return;
@@ -1174,10 +1224,7 @@ function buildConditionLookup(csvText, targetWY) {
     const monthOrder = wyMonthOrderFromLabel(label);
     if (monthOrder == null) return;
 
-    const active = conditionCols.find(c => c.index !== -1 && row[c.index]);
-    if (!active) return;
-
-    lookup.set(WY_MONTHS[monthOrder], active.name);
+    lookup.set(WY_MONTHS[monthOrder], row.conditionName);
   });
 
   return lookup;
@@ -1216,7 +1263,7 @@ function renderChart(el) {
     const csvTexts = await Promise.all(csvUrls.map(fetchText));
     return { cfg, csvUrls, csvTexts };
   }))
-    .then(loadedSeries => {
+    .then(async loadedSeries => {
       // check which water year to filter to (current WY by default, or previous if specified in any series)
       console.log("---------------------------------------------------")
       const currentWY = getCurrentWaterYear();
@@ -1229,13 +1276,13 @@ function renderChart(el) {
       //  Check if it is stacked
       const stacked = (el.dataset.stacked || "").toLowerCase() === "true";
       const showConditionBands = (el.dataset.conditionBands || "").toLowerCase() === "true";
+      const conditionBandsCsv = (el.dataset.conditionBandsCsv || el.dataset.conditionCsv || "").trim();
 
       let conditionBands = [];
       let conditionLookup = new Map();
-      if (showConditionBands) {
-        conditionBands = buildConditionBands(loadedSeries[0].csvTexts[0], currentWY);
-        conditionLookup = buildConditionLookup(loadedSeries[0].csvTexts[0], currentWY);
-      }
+      const conditionCsvText = showConditionBands
+        ? (conditionBandsCsv ? await fetchText(conditionBandsCsv) : loadedSeries[0].csvTexts[0])
+        : null;
 
       const series = loadedSeries.flatMap(({ cfg, csvUrls, csvTexts }, idx) => {
       const parsedSegments = csvTexts.map(csvText => parseFirstColumnAndNamedValue(csvText, cfg.y));
@@ -1561,6 +1608,11 @@ function renderChart(el) {
 
 
       console.log("Primary units:", primaryUnits, "Secondary units:", secondaryUnits);
+
+      if (showConditionBands && conditionCsvText && xAxisLabels) {
+        conditionBands = buildConditionBands(conditionCsvText, currentWY, xAxisLabels);
+        conditionLookup = buildConditionLookup(conditionCsvText, currentWY, xAxisLabels);
+      }
 
       if (conditionBands.length) {
         series.unshift({
