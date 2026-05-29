@@ -887,6 +887,11 @@ function applyWyPlaceholders(root = document) {
 
   });
 
+  root.querySelectorAll(".plotly-map").forEach(el => {
+    el.dataset.title = apply(el.dataset.title);
+    el.dataset.subtitle = apply(el.dataset.subtitle);
+  });
+
   // 3) Single values: labels in HTML (global)
 
   root.querySelectorAll(".single-value").forEach(el => {
@@ -928,6 +933,59 @@ async function fetchText(url) {
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error(`Failed to load ${url}`);
   return res.text();
+}
+
+async function fetchJson(url) {
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error(`Failed to load ${url}`);
+  return res.json();
+}
+
+let plotlyLoadPromise = null;
+
+function loadPlotly() {
+  if (window.Plotly) return Promise.resolve(window.Plotly);
+  if (plotlyLoadPromise) return plotlyLoadPromise;
+
+  const parseDataScript = Array.from(document.scripts)
+    .find(script => (script.getAttribute("src") || "").endsWith("parse-data.js"));
+  const assetBase = parseDataScript?.src || document.baseURI;
+  const sources = [
+    new URL("Data/plotly-2.35.2.min.js", assetBase).href,
+    "https://cdn.plot.ly/plotly-2.35.2.min.js"
+  ];
+
+  const loadScript = (src) => new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    const timeout = window.setTimeout(() => {
+      script.remove();
+      reject(new Error(`Plotly did not finish loading from ${src}.`));
+    }, 30000);
+
+    script.src = src;
+    script.async = true;
+    script.onload = () => {
+      window.clearTimeout(timeout);
+      resolve(window.Plotly);
+    };
+    script.onerror = () => {
+      window.clearTimeout(timeout);
+      script.remove();
+      reject(new Error(`Failed to load Plotly from ${src}.`));
+    };
+
+    document.head.appendChild(script);
+  });
+
+  plotlyLoadPromise = sources.reduce(
+    (promise, src) => promise.catch(() => loadScript(src)),
+    Promise.reject()
+  ).catch(() => {
+    plotlyLoadPromise = null;
+    throw new Error("Plotly could not be loaded from the local bundle or CDN.");
+  });
+
+  return plotlyLoadPromise;
 }
 
 function getSeriesCsvUrls(cfg) {
@@ -1228,6 +1286,205 @@ function buildConditionLookup(csvText, targetWY, axisLabels = WY_MONTHS) {
   });
 
   return lookup;
+}
+
+function getGeoJsonBounds(geojson) {
+  const bounds = {
+    minLon: Infinity,
+    minLat: Infinity,
+    maxLon: -Infinity,
+    maxLat: -Infinity
+  };
+
+  const visit = coords => {
+    if (!Array.isArray(coords)) return;
+
+    if (typeof coords[0] === "number" && typeof coords[1] === "number") {
+      bounds.minLon = Math.min(bounds.minLon, coords[0]);
+      bounds.maxLon = Math.max(bounds.maxLon, coords[0]);
+      bounds.minLat = Math.min(bounds.minLat, coords[1]);
+      bounds.maxLat = Math.max(bounds.maxLat, coords[1]);
+      return;
+    }
+
+    coords.forEach(visit);
+  };
+
+  geojson?.features?.forEach(feature => visit(feature.geometry?.coordinates));
+
+  if (!Number.isFinite(bounds.minLon)) {
+    return {
+      center: { lon: -121.85, lat: 38.6 },
+      zoom: 8
+    };
+  }
+
+  const lonSpan = Math.max(bounds.maxLon - bounds.minLon, 0.01);
+  const latSpan = Math.max(bounds.maxLat - bounds.minLat, 0.01);
+  const maxSpan = Math.max(lonSpan, latSpan);
+  const zoom = Math.max(8.4, Math.min(11.5, Math.log2(360 / maxSpan) - 0.25));
+
+  return {
+    center: {
+      lon: (bounds.minLon + bounds.maxLon) / 2,
+      lat: (bounds.minLat + bounds.maxLat) / 2
+    },
+    zoom
+  };
+}
+
+function getPointCoordinates(geojson) {
+  const lon = [];
+  const lat = [];
+  const text = [];
+
+  geojson?.features?.forEach(feature => {
+    const coords = feature.geometry?.coordinates;
+    if (!coords || feature.geometry?.type !== "Point") return;
+
+    lon.push(coords[0]);
+    lat.push(coords[1]);
+    text.push(feature.properties?.WCRNmbr || feature.properties?.id || "Well");
+  });
+
+  return { lon, lat, text };
+}
+
+async function renderPlotlyMap(el) {
+  try {
+    const PlotlyLib = await loadPlotly();
+
+    const title = el.dataset.title || "Map";
+    const subtitle = el.dataset.subtitle || "";
+    const gridUrl = el.dataset.gridGeojson;
+    const pointUrl = el.dataset.pointsGeojson;
+    const valueField = el.dataset.gridValue || "24-Sep";
+    const pointName = el.dataset.pointName || "Potentially Impacted Wells";
+
+    if (!gridUrl) throw new Error("Missing data-grid-geojson.");
+    if (!pointUrl) throw new Error("Missing data-points-geojson.");
+
+    const [gridGeojson, pointsGeojson] = await Promise.all([
+      fetchJson(gridUrl),
+      fetchJson(pointUrl)
+    ]);
+
+    const gridFeatures = (gridGeojson.features || []).filter(feature =>
+      Number.isFinite(Number(feature.properties?.[valueField]))
+    );
+
+    const gridIds = gridFeatures.map(feature => feature.id || feature.properties?.id);
+    const gridValues = gridFeatures.map(feature => Number(feature.properties[valueField]));
+    const pointCoords = getPointCoordinates(pointsGeojson);
+    const bounds = getGeoJsonBounds(gridGeojson);
+
+    const traces = [
+      {
+        type: "choroplethmapbox",
+        name: "Water Table Elevation",
+        geojson: {
+          type: "FeatureCollection",
+          features: gridFeatures
+        },
+        locations: gridIds,
+        z: gridValues,
+        featureidkey: "id",
+        colorscale: [
+          [0, "#2c7bb6"],
+          [0.35, "#abd9e9"],
+          [0.5, "#ffffbf"],
+          [0.75, "#fdae61"],
+          [1, "#d7191c"]
+        ],
+        marker: {
+          line: {
+            color: "rgba(255,255,255,0.22)",
+            width: 0.2
+          },
+          opacity: 0.58
+        },
+        colorbar: {
+          title: valueField,
+          thickness: 14,
+          len: 0.72,
+          x: 0.975,
+          xanchor: "right",
+          y: 0.5
+        },
+        hovertemplate: `Grid: %{location}<br>${valueField}: %{z:.1f}<extra></extra>`
+      },
+      {
+        type: "scattermapbox",
+        mode: "markers",
+        name: pointName,
+        showlegend: true,
+        lon: pointCoords.lon,
+        lat: pointCoords.lat,
+        text: pointCoords.text,
+        marker: {
+          size: 6,
+          color: "#6f3cc3",
+          opacity: 0.76,
+          line: {
+            color: "white",
+            width: 0.5
+          }
+        },
+        hovertemplate: "%{text}<extra></extra>"
+      }
+    ];
+
+    const layout = {
+      title: {
+        text: subtitle
+          ? `<b>${title}</b><br><span style="font-size:12px;font-weight:400;color:#6b7280;">${subtitle}</span>`
+          : `<b>${title}</b>`,
+        x: 0.5,
+        xanchor: "center",
+        font: {
+          family: "Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+          size: 18,
+          color: "#3f3f46",
+          weight: 600
+        }
+      },
+      margin: { l: 18, r: 18, t: subtitle ? 78 : 58, b: 18 },
+      paper_bgcolor: "rgb(255, 255, 255)",
+      plot_bgcolor: "rgb(255, 255, 255)",
+      legend: {
+        orientation: "h",
+        x: 0.5,
+        xanchor: "center",
+        y: 0.035,
+        yanchor: "bottom",
+        traceorder: "normal",
+        backgroundcolor: "rgba(255,255,255,0.8)",
+
+      },
+      mapbox: {
+        style: "open-street-map",
+        center: bounds.center,
+        zoom: bounds.zoom,
+        domain: {
+          x: [0, 0.9],
+          y: [0.12, 1]
+        }
+      }
+    };
+
+    const config = {
+      responsive: true,
+      scrollZoom: true,
+      displayModeBar: true,
+      displaylogo: false,
+      modeBarButtonsToRemove: ["lasso2d", "select2d"]
+    };
+
+    await PlotlyLib.newPlot(el, traces, layout, config);
+  } catch (err) {
+    console.error(err);
+    el.innerHTML = `<strong>Error:</strong> ${err.message}`;
+  }
 }
 
 
@@ -1861,6 +2118,7 @@ function mountSingleValuesInCharts(root = document) {
 document.addEventListener("DOMContentLoaded", async () => {
 
   applyWyPlaceholders();               // Water Year HTML
+  document.querySelectorAll(".plotly-map").forEach(renderPlotlyMap);
   document.querySelectorAll(".chart").forEach(renderChart);
 
   const allSingleEls = Array.from(document.querySelectorAll(".single-value"));
