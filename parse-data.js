@@ -87,6 +87,13 @@ function normalizeMonth(m) {
   return MONTH_ABBR[key] || null;
 }
 
+function expandTwoDigitYear(yearRaw) {
+  const yearNum = Number(yearRaw);
+  if (!Number.isFinite(yearNum)) return null;
+  if (String(yearRaw).length !== 2) return yearNum;
+  return yearNum >= 70 ? 1900 + yearNum : 2000 + yearNum;
+}
+
 function parseMonthYear(label) {
   if (!label) return null;
   const s = String(label).trim().toLowerCase();
@@ -95,7 +102,7 @@ function parseMonthYear(label) {
   // 0) Handle your main format: "25-Oct" or "23-Sep" (YY-Mon)
   let m0 = s.match(/^(\d{2})\s*[-/.\s_]\s*([a-z]{3,9})$/i);
   if (m0) {
-    const year = 2000 + Number(m0[1]);
+    const year = expandTwoDigitYear(m0[1]);
     const monthAbbr = normalizeMonth(m0[2]);
     const monthIndex = MONTH_INDEX[monthAbbr];
     if (monthIndex != null) return { monthIndex, year };
@@ -105,7 +112,7 @@ function parseMonthYear(label) {
   m0 = s.match(/^([a-z]{3,9})\s*[-/.\s_]\s*(\d{2})$/i);
   if (m0) {
     const monthAbbr = normalizeMonth(m0[1]);
-    const year = 2000 + Number(m0[2]);
+    const year = expandTwoDigitYear(m0[2]);
     const monthIndex = MONTH_INDEX[monthAbbr];
     if (monthIndex != null) return { monthIndex, year };
   }
@@ -114,13 +121,20 @@ function parseMonthYear(label) {
   // capture groups: month text + year 2/4 digits
   const monthWords = "(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|sept|september|oct|october|nov|november|dec|december)";
   let m = s.match(new RegExp(`\\b${monthWords}\\b[^0-9]*?(\\d{2,4})\\b`, "i"));
-  if (!m) m = s.match(new RegExp(`\\b(\\d{2,4})\\b[^a-z]*?\\b${monthWords}\\b`, "i"));
 
   if (m) {
     const monthAbbr = normalizeMonth(m[1]);          // if month first
     const yearRaw = m[2];                            // year captured
-    const year = yearRaw.length === 2 ? 2000 + Number(yearRaw) : Number(yearRaw);
+    const year = expandTwoDigitYear(yearRaw);
     const monthIndex = MONTH_INDEX[monthAbbr];       // you already have MONTH_INDEX
+    if (monthIndex != null && Number.isFinite(year)) return { monthIndex, year };
+  }
+
+  m = s.match(new RegExp(`\\b(\\d{2,4})\\b[^a-z]*?\\b${monthWords}\\b`, "i"));
+  if (m) {
+    const year = expandTwoDigitYear(m[1]);
+    const monthAbbr = normalizeMonth(m[2]);
+    const monthIndex = MONTH_INDEX[monthAbbr];
     if (monthIndex != null && Number.isFinite(year)) return { monthIndex, year };
   }
 
@@ -1584,26 +1598,39 @@ function renderChart(el) {
 
       if (!y.some(v => v != null)) return [];
 
+      const hasExplicitXLabels =
+        xAxisLabels &&
+        seriesData.labels &&
+        seriesData.labels !== xAxisLabels &&
+        seriesData.labels.some(label => xAxisLabels.includes(label));
+      const chartData = hasExplicitXLabels
+        ? seriesData.labels.map((label, i) => [label, y[i]])
+        : y;
+
       const chartType = (cfg.type || "line").toLowerCase();
       const isArea = chartType === "area";
+      const isPointSeries = chartType === "points" || chartType === "point" || chartType === "scatter";
+      const echartsType = isArea ? "line" : (isPointSeries ? "scatter" : chartType);
 
       const color = cfg.color;
       const fillColor = cfg.fillColor;
       const width = Number(cfg.width) || 3;
       const showLineSymbols = cfg.showSymbol !== false && cfg.symbols !== false;
       const lineSymbolSize = Number.isFinite(Number(cfg.symbolSize)) ? Number(cfg.symbolSize) : 6;
+      const pointSymbolSize = Number.isFinite(Number(cfg.symbolSize)) ? Number(cfg.symbolSize) : 7;
+      const getDatumValue = datum => Array.isArray(datum) ? datum[1] : datum;
 
       // ---- Base series factory ----
       const makeSeries = (name, data, { dashed } = {}) => ({
         id: `${cfg.name || csvUrls.join("+")}-${name}-${dashed ? "forecast" : "hist"}`, // unique
         name: cfg.name || csvUrls.join(" + "), // IMPORTANT: keep legend item as a single name
-        type: isArea ? "line" : chartType,
+        type: echartsType,
         data,
-        connectNulls: isStitched ? false : chartType !== "bar",
+        connectNulls: !isPointSeries && (isStitched ? false : chartType !== "bar"),
         yAxisIndex: Number(cfg.yAxisIndex) || 0,
         // smooth: !isArea && chartType === "line",
-        symbolSize: (!isArea && chartType === "line" && showLineSymbols) ? lineSymbolSize : 0,
-        showSymbol: (!isArea && chartType === "line" && showLineSymbols),
+        symbolSize: isPointSeries ? pointSymbolSize : ((!isArea && chartType === "line" && showLineSymbols) ? lineSymbolSize : 0),
+        showSymbol: isPointSeries ? true : (!isArea && chartType === "line" && showLineSymbols),
 
 
 
@@ -1655,7 +1682,7 @@ function renderChart(el) {
         // for your layering sorter
         _isArea: isArea,
         _mag: isArea ? (() => {
-          const ys = data.filter(v => v != null);
+          const ys = data.map(getDatumValue).filter(v => v != null);
           return ys.length ? (ys.reduce((a,b)=>a+b,0) / ys.length) : null;
         })() : null,
 
@@ -1677,12 +1704,13 @@ function renderChart(el) {
       const isStackedArea = stacked && isArea && cfg.stack !== false; // fix non stacked & stacked layered charts bug
 
       const shouldSplit =
+        !hasExplicitXLabels &&
         (chartType === "line" || chartType === "bar" || (chartType === "area" && !stacked)) &&
         targetWY === currentWY &&
         dashFromCurrentMonth; // && !stacked;         // fix non stacked & stacked layered charts bug
 
       if (!shouldSplit) {
-        return [makeSeries("full", y, { dashed: false })];
+        return [makeSeries("full", chartData, { dashed: false })];
       }
 
       const splitIdx = currentWyMonthIndex(new Date()); // Feb 18 => Feb index in WY
@@ -1998,7 +2026,8 @@ function renderChart(el) {
             }
 
             const rows = Array.from(byName.values()).map(p => {
-              const v = Number(p.data).toFixed(1);
+              const rawValue = Array.isArray(p.data) ? p.data[1] : p.data;
+              const v = Number(rawValue).toFixed(1);
               const u = p?.seriesId ? series.find(s => s.id === p.seriesId)?._units : null;
             
               console.log("Tooltip params:", p, "value:", v, "units:", u);
