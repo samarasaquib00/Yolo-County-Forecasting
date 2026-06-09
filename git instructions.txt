@@ -1,0 +1,43 @@
+Work Locally On Dev
+
+git switch dev
+git pull origin dev
+Make/test changes, then:
+
+git status
+git add .
+git commit -m "Your message"
+git push
+Put Dev On GitHub Main
+Open PR on GitHub:
+
+dev → main
+Review, then merge.
+
+Update Viracocha With Main
+
+cd "F:\Users\Jack\OneDrive - SEI\Yolo_Website"
+git switch main
+git pull origin main
+Temporarily Use Dev On Viracocha
+
+cd "F:\Users\Jack\OneDrive - SEI\Yolo_Website"
+git fetch origin
+git switch dev
+git pull origin dev
+If dev does not exist locally yet:
+
+git fetch origin
+git switch -c dev origin/dev
+Go Back To Main On Viracocha
+
+git switch main
+git pull origin main
+
+
+Merge Dev into Main
+Command-Line Way
+git switch main
+git pull origin main
+git merge dev
+git push origin main

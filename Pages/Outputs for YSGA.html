@@ -32,7 +32,6 @@
 
     <div class="layout">
       <div class="container page-content">
-
         <!-- Plotly -->
 
         <div
@@ -47,7 +46,6 @@
           data-point-name="Potentially Impacted Wells"
         ></div>
 
-
         <!-- Groundwater Storage -->
         <div
           id="groundwater-storage"
@@ -55,14 +53,14 @@
           data-title="Monthly Change in Groundwater Storage"
           data-subtitle="Water Year: {wyRange}"
           data-stacked="false"
-          data-note="Displays the change in storage from previous month. All values are simulated."
+          data-note="Displays the change in storage from previous month."
           data-series='[
                     { "csv": "../Data/Groundwater Storage.csv", "name": "Storage Change", "y": "Baseline", "type": "line", "dashFromCurrentMonth": false, "monthlyChange": true }
                 ]'
         ></div>
 
-
         <!--  Representative Monitoring Wells - Average Depth to Water -->
+        <!-- data-note="All data is simulated." -->
         <div
           id="representative-monitoring-wells"
           class="chart"
@@ -73,9 +71,9 @@
           data-y-axis-name="Depth to Water (ft)"
           data-condition-bands="true"
           data-condition-bands-csv="../Data/Water Year Types.csv"
-          data-note="All data is simulated."
           data-series='[
-                    { "csvHistorical": "../Data/Historical RMW Avg DTW.csv", "csvForecast": "../Data/RMW Avg DTW.csv", "stitch": "back-to-back", "name": "Average Groundwater Level", "y": "Avg Depth to Water (ft)", "units": "ft", "sourceUnits": "ft", "type": "line", "dashFromCurrentMonth": false, "color": "red", "showSymbol": false}
+                    { "csvHistorical": "../Data/Historical RMW Avg DTW.csv", "csvForecast": "../Data/RMW Avg DTW.csv", "stitch": "back-to-back", "name": "Average Groundwater Level", "y": "Avg Depth to Water (ft)", "units": "ft", "sourceUnits": "ft", "type": "line", "dashFromCurrentMonth": false, "color": "red", "showSymbol": false},
+                    { "csv": "../Data/Observed RMW Avg DTW.csv", "name": "Observed Average Groundwater Level", "y": "Avg Depth to Water (ft)", "units": "ft", "sourceUnits": "ft", "type": "line", "dashFromCurrentMonth": false, "color": "black", "showSymbol": true }
                 ]'
         ></div>
 
@@ -98,8 +96,6 @@
             "color": "red"
           }
         ]' -->
-
-
 
         <!-- Table of Budget Numbers -->
         <!-- If data-year is empty, assume current water year -->
