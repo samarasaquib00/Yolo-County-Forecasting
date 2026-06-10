@@ -1373,6 +1373,10 @@ async function renderPlotlyMap(el) {
     const gridUrl = el.dataset.gridGeojson;
     const pointUrl = el.dataset.pointsGeojson;
     const valueField = el.dataset.gridValue || "24-Sep";
+    const gridLabel = el.dataset.gridLabel || valueField;
+    const colorbarTitle = gridLabel === "Water Table Elevation (ft)"
+      ? "Water Table<br>Elevation (ft)"
+      : gridLabel;
     const pointName = el.dataset.pointName || "Potentially Impacted Wells";
 
     if (!gridUrl) throw new Error("Missing data-grid-geojson.");
@@ -1418,11 +1422,15 @@ async function renderPlotlyMap(el) {
           opacity: 0.58
         },
         colorbar: {
-          title: valueField,
+          title: {
+            text: colorbarTitle,
+            side: "top",
+            font: { size: 12, color: "#3f3f46" }
+          },
           thickness: 14,
-          len: 0.72,
-          x: 0.975,
-          xanchor: "right",
+          len: 0.64,
+          x: 0.94,
+          xanchor: "center",
           y: 0.5
         },
         hovertemplate: `Grid: %{location}<br>${valueField}: %{z:.1f}<extra></extra>`
@@ -1462,7 +1470,7 @@ async function renderPlotlyMap(el) {
           weight: 600
         }
       },
-      margin: { l: 18, r: 18, t: subtitle ? 78 : 58, b: 18 },
+      margin: { l: 18, r: 34, t: subtitle ? 78 : 58, b: 18 },
       paper_bgcolor: "rgb(255, 255, 255)",
       plot_bgcolor: "rgb(255, 255, 255)",
       legend: {
@@ -1480,7 +1488,7 @@ async function renderPlotlyMap(el) {
         center: bounds.center,
         zoom: bounds.zoom,
         domain: {
-          x: [0, 0.9],
+          x: [0, 0.86],
           y: [0.12, 1]
         }
       }
