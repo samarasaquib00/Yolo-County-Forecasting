@@ -41,3 +41,6 @@ git switch main
 git pull origin main
 git merge dev
 git push origin main
+
+
+python -m http.server 8084

@@ -1351,17 +1351,83 @@ function getPointCoordinates(geojson) {
   const lon = [];
   const lat = [];
   const text = [];
+  const thresholdStatus = [];
 
   geojson?.features?.forEach(feature => {
     const coords = feature.geometry?.coordinates;
     if (!coords || feature.geometry?.type !== "Point") return;
 
+    const status = normalizeThresholdStatus(feature.properties?.BlwThreshl);
     lon.push(coords[0]);
     lat.push(coords[1]);
-    text.push(feature.properties?.WCRNmbr || feature.properties?.id || "Well");
+    text.push([
+      feature.properties?.WCRNmbr || feature.properties?.id || "Well",
+      `Status: ${status.label}`
+    ].join("<br>"));
+    thresholdStatus.push(status);
   });
 
-  return { lon, lat, text };
+  return { lon, lat, text, thresholdStatus };
+}
+
+const THRESHOLD_STATUS_STYLES = {
+  below: { label: "Below", legendLabel: "Below Threshold", color: "#dc2626", order: 0 },
+  close: { label: "Close", legendLabel: "Close to Threshold", color: "#facc15", order: 1 },
+  above: { label: "Above", legendLabel: "Above Threshold", color: "#16a34a", order: 2 },
+  nodata: { label: "No Data", legendLabel: "No data", color: "#6b7280", order: 3 }
+};
+
+function normalizeThresholdStatus(value) {
+  const key = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_-]+/g, "");
+
+  if (key === "below") return THRESHOLD_STATUS_STYLES.below;
+  if (key === "close") return THRESHOLD_STATUS_STYLES.close;
+  if (key === "above") return THRESHOLD_STATUS_STYLES.above;
+  if (key === "nodata" || key === "na" || key === "no") return THRESHOLD_STATUS_STYLES.nodata;
+  return THRESHOLD_STATUS_STYLES.nodata;
+}
+
+function buildPointStatusTraces(pointCoords, pointName) {
+  return Object.values(THRESHOLD_STATUS_STYLES)
+    .sort((a, b) => a.order - b.order)
+    .map(status => {
+      const lon = [];
+      const lat = [];
+      const text = [];
+
+      pointCoords.thresholdStatus.forEach((pointStatus, i) => {
+        if (pointStatus.label !== status.label) return;
+        lon.push(pointCoords.lon[i]);
+        lat.push(pointCoords.lat[i]);
+        text.push(pointCoords.text[i]);
+      });
+
+      if (!lon.length) return null;
+
+      return {
+        type: "scattermapbox",
+        mode: "markers",
+        name: status.legendLabel,
+        showlegend: true,
+        lon,
+        lat,
+        text,
+        marker: {
+          size: 6,
+          color: status.color,
+          opacity: 0.82,
+          line: {
+            color: "white",
+            width: 0.5
+          }
+        },
+        hovertemplate: "%{text}<extra></extra>"
+      };
+    })
+    .filter(Boolean);
 }
 
 async function renderPlotlyMap(el) {
@@ -1395,6 +1461,8 @@ async function renderPlotlyMap(el) {
     const gridValues = gridFeatures.map(feature => Number(feature.properties[valueField]));
     const pointCoords = getPointCoordinates(pointsGeojson);
     const bounds = getGeoJsonBounds(gridGeojson);
+
+    const pointTraces = buildPointStatusTraces(pointCoords, pointName);
 
     const traces = [
       {
@@ -1435,25 +1503,7 @@ async function renderPlotlyMap(el) {
         },
         hovertemplate: `Grid: %{location}<br>${valueField}: %{z:.1f}<extra></extra>`
       },
-      {
-        type: "scattermapbox",
-        mode: "markers",
-        name: pointName,
-        showlegend: true,
-        lon: pointCoords.lon,
-        lat: pointCoords.lat,
-        text: pointCoords.text,
-        marker: {
-          size: 6,
-          color: "#6f3cc3",
-          opacity: 0.76,
-          line: {
-            color: "white",
-            width: 0.5
-          }
-        },
-        hovertemplate: "%{text}<extra></extra>"
-      }
+      ...pointTraces
     ];
 
     const layout = {
@@ -1503,6 +1553,7 @@ async function renderPlotlyMap(el) {
     };
 
     await PlotlyLib.newPlot(el, traces, layout, config);
+    requestAnimationFrame(() => PlotlyLib.Plots.resize(el));
   } catch (err) {
     console.error(err);
     el.innerHTML = `<strong>Error:</strong> ${err.message}`;

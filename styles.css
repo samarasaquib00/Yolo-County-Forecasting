@@ -618,16 +618,21 @@ h2 {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: 0 2px 8px rgba(17, 24, 39, 0.06);
-  padding: 1.5rem;
+  padding: 0;
   box-sizing: border-box;
   position: relative;
-  overflow: visible;
+  overflow: hidden;
   transition: box-shadow 240ms ease, border-color 240ms ease;
 }
 
 .plotly-map .plot-container,
 .plotly-map .svg-container {
   max-width: 100%;
+}
+
+.plotly-map .modebar {
+  right: 18px !important;
+  top: 18px !important;
 }
 
 .plotly-map::before {
@@ -659,7 +664,7 @@ h2 {
 
   .plotly-map {
     height: 520px;
-    padding: 1rem;
+    padding: 0;
     margin-bottom: 2rem;
   }
 }
