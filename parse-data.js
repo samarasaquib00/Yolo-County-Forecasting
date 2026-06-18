@@ -1462,13 +1462,15 @@ function parseDateFromFieldName(fieldName) {
   return "";
 }
 
-function inferMapSubtitle(pointsGeojson, valueField) {
-  const pointProperties = pointsGeojson?.features
+function inferMapSubtitle(gridGeojson, valueField) {
+  const gridProperties = gridGeojson?.features
     ?.map(feature => feature.properties || {})
     ?.find(properties => Object.keys(properties).length) || {};
 
-  const pointDateField = Object.keys(pointProperties).find(field => /head$/i.test(field));
-  return parseDateFromFieldName(pointDateField) || parseDateFromFieldName(valueField);
+  const gridDateField = Object.keys(gridProperties).find(field =>
+    field === valueField || parseDateFromFieldName(field)
+  );
+  return parseDateFromFieldName(gridDateField) || parseDateFromFieldName(valueField);
 }
 
 async function renderPlotlyMap(el) {
@@ -1495,7 +1497,7 @@ async function renderPlotlyMap(el) {
     ]);
 
     if (!subtitle) {
-      subtitle = inferMapSubtitle(pointsGeojson, valueField);
+      subtitle = inferMapSubtitle(gridGeojson, valueField);
     }
 
     const gridFeatures = (gridGeojson.features || []).filter(feature =>
