@@ -1430,12 +1430,53 @@ function buildPointStatusTraces(pointCoords, pointName) {
     .filter(Boolean);
 }
 
+function formatMonthYearSubtitle(monthAbbr, year) {
+  const monthIndex = MONTH_INDEX[monthAbbr];
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  if (monthIndex == null || !Number.isFinite(year)) return "";
+  return `${monthNames[monthIndex]} ${year}`;
+}
+
+function parseDateFromFieldName(fieldName) {
+  const s = String(fieldName || "").trim().toLowerCase();
+  const monthWords = "(january|jan|february|feb|march|mar|april|apr|may|june|jun|july|jul|august|aug|september|sept|sep|october|oct|november|nov|december|dec)";
+
+  let match = s.match(new RegExp(`^${monthWords}[-_\\s]*(\\d{2,4})`, "i"));
+  if (match) {
+    const monthAbbr = normalizeMonth(match[1]);
+    const year = expandTwoDigitYear(match[2]);
+    return formatMonthYearSubtitle(monthAbbr, year);
+  }
+
+  match = s.match(new RegExp(`^(\\d{2,4})[-_\\s]*${monthWords}`, "i"));
+  if (match) {
+    const year = expandTwoDigitYear(match[1]);
+    const monthAbbr = normalizeMonth(match[2]);
+    return formatMonthYearSubtitle(monthAbbr, year);
+  }
+
+  return "";
+}
+
+function inferMapSubtitle(pointsGeojson, valueField) {
+  const pointProperties = pointsGeojson?.features
+    ?.map(feature => feature.properties || {})
+    ?.find(properties => Object.keys(properties).length) || {};
+
+  const pointDateField = Object.keys(pointProperties).find(field => /head$/i.test(field));
+  return parseDateFromFieldName(pointDateField) || parseDateFromFieldName(valueField);
+}
+
 async function renderPlotlyMap(el) {
   try {
     const PlotlyLib = await loadPlotly();
 
     const title = el.dataset.title || "Map";
-    const subtitle = el.dataset.subtitle || "";
+    let subtitle = el.dataset.subtitle || "";
     const gridUrl = el.dataset.gridGeojson;
     const pointUrl = el.dataset.pointsGeojson;
     const valueField = el.dataset.gridValue || "24-Sep";
@@ -1452,6 +1493,10 @@ async function renderPlotlyMap(el) {
       fetchJson(gridUrl),
       fetchJson(pointUrl)
     ]);
+
+    if (!subtitle) {
+      subtitle = inferMapSubtitle(pointsGeojson, valueField);
+    }
 
     const gridFeatures = (gridGeojson.features || []).filter(feature =>
       Number.isFinite(Number(feature.properties?.[valueField]))
