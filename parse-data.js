@@ -153,6 +153,13 @@ function parseMonthYear(label) {
     if (mm >= 1 && mm <= 12) return { monthIndex: mm - 1, year };
   }
 
+  n = s.match(/\b(\d{1,2})[-/.\s_](\d{1,2})[-/.\s_](\d{2,4})\b/); // mm-dd-yyyy or mm/dd/yy
+  if (n) {
+    const mm = Number(n[1]);
+    const year = expandTwoDigitYear(n[3]);
+    if (mm >= 1 && mm <= 12 && Number.isFinite(year)) return { monthIndex: mm - 1, year };
+  }
+
   return null;
 }
 
