@@ -1185,31 +1185,35 @@ function buildConditionBands(csvText, targetWY, axisLabels = WY_MONTHS) {
   const axisHasYears = axisLabels.some(label => isValidMonthYear(parseMonthYear(label)));
 
   if (axisHasYears) {
-    const bySerial = new Map();
+    const conditionPoints = conditionRows
+      .map(row => {
+        const parsed = parseMonthYear(row.label);
+        if (!isValidMonthYear(parsed)) return null;
+        const serial = getMonthSerial(parsed);
+        const axisIndex = axisLabels.findIndex(axisLabel => {
+          const axisParsed = parseMonthYear(axisLabel);
+          return isValidMonthYear(axisParsed) && getMonthSerial(axisParsed) === serial;
+        });
+        if (axisIndex === -1) return null;
+        return { axisIndex, conditionName: row.conditionName };
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.axisIndex - b.axisIndex);
 
-    conditionRows.forEach(row => {
-      const parsed = parseMonthYear(row.label);
-      if (!isValidMonthYear(parsed)) return;
-      bySerial.set(getMonthSerial(parsed), row.conditionName);
-    });
-
-    axisLabels.forEach((axisLabel, index) => {
-      const parsed = parseMonthYear(axisLabel);
-      if (!isValidMonthYear(parsed)) return;
-
-      const conditionName = bySerial.get(getMonthSerial(parsed));
-      if (!conditionName) return;
+    conditionPoints.forEach((point, i) => {
+      const nextPoint = conditionPoints[i + 1];
+      const endAxis = nextPoint ? nextPoint.axisIndex - 0.5 : axisLabels.length - 0.5;
 
       bands.push([
         {
-          xAxis: index - 0.5,
+          xAxis: point.axisIndex - 0.5,
           itemStyle: {
-            color: CONDITION_COLORS[conditionName],
+            color: CONDITION_COLORS[point.conditionName],
             opacity: 0.75
           }
         },
         {
-          xAxis: index + 0.5
+          xAxis: endAxis
         }
       ]);
     });
@@ -1275,20 +1279,29 @@ function buildConditionLookup(csvText, targetWY, axisLabels = WY_MONTHS) {
   const axisHasYears = axisLabels.some(label => isValidMonthYear(parseMonthYear(label)));
 
   if (axisHasYears) {
-    const bySerial = new Map();
-
-    conditionRows.forEach(row => {
-      const parsed = parseMonthYear(row.label);
-      if (!isValidMonthYear(parsed)) return;
-      bySerial.set(getMonthSerial(parsed), row.conditionName);
-    });
+    const conditionPoints = conditionRows
+      .map(row => {
+        const parsed = parseMonthYear(row.label);
+        if (!isValidMonthYear(parsed)) return null;
+        return {
+          serial: getMonthSerial(parsed),
+          conditionName: row.conditionName
+        };
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.serial - b.serial);
 
     axisLabels.forEach(axisLabel => {
       const parsed = parseMonthYear(axisLabel);
       if (!isValidMonthYear(parsed)) return;
 
-      const conditionName = bySerial.get(getMonthSerial(parsed));
-      if (conditionName) lookup.set(axisLabel, conditionName);
+      const axisSerial = getMonthSerial(parsed);
+      let activePoint = null;
+      for (const point of conditionPoints) {
+        if (point.serial > axisSerial) break;
+        activePoint = point;
+      }
+      if (activePoint) lookup.set(axisLabel, activePoint.conditionName);
     });
 
     return lookup;
@@ -1732,6 +1745,9 @@ function renderChart(el) {
       const lineSymbolSize = Number.isFinite(Number(cfg.symbolSize)) ? Number(cfg.symbolSize) : 6;
       const pointSymbolSize = Number.isFinite(Number(cfg.symbolSize)) ? Number(cfg.symbolSize) : 7;
       const getDatumValue = datum => Array.isArray(datum) ? datum[1] : datum;
+      const connectNulls = cfg.connectNulls === true || cfg.connectNulls === "true"
+        ? true
+        : (!isPointSeries && (isStitched ? false : chartType !== "bar"));
 
       // ---- Base series factory ----
       const makeSeries = (name, data, { dashed } = {}) => ({
@@ -1739,7 +1755,7 @@ function renderChart(el) {
         name: cfg.name || csvUrls.join(" + "), // IMPORTANT: keep legend item as a single name
         type: echartsType,
         data,
-        connectNulls: !isPointSeries && (isStitched ? false : chartType !== "bar"),
+        connectNulls,
         yAxisIndex: Number(cfg.yAxisIndex) || 0,
         // smooth: !isArea && chartType === "line",
         symbolSize: isPointSeries ? pointSymbolSize : ((!isArea && chartType === "line" && showLineSymbols) ? lineSymbolSize : 0),
