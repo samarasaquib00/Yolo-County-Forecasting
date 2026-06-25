@@ -12,6 +12,9 @@
 | `data-units` | Chart-level default output units (e.g. `"TAF"`) — overridden by per-series `units` |
 | `data-source-units` | Chart-level input units override; overrides auto-detection from CSV |
 | `data-note` | Optional footnote/note text rendered below the chart |
+| `data-x-axis-data` | Set to `"points"` to include only dated x-axis positions where the data has rows |
+| `data-x-axis-label-rotate` | Degrees to rotate x-axis labels, such as `"45"` or `"90"` |
+| `data-x-axis-labels` | Set to `"year"` to show only year labels on dated x-axes |
 | `data-condition-bands` | `"true"` to show water year type background bands |
 | `data-condition-bands-csv` | CSV file to read condition bands from, such as `"../Data/Water Year Types.csv"` |
 

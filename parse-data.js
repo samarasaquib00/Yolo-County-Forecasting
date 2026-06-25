@@ -138,8 +138,18 @@ function parseMonthYear(label) {
     if (monthIndex != null && Number.isFinite(year)) return { monthIndex, year };
   }
 
-  // 2) Match numeric formats: "2026-04", "04/2026", "2026/4"
-  let n = s.match(/\b(\d{4})[-/.\s_](\d{1,2})\b/);   // yyyy-mm
+  // 2) Match numeric formats.
+  // Check full dates before month/year so "3/1/1999" is not parsed from the
+  // inner "1/1999" substring as Jan-1999.
+  let n = s.match(/\b(\d{1,2})[-/.\s_](\d{1,2})[-/.\s_](\d{2,4})\b/); // mm-dd-yyyy or mm/dd/yy
+  if (n) {
+    const mm = Number(n[1]);
+    const year = expandTwoDigitYear(n[3]);
+    if (mm >= 1 && mm <= 12 && Number.isFinite(year)) return { monthIndex: mm - 1, year };
+  }
+
+  // Match partial dates: "2026-04", "04/2026", "2026/4"
+  n = s.match(/\b(\d{4})[-/.\s_](\d{1,2})\b/);   // yyyy-mm
   if (n) {
     const year = Number(n[1]);
     const mm = Number(n[2]);
@@ -151,13 +161,6 @@ function parseMonthYear(label) {
     const mm = Number(n[1]);
     const year = Number(n[2]);
     if (mm >= 1 && mm <= 12) return { monthIndex: mm - 1, year };
-  }
-
-  n = s.match(/\b(\d{1,2})[-/.\s_](\d{1,2})[-/.\s_](\d{2,4})\b/); // mm-dd-yyyy or mm/dd/yy
-  if (n) {
-    const mm = Number(n[1]);
-    const year = expandTwoDigitYear(n[3]);
-    if (mm >= 1 && mm <= 12 && Number.isFinite(year)) return { monthIndex: mm - 1, year };
   }
 
   return null;
@@ -1032,6 +1035,17 @@ function formatMonthYearLabel(serial) {
   return `${prettyMonth}-${String(year).slice(-2)}`;
 }
 
+function formatXAxisTickLabel(label, mode, index = 0, labels = []) {
+  if (mode !== "year") return label;
+
+  const parsed = parseMonthYear(label);
+  if (!isValidMonthYear(parsed)) return label;
+
+  const previous = index > 0 ? parseMonthYear(labels[index - 1]) : null;
+  const previousYear = isValidMonthYear(previous) ? previous.year : null;
+  return index === 0 || parsed.year !== previousYear ? String(parsed.year) : "";
+}
+
 function resolveTargetWaterYear(cfg, currentWY, previousWY) {
   const spec = String(cfg.waterYear ?? "current").trim().toLowerCase();
   if (spec === "previous" || spec === "prev") return previousWY;
@@ -1090,7 +1104,7 @@ function buildWaterYearSeriesData({ labels, values, cfg, desiredUnits, sourceUni
   };
 }
 
-function buildStitchedSeriesData({ parsedSegments, cfg, desiredUnits, sourceUnits }) {
+function buildStitchedSeriesData({ parsedSegments, cfg, desiredUnits, sourceUnits, includeMissingMonths = true }) {
   const byMonth = new Map();
 
   parsedSegments.forEach(segment => {
@@ -1114,6 +1128,17 @@ function buildStitchedSeriesData({ parsedSegments, cfg, desiredUnits, sourceUnit
   if (!byMonth.size) return null;
 
   const sortedSerials = Array.from(byMonth.keys()).sort((a, b) => a - b);
+  if (!includeMissingMonths) {
+    const labels = sortedSerials.map(formatMonthYearLabel);
+    const data = sortedSerials.map(serial => byMonth.get(serial));
+
+    if (cfg.monthlyChange === true) {
+      return { labels, data: computeMonthlyChange(data) };
+    }
+
+    return { labels, data };
+  }
+
   const minSerial = sortedSerials[0];
   const maxSerial = sortedSerials[sortedSerials.length - 1];
   const axisLabels = [];
@@ -1139,6 +1164,16 @@ const CONDITION_COLORS = {
   "Dry": "#feece6",
   "Critical": "#eadad0"
 };
+
+function hexToRgba(hex, opacity = 1) {
+  const clean = String(hex || "").replace("#", "");
+  if (!/^[0-9a-f]{6}$/i.test(clean)) return `rgba(255,255,255,${opacity})`;
+
+  const r = parseInt(clean.slice(0, 2), 16);
+  const g = parseInt(clean.slice(2, 4), 16);
+  const b = parseInt(clean.slice(4, 6), 16);
+  return `rgba(${r},${g},${b},${opacity})`;
+}
 
 function parseConditionRows(csvText) {
   const rows = csvText
@@ -1202,18 +1237,18 @@ function buildConditionBands(csvText, targetWY, axisLabels = WY_MONTHS) {
 
     conditionPoints.forEach((point, i) => {
       const nextPoint = conditionPoints[i + 1];
-      const endAxis = nextPoint ? nextPoint.axisIndex - 0.5 : axisLabels.length - 0.5;
+      const endIndex = nextPoint ? nextPoint.axisIndex : axisLabels.length - 1;
 
       bands.push([
         {
-          xAxis: point.axisIndex - 0.5,
+          xAxis: point.axisIndex,
           itemStyle: {
             color: CONDITION_COLORS[point.conditionName],
             opacity: 0.75
           }
         },
         {
-          xAxis: endAxis
+          xAxis: endIndex
         }
       ]);
     });
@@ -1635,6 +1670,11 @@ function renderChart(el) {
   const title = el.dataset.title || "Chart";
   const subtitle = el.dataset.subtitle || "";
   const noteText = el.dataset.note || "";
+  const xAxisLabelMode = (el.dataset.xAxisLabels || "").trim().toLowerCase();
+  const xAxisDataMode = (el.dataset.xAxisData || "").trim().toLowerCase();
+  const xAxisLabelRotate = Number.isFinite(Number(el.dataset.xAxisLabelRotate))
+    ? Number(el.dataset.xAxisLabelRotate)
+    : 0;
   const hasInlineValue = !!(el.id && document.querySelector(`.single-value[data-in-chart="#${el.id}"]`));
   const legendBottom = hasInlineValue ? 132 : 60;
   const gridBottom = hasInlineValue ? 220 : 160;
@@ -1677,6 +1717,7 @@ function renderChart(el) {
 
       let conditionBands = [];
       let conditionLookup = new Map();
+      let conditionAreaColors = null;
       const conditionCsvText = showConditionBands
         ? (conditionBandsCsv ? await fetchText(conditionBandsCsv) : loadedSeries[0].csvTexts[0])
         : null;
@@ -1695,8 +1736,9 @@ function renderChart(el) {
 
       const targetWY = resolveTargetWaterYear(cfg, currentWY, previousWY);
       const isStitched = String(cfg.stitch || "").toLowerCase() === "back-to-back" || csvTexts.length > 1;
+      const includeMissingMonths = xAxisDataMode !== "points" && xAxisDataMode !== "data-points";
       const seriesData = isStitched
-        ? buildStitchedSeriesData({ parsedSegments, cfg, desiredUnits, sourceUnits })
+        ? buildStitchedSeriesData({ parsedSegments, cfg, desiredUnits, sourceUnits, includeMissingMonths })
         : buildWaterYearSeriesData({ labels, values, cfg, desiredUnits, sourceUnits, targetWY });
 
       if (!seriesData) return [];
@@ -1920,7 +1962,6 @@ function renderChart(el) {
       // 2) Lines always on top of areas
 
       series.sort((a, b) => {
-
         // Preserve stack order for stacked areas 
         if (stacked) {
           const aStackedArea = a.stack === "total" && a.areaStyle;
@@ -2028,27 +2069,9 @@ function renderChart(el) {
       if (showConditionBands && conditionCsvText && xAxisLabels) {
         conditionBands = buildConditionBands(conditionCsvText, currentWY, xAxisLabels);
         conditionLookup = buildConditionLookup(conditionCsvText, currentWY, xAxisLabels);
-      }
-
-      if (conditionBands.length) {
-        series.unshift({
-          name: "__condition_bands__",
-          type: "line",
-          data: [],
-          silent: true,
-          tooltip: { show: false },
-          lineStyle: { opacity: 0 },
-          symbolSize: 0,
-          markArea: {
-            silent: true,
-            itemStyle: {
-              opacity: 0.75
-            },
-            data: conditionBands
-          },
-          z: -100,
-          zlevel: -10
-        });
+        conditionAreaColors = xAxisLabels.map(label =>
+          hexToRgba(CONDITION_COLORS[conditionLookup.get(label)], 0.75)
+        );
       }
 
       if (showConditionBands) {
@@ -2197,8 +2220,20 @@ function renderChart(el) {
           nameGap: 45,
           boundaryGap: series.some(s => s.type === "bar") ? true : false,
           data: xAxisLabels,
-          axisLabel: { interval: xAxisLabels.length > 24 ? "auto" : 0 },
-          axisTick: { alignWithLabel: true }
+          axisLabel: {
+            interval: xAxisLabelMode === "year" ? 0 : (xAxisLabels.length > 24 ? "auto" : 0),
+            formatter: (value, index) => formatXAxisTickLabel(value, xAxisLabelMode, index, xAxisLabels),
+            rotate: xAxisLabelRotate
+          },
+          axisTick: { alignWithLabel: true },
+          splitArea: conditionAreaColors
+            ? {
+                show: true,
+                areaStyle: {
+                  color: conditionAreaColors
+                }
+              }
+            : undefined
         },
 
         // yAxis: {
