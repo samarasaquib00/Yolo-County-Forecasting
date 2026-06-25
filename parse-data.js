@@ -2131,40 +2131,34 @@ function renderChart(el) {
         series.push(...buildConditionLegendSeries(xAxisLabels));
       }
 
+      const legendOptions = buildLegendOptions(series, legendBottom);
       const hasForecastSplit = series.some(s => s.lineStyle?.type === "dashed");
 
       // Note / graphic logic
       const graphicItems = [];
-      let graphicBottom = hasInlineValue ? 10 : 30;
+      const graphicNotes = [
+        ...(hasForecastSplit ? ["Solid lines represent observed values; Dashed lines represent forecasted values"] : []),
+        ...(noteText ? [noteText] : [])
+      ];
+      const lowestLegendBottom = legendOptions.length
+        ? Math.min(...legendOptions.map(legend => Number(legend.bottom) || 0))
+        : legendBottom;
+      let graphicBottom = Math.max(6, lowestLegendBottom - (graphicNotes.length * 18 + 8));
 
-      if (hasForecastSplit) {
+      graphicNotes.slice().reverse().forEach(text => {
         graphicItems.push({
           type: "text",
           left: "center",
           bottom: graphicBottom,
           style: {
-            text: "Solid lines represent observed values; Dashed lines represent forecasted values",
+            text,
             fontSize: 12,
             fill: "#898e98c4",
             fontWeight: 10
           }
         });
-        graphicBottom -= 18;
-      }
-
-      if (noteText) {
-        graphicItems.push({
-          type: "text",
-          left: "center",
-          bottom: graphicBottom,
-          style: {
-            text: noteText,
-            fontSize: 12,
-            fill: "#898e98c4",
-            fontWeight: 10
-          }
-        });
-      }
+        graphicBottom += 18;
+      });
 
 
       
@@ -2178,7 +2172,7 @@ function renderChart(el) {
           left: "center"
         },
 
-        legend: buildLegendOptions(series, legendBottom),
+        legend: legendOptions,
 
 
 
@@ -2265,6 +2259,7 @@ function renderChart(el) {
             formatter: (value, index) => formatXAxisTickLabel(value, xAxisLabelMode, index, xAxisLabels),
             rotate: xAxisLabelRotate
           },
+          axisLine: { onZero: true }, // x axis tick mark 
           axisTick: { alignWithLabel: true },
           splitArea: conditionAreaColors
             ? {
