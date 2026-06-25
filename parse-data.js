@@ -1046,6 +1046,28 @@ function formatXAxisTickLabel(label, mode, index = 0, labels = []) {
   return index === 0 || parsed.year !== previousYear ? String(parsed.year) : "";
 }
 
+function getYearRangeFromLabels(labels = []) {
+  const years = labels
+    .map(label => getLabelWaterYear(label))
+    .filter(year => Number.isFinite(year));
+
+  if (!years.length) return null;
+
+  return {
+    startyear: Math.min(...years),
+    endyear: Math.max(...years)
+  };
+}
+
+function applyChartDataPlaceholders(str, labels = []) {
+  const range = getYearRangeFromLabels(labels);
+  if (!range) return str;
+
+  return String(str ?? "")
+    .replace(/\{start\s*year\}|\{startyear\}/gi, String(range.startyear))
+    .replace(/\{end\s*year\}|\{endyear\}/gi, String(range.endyear));
+}
+
 function resolveTargetWaterYear(cfg, currentWY, previousWY) {
   const spec = String(cfg.waterYear ?? "current").trim().toLowerCase();
   if (spec === "previous" || spec === "prev") return previousWY;
@@ -1720,8 +1742,8 @@ function renderChart(el) {
   // const el = document.getElementById("chart");
   // if (!el) return;
 
-  const title = el.dataset.title || "Chart";
-  const subtitle = el.dataset.subtitle || "";
+  let title = el.dataset.title || "Chart";
+  let subtitle = el.dataset.subtitle || "";
   const noteText = el.dataset.note || "";
   const xAxisLabelMode = (el.dataset.xAxisLabels || "").trim().toLowerCase();
   const xAxisDataMode = (el.dataset.xAxisData || "").trim().toLowerCase();
@@ -2060,6 +2082,9 @@ function renderChart(el) {
       if (!xAxisLabels || series.length === 0) {
         throw new Error("No data found for current water year across the provided series.");
       }
+
+      title = applyChartDataPlaceholders(title, xAxisLabels);
+      subtitle = applyChartDataPlaceholders(subtitle, xAxisLabels);
 
       const chart = echarts.init(el);
       // Decide y-axis label:

@@ -92,5 +92,7 @@
 | Placeholder | Replaced with |
 |---|---|
 | `{wyRange}` | Current water year range, e.g. `"Oct 2025 – Sep 2026"` |
+| `{startyear}` `{start year}` | First water year represented by the chart's loaded x-axis data |
+| `{endyear}` `{end year}` | Last water year represented by the chart's loaded x-axis data |
 
 > Note: `{year}` inside a `single-value` label is replaced with the water year from that element's `data-year` attribute (which may be current or previous). In chart subtitles, `{year}` always resolves to the current water year.
