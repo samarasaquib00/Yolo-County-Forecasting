@@ -1372,6 +1372,7 @@ function buildLegendOptions(series, baseBottom) {
     legends.push({
       ...baseLegend,
       bottom: baseBottom,
+      selectedMode: false,
       data: legendGroups.conditions
     });
   }
