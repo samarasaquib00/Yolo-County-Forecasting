@@ -1304,6 +1304,59 @@ function buildConditionLegendSeries(axisLabels = WY_MONTHS) {
   }));
 }
 
+function buildLegendGroups(series) {
+  const hiddenLegendNames = new Set([
+    "__internal_total_outline__",
+    "__internal_stack_overlay__",
+    "__condition_bands__"
+  ]);
+  const conditionOrder = Object.keys(CONDITION_COLORS);
+  const conditionNames = new Set(conditionOrder);
+  const names = [];
+  const seen = new Set();
+
+  series.forEach(s => {
+    const name = s.name;
+    if (!name || hiddenLegendNames.has(name) || seen.has(name)) return;
+    seen.add(name);
+    names.push(name);
+  });
+
+  return {
+    conditions: conditionOrder.filter(name => seen.has(name)),
+    data: names.filter(name => !conditionNames.has(name))
+  };
+}
+
+function buildLegendOptions(series, baseBottom) {
+  const legendGroups = buildLegendGroups(series);
+  const baseLegend = {
+    left: "center",
+    icon: "roundRect",
+    itemWidth: 28,
+    itemHeight: 6
+  };
+  const legends = [];
+
+  if (legendGroups.data.length) {
+    legends.push({
+      ...baseLegend,
+      bottom: legendGroups.conditions.length ? baseBottom + 28 : baseBottom,
+      data: legendGroups.data
+    });
+  }
+
+  if (legendGroups.conditions.length) {
+    legends.push({
+      ...baseLegend,
+      bottom: baseBottom,
+      data: legendGroups.conditions
+    });
+  }
+
+  return legends;
+}
+
 // Condition bands for legend and tooltip
 function buildConditionLookup(csvText, targetWY, axisLabels = WY_MONTHS) {
   const conditionRows = parseConditionRows(csvText);
@@ -1676,7 +1729,7 @@ function renderChart(el) {
     ? Number(el.dataset.xAxisLabelRotate)
     : 0;
   const hasInlineValue = !!(el.id && document.querySelector(`.single-value[data-in-chart="#${el.id}"]`));
-  const legendBottom = hasInlineValue ? 132 : 60;
+  const legendBottom = hasInlineValue ? 102 : 30;
   const gridBottom = hasInlineValue ? 220 : 160;
   let seriesConfig;
   try {
@@ -2125,20 +2178,7 @@ function renderChart(el) {
           left: "center"
         },
 
-        legend: {
-          bottom: legendBottom,
-          left: "center",
-          icon: "roundRect",
-          itemWidth: 28,
-          itemHeight: 6,
-          data: series
-            .map(s => s.name)
-            .filter(n => n !== "__internal_total_outline__")
-            .filter(n => n !== "__internal_stack_overlay__")
-            .filter(n => n !== "__condition_bands__")
-            .slice()
-            .sort((a, b) => a.localeCompare(b))
-        },
+        legend: buildLegendOptions(series, legendBottom),
 
 
 
