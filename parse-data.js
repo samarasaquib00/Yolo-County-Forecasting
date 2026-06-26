@@ -1723,13 +1723,14 @@ function bindMapLegendControls(el, PlotlyLib, gridLayers, traces) {
   if (el.__mapLegendControlsBound) return;
   el.__mapLegendControlsBound = true;
 
+  const legendTraceSelector = ".legend .traces, .legend2 .traces";
   const gridTraceIndexes = gridLayers.map((_, index) => index);
   const traceActive = traces.map((trace, index) =>
     index < gridLayers.length ? trace.marker?.opacity !== 0 : trace.visible !== "legendonly"
   );
 
   const syncLegendStyles = () => {
-    const legendItems = Array.from(el.querySelectorAll(".legend .traces"));
+    const legendItems = Array.from(el.querySelectorAll(legendTraceSelector));
     legendItems.forEach((legendItem) => {
       const legendName = legendItem.textContent?.trim();
       const traceIndex = traces.findIndex(trace => trace.name === legendName);
@@ -1742,7 +1743,7 @@ function bindMapLegendControls(el, PlotlyLib, gridLayers, traces) {
   requestAnimationFrame(syncLegendStyles);
 
   el.addEventListener("click", (event) => {
-    const legendTrace = event.target?.closest?.(".legend .traces");
+    const legendTrace = event.target?.closest?.(legendTraceSelector);
     if (!legendTrace || !el.contains(legendTrace)) return;
 
     const legendName = legendTrace.textContent?.trim();
@@ -1802,7 +1803,12 @@ async function renderPlotlyMap(el) {
     const pointCoords = getPointCoordinates(pointsGeojson);
     const bounds = getGeoJsonBounds(gridGeojson);
 
-    const pointTraces = buildPointStatusTraces(pointCoords, pointName);
+    const pointTraces = buildPointStatusTraces(pointCoords, pointName)
+      .map((trace, index) => ({
+        ...trace,
+        legend: "legend2",
+        legendrank: gridLayers.length + index
+      }));
 
     const traces = [
       ...gridLayers.map((layer, index) => buildGridChoroplethTrace(gridGeojson, layer, index, gridLayers.length)),
@@ -1830,13 +1836,24 @@ async function renderPlotlyMap(el) {
         orientation: "h",
         x: 0.5,
         xanchor: "center",
-        y: 0.035,
+        y: 0.045,
         yanchor: "bottom",
         traceorder: "normal",
         backgroundcolor: "rgba(255,255,255,0.8)",
         itemclick: false,
         itemdoubleclick: false,
 
+      },
+      legend2: {
+        orientation: "h",
+        x: 0.5,
+        xanchor: "center",
+        y: -0.005,
+        yanchor: "bottom",
+        traceorder: "normal",
+        backgroundcolor: "rgba(255,255,255,0.8)",
+        itemclick: false,
+        itemdoubleclick: false,
       },
       mapbox: {
         style: "open-street-map",
