@@ -1604,6 +1604,178 @@ function inferMapSubtitle(gridGeojson, valueField) {
   return parseDateFromFieldName(gridDateField) || parseDateFromFieldName(valueField);
 }
 
+function getGridFeatureId(feature, index) {
+  return feature?.id
+    ?? feature?.properties?.id
+    ?? feature?.properties?.Row_Column
+    ?? (
+      feature?.properties?.Row != null && feature?.properties?.Column != null
+        ? `${feature.properties.Row},${feature.properties.Column}`
+        : `grid-${index}`
+    );
+}
+
+function parseGridLayers(el) {
+  if (el.dataset.gridLayers) {
+    try {
+      const layers = JSON.parse(el.dataset.gridLayers);
+      if (!Array.isArray(layers) || !layers.length) {
+        throw new Error("data-grid-layers must be a non-empty JSON array.");
+      }
+
+      return layers.map(layer => ({
+        value: layer.value,
+        label: layer.label || layer.value,
+        name: layer.name || layer.label || layer.value,
+        visible: layer.visible
+      }));
+    } catch (err) {
+      throw new Error(`Invalid data-grid-layers: ${err.message}`);
+    }
+  }
+
+  const value = el.dataset.gridValue || "24-Sep";
+  const label = el.dataset.gridLabel || value;
+  return [{ value, label, name: label }];
+}
+
+function makeColorbarTitle(label) {
+  if (label === "Water Table Elevation (ft)") return "Water Table<br>Elevation (ft)";
+  if (label === "Depth to Water (ft)") return "Depth to<br>Water (ft)";
+  return label;
+}
+
+function parseFiniteMapValue(value) {
+  if (value == null || value === "") return null;
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) ? numericValue : null;
+}
+
+const ACTIVE_GRID_COLOR_SCALE = [
+  [0, "#2c7bb6"],
+  [0.35, "#abd9e9"],
+  [0.5, "#ffffbf"],
+  [0.75, "#fdae61"],
+  [1, "#d7191c"]
+];
+
+const INACTIVE_GRID_COLOR_SCALE = [
+  [0, "#d4d4d8"],
+  [1, "#a1a1aa"]
+];
+
+function buildGridChoroplethTrace(gridGeojson, layer, index, totalGridLayers = 1) {
+  if (!layer.value) throw new Error("Each grid layer needs a value field.");
+  const isActive = layer.visible !== "legendonly";
+
+  const gridFeatures = (gridGeojson.features || [])
+    .map((feature, featureIndex) => ({
+      ...feature,
+      id: getGridFeatureId(feature, featureIndex)
+    }))
+    .filter(feature => parseFiniteMapValue(feature.properties?.[layer.value]) != null);
+
+  if (!gridFeatures.length) {
+    throw new Error(`No numeric grid values found for "${layer.value}".`);
+  }
+
+  return {
+    type: "choroplethmapbox",
+    name: layer.name || layer.label || layer.value,
+    showlegend: true,
+    showscale: true,
+    visible: true,
+    geojson: {
+      type: "FeatureCollection",
+      features: gridFeatures
+    },
+    locations: gridFeatures.map(feature => feature.id),
+    z: gridFeatures.map(feature => parseFiniteMapValue(feature.properties[layer.value])),
+    featureidkey: "id",
+    colorscale: isActive ? ACTIVE_GRID_COLOR_SCALE : INACTIVE_GRID_COLOR_SCALE,
+    marker: {
+      line: {
+        color: "rgba(255,255,255,0.22)",
+        width: 0.2
+      },
+      opacity: isActive ? 0.58 : 0
+    },
+    colorbar: {
+      title: {
+        text: makeColorbarTitle(layer.label || layer.value),
+        side: "top",
+        font: { size: 12, color: isActive ? "#3f3f46" : "#a1a1aa" }
+      },
+      tickfont: { color: isActive ? "#3f3f46" : "#a1a1aa" },
+      thickness: 14,
+      len: 0.64,
+      x: totalGridLayers > 1 ? 0.88 + (index * 0.08) : 0.94,
+      xanchor: "center",
+      y: 0.5
+    },
+    hoverinfo: isActive ? "all" : "skip",
+    hovertemplate: `Grid: %{location}<br>${layer.label || layer.value}: %{z:.1f}<extra></extra>`,
+    legendrank: index
+  };
+}
+
+function bindMapLegendControls(el, PlotlyLib, gridLayers, traces) {
+  if (el.__mapLegendControlsBound) return;
+  el.__mapLegendControlsBound = true;
+
+  const gridTraceIndexes = gridLayers.map((_, index) => index);
+  const traceActive = traces.map((trace, index) =>
+    index < gridLayers.length ? trace.marker?.opacity !== 0 : trace.visible !== "legendonly"
+  );
+
+  const syncLegendStyles = () => {
+    const legendItems = Array.from(el.querySelectorAll(".legend .traces"));
+    legendItems.forEach((legendItem) => {
+      const legendName = legendItem.textContent?.trim();
+      const traceIndex = traces.findIndex(trace => trace.name === legendName);
+      if (traceIndex >= 0) {
+        legendItem.style.opacity = traceActive[traceIndex] ? "" : "0.45";
+      }
+    });
+  };
+
+  requestAnimationFrame(syncLegendStyles);
+
+  el.addEventListener("click", (event) => {
+    const legendTrace = event.target?.closest?.(".legend .traces");
+    if (!legendTrace || !el.contains(legendTrace)) return;
+
+    const legendName = legendTrace.textContent?.trim();
+    const traceIndex = traces.findIndex(trace => trace.name === legendName);
+    if (traceIndex < 0) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+
+    if (traceIndex < gridLayers.length) {
+      gridTraceIndexes.forEach((gridTraceIndex) => {
+        traceActive[gridTraceIndex] = gridTraceIndex === traceIndex;
+      });
+
+      PlotlyLib.restyle(el, {
+        "marker.opacity": gridTraceIndexes.map(gridTraceIndex => gridTraceIndex === traceIndex ? 0.58 : 0),
+        "colorscale": gridTraceIndexes.map(gridTraceIndex => gridTraceIndex === traceIndex ? ACTIVE_GRID_COLOR_SCALE : INACTIVE_GRID_COLOR_SCALE),
+        "colorbar.title.font.color": gridTraceIndexes.map(gridTraceIndex => gridTraceIndex === traceIndex ? "#3f3f46" : "#a1a1aa"),
+        "colorbar.tickfont.color": gridTraceIndexes.map(gridTraceIndex => gridTraceIndex === traceIndex ? "#3f3f46" : "#a1a1aa"),
+        "hoverinfo": gridTraceIndexes.map(gridTraceIndex => gridTraceIndex === traceIndex ? "all" : "skip")
+      }, gridTraceIndexes).then(() => requestAnimationFrame(syncLegendStyles));
+
+      return;
+    }
+
+    traceActive[traceIndex] = !traceActive[traceIndex];
+    PlotlyLib.restyle(el, {
+      visible: traceActive[traceIndex] ? true : "legendonly"
+    }, [traceIndex]).then(() => requestAnimationFrame(syncLegendStyles));
+  }, true);
+}
+
 async function renderPlotlyMap(el) {
   try {
     const PlotlyLib = await loadPlotly();
@@ -1612,11 +1784,7 @@ async function renderPlotlyMap(el) {
     let subtitle = el.dataset.subtitle || "";
     const gridUrl = el.dataset.gridGeojson;
     const pointUrl = el.dataset.pointsGeojson;
-    const valueField = el.dataset.gridValue || "24-Sep";
-    const gridLabel = el.dataset.gridLabel || valueField;
-    const colorbarTitle = gridLabel === "Water Table Elevation (ft)"
-      ? "Water Table<br>Elevation (ft)"
-      : gridLabel;
+    const gridLayers = parseGridLayers(el);
     const pointName = el.dataset.pointName || "Potentially Impacted Wells";
 
     if (!gridUrl) throw new Error("Missing data-grid-geojson.");
@@ -1628,59 +1796,16 @@ async function renderPlotlyMap(el) {
     ]);
 
     if (!subtitle) {
-      subtitle = inferMapSubtitle(gridGeojson, valueField);
+      subtitle = inferMapSubtitle(gridGeojson, gridLayers[0]?.value);
     }
 
-    const gridFeatures = (gridGeojson.features || []).filter(feature =>
-      Number.isFinite(Number(feature.properties?.[valueField]))
-    );
-
-    const gridIds = gridFeatures.map(feature => feature.id || feature.properties?.id);
-    const gridValues = gridFeatures.map(feature => Number(feature.properties[valueField]));
     const pointCoords = getPointCoordinates(pointsGeojson);
     const bounds = getGeoJsonBounds(gridGeojson);
 
     const pointTraces = buildPointStatusTraces(pointCoords, pointName);
 
     const traces = [
-      {
-        type: "choroplethmapbox",
-        name: "Water Table Elevation",
-        geojson: {
-          type: "FeatureCollection",
-          features: gridFeatures
-        },
-        locations: gridIds,
-        z: gridValues,
-        featureidkey: "id",
-        colorscale: [
-          [0, "#2c7bb6"],
-          [0.35, "#abd9e9"],
-          [0.5, "#ffffbf"],
-          [0.75, "#fdae61"],
-          [1, "#d7191c"]
-        ],
-        marker: {
-          line: {
-            color: "rgba(255,255,255,0.22)",
-            width: 0.2
-          },
-          opacity: 0.58
-        },
-        colorbar: {
-          title: {
-            text: colorbarTitle,
-            side: "top",
-            font: { size: 12, color: "#3f3f46" }
-          },
-          thickness: 14,
-          len: 0.64,
-          x: 0.94,
-          xanchor: "center",
-          y: 0.5
-        },
-        hovertemplate: `Grid: %{location}<br>${valueField}: %{z:.1f}<extra></extra>`
-      },
+      ...gridLayers.map((layer, index) => buildGridChoroplethTrace(gridGeojson, layer, index, gridLayers.length)),
       ...pointTraces
     ];
 
@@ -1709,6 +1834,8 @@ async function renderPlotlyMap(el) {
         yanchor: "bottom",
         traceorder: "normal",
         backgroundcolor: "rgba(255,255,255,0.8)",
+        itemclick: false,
+        itemdoubleclick: false,
 
       },
       mapbox: {
@@ -1716,7 +1843,7 @@ async function renderPlotlyMap(el) {
         center: bounds.center,
         zoom: bounds.zoom,
         domain: {
-          x: [0, 0.86],
+          x: [0, gridLayers.length > 1 ? 0.78 : 0.86],
           y: [0.12, 1]
         }
       }
@@ -1731,6 +1858,7 @@ async function renderPlotlyMap(el) {
     };
 
     await PlotlyLib.newPlot(el, traces, layout, config);
+    bindMapLegendControls(el, PlotlyLib, gridLayers, traces);
     requestAnimationFrame(() => PlotlyLib.Plots.resize(el));
   } catch (err) {
     console.error(err);

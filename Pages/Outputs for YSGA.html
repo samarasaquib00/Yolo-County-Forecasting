@@ -37,10 +37,12 @@
         <div
           id="water-table-map"
           class="plotly-map"
-          data-title="Water Table Elevation and Potentially Impacted Wells"
-          data-grid-geojson="../Data/Sep24WT.geojson"
-          data-grid-value="24-Sep"
-          data-grid-label="Water Table Elevation (ft)"
+          data-title="Water Table Elevation, Depth to Water, and Potentially Impacted Wells"
+          data-grid-geojson="../geojson files/Sep26.geojson"
+          data-grid-layers='[
+            { "value": "Sep 2026 WT", "label": "Water Table Elevation (ft)", "name": "Water Table Elevation" },
+            { "value": "Sep 2026 DTW", "label": "Depth to Water (ft)", "name": "Depth to Water", "visible": "legendonly" }
+          ]'
           data-points-geojson="../Data/ImpactedWells_Sep26_ForecastHeads_Thresholds.geojson"
           data-point-name="Potentially Impacted Wells"
         ></div>
