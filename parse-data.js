@@ -1836,7 +1836,7 @@ async function renderPlotlyMap(el) {
         orientation: "h",
         x: 0.5,
         xanchor: "center",
-        y: 0.045,
+        y: 0.025,
         yanchor: "bottom",
         traceorder: "normal",
         backgroundcolor: "rgba(255,255,255,0.8)",
@@ -1848,20 +1848,44 @@ async function renderPlotlyMap(el) {
         orientation: "h",
         x: 0.5,
         xanchor: "center",
-        y: -0.005,
+        y: -0.07,
         yanchor: "bottom",
         traceorder: "normal",
         backgroundcolor: "rgba(255,255,255,0.8)",
         itemclick: false,
         itemdoubleclick: false,
       },
+      annotations: [
+        {
+          text: "Grid layer: select one",
+          x: 0.5,
+          y: 0.08,
+          xref: "paper",
+          yref: "paper",
+          xanchor: "center",
+          yanchor: "bottom",
+          showarrow: false,
+          font: { size: 12, color: "#6b7280" }
+        },
+        {
+          text: "Well status",
+          x: 0.5,
+          y: -0.025,
+          xref: "paper",
+          yref: "paper",
+          xanchor: "center",
+          yanchor: "bottom",
+          showarrow: false,
+          font: { size: 12, color: "#6b7280" }
+        }
+      ],
       mapbox: {
         style: "open-street-map",
         center: bounds.center,
         zoom: bounds.zoom,
         domain: {
           x: [0, gridLayers.length > 1 ? 0.78 : 0.86],
-          y: [0.12, 1]
+          y: [0.16, 1]
         }
       }
     };
