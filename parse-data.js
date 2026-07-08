@@ -1659,11 +1659,6 @@ const ACTIVE_GRID_COLOR_SCALE = [
   [1, "#d7191c"]
 ];
 
-const INACTIVE_GRID_COLOR_SCALE = [
-  [0, "#d4d4d8"],
-  [1, "#a1a1aa"]
-];
-
 function buildGridChoroplethTrace(gridGeojson, layer, index, totalGridLayers = 1) {
   if (!layer.value) throw new Error("Each grid layer needs a value field.");
   const isActive = layer.visible !== "legendonly";
@@ -1682,8 +1677,8 @@ function buildGridChoroplethTrace(gridGeojson, layer, index, totalGridLayers = 1
   return {
     type: "choroplethmapbox",
     name: layer.name || layer.label || layer.value,
-    showlegend: true,
-    showscale: true,
+    showlegend: totalGridLayers <= 1,
+    showscale: isActive,
     visible: true,
     geojson: {
       type: "FeatureCollection",
@@ -1692,7 +1687,7 @@ function buildGridChoroplethTrace(gridGeojson, layer, index, totalGridLayers = 1
     locations: gridFeatures.map(feature => feature.id),
     z: gridFeatures.map(feature => parseFiniteMapValue(feature.properties[layer.value])),
     featureidkey: "id",
-    colorscale: isActive ? ACTIVE_GRID_COLOR_SCALE : INACTIVE_GRID_COLOR_SCALE,
+    colorscale: ACTIVE_GRID_COLOR_SCALE,
     marker: {
       line: {
         color: "rgba(255,255,255,0.22)",
@@ -1704,14 +1699,14 @@ function buildGridChoroplethTrace(gridGeojson, layer, index, totalGridLayers = 1
       title: {
         text: makeColorbarTitle(layer.label || layer.value),
         side: "top",
-        font: { size: 12, color: isActive ? "#3f3f46" : "#a1a1aa" }
+        font: { size: 14, color: "#3f3f46" }
       },
-      tickfont: { color: isActive ? "#3f3f46" : "#a1a1aa" },
-      thickness: 14,
+      tickfont: { size: 12, color: "#3f3f46" },
+      thickness: 22,
       len: 0.64,
-      x: totalGridLayers > 1 ? 0.88 + (index * 0.08) : 0.94,
+      x: totalGridLayers > 1 ? 0.94 : 0.96,
       xanchor: "center",
-      y: 0.5
+      y: 0.57
     },
     hoverinfo: isActive ? "all" : "skip",
     hovertemplate: `Grid: %{location}<br>${layer.label || layer.value}: %{z:.1f}<extra></extra>`,
@@ -1729,6 +1724,15 @@ function bindMapLegendControls(el, PlotlyLib, gridLayers, traces) {
     index < gridLayers.length ? trace.marker?.opacity !== 0 : trace.visible !== "legendonly"
   );
 
+  const syncLayerToggle = () => {
+    el.querySelectorAll(".map-layer-toggle__button").forEach((button) => {
+      const traceIndex = Number(button.dataset.traceIndex);
+      const isActive = traceActive[traceIndex];
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-pressed", String(isActive));
+    });
+  };
+
   const syncLegendStyles = () => {
     const legendItems = Array.from(el.querySelectorAll(legendTraceSelector));
     legendItems.forEach((legendItem) => {
@@ -1738,7 +1742,43 @@ function bindMapLegendControls(el, PlotlyLib, gridLayers, traces) {
         legendItem.style.opacity = traceActive[traceIndex] ? "" : "0.45";
       }
     });
+    syncLayerToggle();
   };
+
+  const activateGridLayer = (traceIndex) => {
+    gridTraceIndexes.forEach((gridTraceIndex) => {
+      traceActive[gridTraceIndex] = gridTraceIndex === traceIndex;
+    });
+
+    return PlotlyLib.restyle(el, {
+      "marker.opacity": gridTraceIndexes.map(gridTraceIndex => gridTraceIndex === traceIndex ? 0.58 : 0),
+      "showscale": gridTraceIndexes.map(gridTraceIndex => gridTraceIndex === traceIndex),
+      "hoverinfo": gridTraceIndexes.map(gridTraceIndex => gridTraceIndex === traceIndex ? "all" : "skip")
+    }, gridTraceIndexes).then(() => requestAnimationFrame(syncLegendStyles));
+  };
+
+  if (gridLayers.length > 1) {
+    const existingToggle = el.querySelector(".map-layer-toggle");
+    if (existingToggle) existingToggle.remove();
+
+    const toggle = document.createElement("div");
+    toggle.className = "map-layer-toggle";
+    toggle.setAttribute("role", "group");
+    toggle.setAttribute("aria-label", "Water map layer");
+
+    gridLayers.forEach((layer, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "map-layer-toggle__button";
+      button.dataset.traceIndex = String(index);
+      button.textContent = layer.name || layer.label || layer.value;
+      button.setAttribute("aria-pressed", String(traceActive[index]));
+      button.addEventListener("click", () => activateGridLayer(index));
+      toggle.appendChild(button);
+    });
+
+    el.appendChild(toggle);
+  }
 
   requestAnimationFrame(syncLegendStyles);
 
@@ -1755,18 +1795,7 @@ function bindMapLegendControls(el, PlotlyLib, gridLayers, traces) {
     event.stopImmediatePropagation();
 
     if (traceIndex < gridLayers.length) {
-      gridTraceIndexes.forEach((gridTraceIndex) => {
-        traceActive[gridTraceIndex] = gridTraceIndex === traceIndex;
-      });
-
-      PlotlyLib.restyle(el, {
-        "marker.opacity": gridTraceIndexes.map(gridTraceIndex => gridTraceIndex === traceIndex ? 0.58 : 0),
-        "colorscale": gridTraceIndexes.map(gridTraceIndex => gridTraceIndex === traceIndex ? ACTIVE_GRID_COLOR_SCALE : INACTIVE_GRID_COLOR_SCALE),
-        "colorbar.title.font.color": gridTraceIndexes.map(gridTraceIndex => gridTraceIndex === traceIndex ? "#3f3f46" : "#a1a1aa"),
-        "colorbar.tickfont.color": gridTraceIndexes.map(gridTraceIndex => gridTraceIndex === traceIndex ? "#3f3f46" : "#a1a1aa"),
-        "hoverinfo": gridTraceIndexes.map(gridTraceIndex => gridTraceIndex === traceIndex ? "all" : "skip")
-      }, gridTraceIndexes).then(() => requestAnimationFrame(syncLegendStyles));
-
+      activateGridLayer(traceIndex);
       return;
     }
 
@@ -1836,7 +1865,7 @@ async function renderPlotlyMap(el) {
         orientation: "h",
         x: 0.5,
         xanchor: "center",
-        y: 0.025,
+        y: 0.04,
         yanchor: "bottom",
         traceorder: "normal",
         backgroundcolor: "rgba(255,255,255,0.8)",
@@ -1848,44 +1877,20 @@ async function renderPlotlyMap(el) {
         orientation: "h",
         x: 0.5,
         xanchor: "center",
-        y: -0.07,
+        y: -0.01,
         yanchor: "bottom",
         traceorder: "normal",
         backgroundcolor: "rgba(255,255,255,0.8)",
         itemclick: false,
         itemdoubleclick: false,
       },
-      annotations: [
-        {
-          text: "Grid layer: select one",
-          x: 0.5,
-          y: 0.08,
-          xref: "paper",
-          yref: "paper",
-          xanchor: "center",
-          yanchor: "bottom",
-          showarrow: false,
-          font: { size: 12, color: "#6b7280" }
-        },
-        {
-          text: "Well status",
-          x: 0.5,
-          y: -0.025,
-          xref: "paper",
-          yref: "paper",
-          xanchor: "center",
-          yanchor: "bottom",
-          showarrow: false,
-          font: { size: 12, color: "#6b7280" }
-        }
-      ],
       mapbox: {
         style: "open-street-map",
         center: bounds.center,
         zoom: bounds.zoom,
         domain: {
-          x: [0, gridLayers.length > 1 ? 0.78 : 0.86],
-          y: [0.16, 1]
+          x: [0.035, gridLayers.length > 1 ? 0.84 : 0.9],
+          y: [0.14, 1]
         }
       }
     };
