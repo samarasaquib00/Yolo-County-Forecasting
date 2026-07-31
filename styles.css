@@ -635,6 +635,43 @@ h2 {
   top: 18px !important;
 }
 
+.map-visibility-controls {
+  position: absolute;
+  top: 58px;
+  right: 16px;
+  z-index: 5;
+  display: grid;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(4px);
+}
+
+.map-visibility-controls__option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #334155;
+  line-height: 1.25;
+  cursor: pointer;
+}
+
+.map-visibility-controls__input {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: #0f766e;
+}
+
+.map-visibility-controls__text {
+  white-space: nowrap;
+}
+
 .map-layer-toggle {
   position: absolute;
   left: 50%;
@@ -721,6 +758,16 @@ h2 {
     grid-template-columns: repeat(2, minmax(104px, 1fr));
     max-width: calc(100% - 32px);
     min-height: 44px;
+  }
+
+  .map-visibility-controls {
+    top: 54px;
+    right: 12px;
+    padding: 7px 9px;
+  }
+
+  .map-visibility-controls__option {
+    font-size: 0.72rem;
   }
 
   .map-layer-toggle__button {

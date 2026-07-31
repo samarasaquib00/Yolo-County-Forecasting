@@ -45,11 +45,14 @@
 | Attribute | What it does |
 |---|---|
 | `data-title` | Map title text |
-| `data-grid-allow-off` | Set to `"true"` to let users toggle gridded layers completely off (wells-only view) |
 | `data-grid-geojson` | GeoJSON polygon grid file to draw as water table elevation cells |
 | `data-grid-value` | Numeric grid property to color by, such as `"24-Sep"` |
 | `data-points-geojson` | GeoJSON point file to draw as impacted well markers |
 | `data-point-name` | Legend label for the point markers |
+
+The map UI includes two top-right checkboxes by default:
+- `Gridded Elevation Data` toggles polygon raster/gridded overlays.
+- `Potentially Impacted Wells` (or your `data-point-name`) toggles point markers.
 
 ---
 

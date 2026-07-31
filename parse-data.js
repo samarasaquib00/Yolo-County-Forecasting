@@ -1744,17 +1744,37 @@ function buildGridChoroplethTrace(gridGeojson, layer, index, totalGridLayers = 1
   };
 }
 
-function bindMapLegendControls(el, PlotlyLib, gridLayers, traces, options = {}) {
+function bindMapLegendControls(el, PlotlyLib, gridLayers, traces, pointName = "Impacted Wells") {
   if (el.__mapLegendControlsBound) return;
   el.__mapLegendControlsBound = true;
 
-  const allowGridOff = options.allowGridOff === true;
-
   const legendTraceSelector = ".legend .traces, .legend2 .traces";
   const gridTraceIndexes = gridLayers.map((_, index) => index);
+  const pointTraceIndexes = traces
+    .map((_, index) => index)
+    .filter(index => index >= gridLayers.length);
+
+  const getGridCheckboxLabel = () => {
+    const activeGridIndex = gridTraceIndexes.find(index => traceActive[index]);
+    const fallbackLayer = gridLayers[0];
+    const activeLayer = activeGridIndex != null ? gridLayers[activeGridIndex] : fallbackLayer;
+    const layerLabel = String(activeLayer?.label || activeLayer?.name || "").trim();
+    const normalized = layerLabel.toLowerCase();
+
+    if (normalized.includes("depth to water") || /\bdtw\b/.test(normalized)) {
+      return "Gridded DTW Data";
+    }
+
+    return "Gridded Elevation Data";
+  };
+
   const traceActive = traces.map((trace, index) =>
     index < gridLayers.length ? trace.marker?.opacity !== 0 : trace.visible !== "legendonly"
   );
+  let lastActiveGridTraceIndex = gridTraceIndexes.find(index => traceActive[index]);
+  if (lastActiveGridTraceIndex == null && gridTraceIndexes.length) {
+    lastActiveGridTraceIndex = gridTraceIndexes[0];
+  }
 
   const syncLayerToggle = () => {
     el.querySelectorAll(".map-layer-toggle__button").forEach((button) => {
@@ -1775,6 +1795,25 @@ function bindMapLegendControls(el, PlotlyLib, gridLayers, traces, options = {}) 
       }
     });
     syncLayerToggle();
+    syncVisibilityCheckboxes();
+  };
+
+  const syncVisibilityCheckboxes = () => {
+    const gridCheckbox = el.querySelector('.map-visibility-controls__input[data-role="grid"]');
+    const gridCheckboxText = el.querySelector('.map-visibility-controls__text[data-role="grid"]');
+    const pointsCheckbox = el.querySelector('.map-visibility-controls__input[data-role="points"]');
+
+    if (gridCheckbox) {
+      gridCheckbox.checked = gridTraceIndexes.some(index => traceActive[index]);
+    }
+
+    if (gridCheckboxText) {
+      gridCheckboxText.textContent = getGridCheckboxLabel();
+    }
+
+    if (pointsCheckbox) {
+      pointsCheckbox.checked = pointTraceIndexes.some(index => traceActive[index]);
+    }
   };
 
   const setGridLayerState = (activeTraceIndex = null) => {
@@ -1790,15 +1829,86 @@ function bindMapLegendControls(el, PlotlyLib, gridLayers, traces, options = {}) 
   };
 
   const activateGridLayer = (traceIndex) => {
-    const isAlreadyActive = traceActive[traceIndex] === true;
-    if (allowGridOff && isAlreadyActive) {
-      return setGridLayerState(null);
-    }
-
+    lastActiveGridTraceIndex = traceIndex;
     return setGridLayerState(traceIndex);
   };
 
-  if (gridLayers.length > 1 || allowGridOff) {
+  const setGridGroupVisible = (isVisible) => {
+    if (!gridTraceIndexes.length) return Promise.resolve();
+
+    if (!isVisible) {
+      const currentlyActive = gridTraceIndexes.find(index => traceActive[index]);
+      if (currentlyActive != null) {
+        lastActiveGridTraceIndex = currentlyActive;
+      }
+      return setGridLayerState(null);
+    }
+
+    const restoreIndex =
+      gridTraceIndexes.includes(lastActiveGridTraceIndex)
+        ? lastActiveGridTraceIndex
+        : gridTraceIndexes[0];
+    return setGridLayerState(restoreIndex);
+  };
+
+  const setPointGroupVisible = (isVisible) => {
+    if (!pointTraceIndexes.length) return Promise.resolve();
+
+    pointTraceIndexes.forEach((index) => {
+      traceActive[index] = isVisible;
+    });
+
+    return PlotlyLib.restyle(el, {
+      visible: pointTraceIndexes.map(() => (isVisible ? true : "legendonly"))
+    }, pointTraceIndexes).then(() => requestAnimationFrame(syncLegendStyles));
+  };
+
+  const existingVisibilityControls = el.querySelector('.map-visibility-controls');
+  if (existingVisibilityControls) existingVisibilityControls.remove();
+
+  const visibilityControls = document.createElement('div');
+  visibilityControls.className = 'map-visibility-controls';
+  visibilityControls.setAttribute('role', 'group');
+  visibilityControls.setAttribute('aria-label', 'Map data visibility');
+
+  const createCheckbox = ({ role, label, checked, onChange }) => {
+    const checkboxLabel = document.createElement('label');
+    checkboxLabel.className = 'map-visibility-controls__option';
+
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.className = 'map-visibility-controls__input';
+    input.dataset.role = role;
+    input.checked = checked;
+    input.addEventListener('change', () => onChange(input.checked));
+
+    const text = document.createElement('span');
+    text.className = 'map-visibility-controls__text';
+    text.dataset.role = role;
+    text.textContent = label;
+
+    checkboxLabel.appendChild(input);
+    checkboxLabel.appendChild(text);
+    return checkboxLabel;
+  };
+
+  visibilityControls.appendChild(createCheckbox({
+    role: 'grid',
+    label: getGridCheckboxLabel(),
+    checked: gridTraceIndexes.some(index => traceActive[index]),
+    onChange: setGridGroupVisible
+  }));
+
+  visibilityControls.appendChild(createCheckbox({
+    role: 'points',
+    label: pointTraceIndexes.length ? String(pointName || 'Impacted Wells') : 'Impacted Wells',
+    checked: pointTraceIndexes.some(index => traceActive[index]),
+    onChange: setPointGroupVisible
+  }));
+
+  el.appendChild(visibilityControls);
+
+  if (gridLayers.length > 1) {
     const existingToggle = el.querySelector(".map-layer-toggle");
     if (existingToggle) existingToggle.remove();
 
@@ -1822,6 +1932,7 @@ function bindMapLegendControls(el, PlotlyLib, gridLayers, traces, options = {}) 
   }
 
   requestAnimationFrame(syncLegendStyles);
+  requestAnimationFrame(syncVisibilityCheckboxes);
 
   el.addEventListener("click", (event) => {
     const legendTrace = event.target?.closest?.(legendTraceSelector);
@@ -1856,7 +1967,6 @@ async function renderPlotlyMap(el) {
     const gridUrl = el.dataset.gridGeojson;
     const pointUrl = el.dataset.pointsGeojson;
     const gridLayers = parseGridLayers(el);
-    const allowGridOff = String(el.dataset.gridAllowOff || "").trim().toLowerCase() === "true";
     const pointName = el.dataset.pointName || "Potentially Impacted Wells";
 
     if (!gridUrl) throw new Error("Missing data-grid-geojson.");
@@ -1946,7 +2056,7 @@ async function renderPlotlyMap(el) {
     };
 
     await PlotlyLib.newPlot(el, traces, layout, config);
-    bindMapLegendControls(el, PlotlyLib, gridLayers, traces, { allowGridOff });
+    bindMapLegendControls(el, PlotlyLib, gridLayers, traces, pointName);
     requestAnimationFrame(() => PlotlyLib.Plots.resize(el));
   } catch (err) {
     console.error(err);
