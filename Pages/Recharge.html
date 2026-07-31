@@ -112,9 +112,10 @@
           data-stacked="false"
           data-units="cfs"
           data-source-units="cfs"
+          data-note="Solid lines represent simulated historical values. Dashed lines represent simulated forecasted values."
           data-series='[
                 { "csv": "../Data/1991-2020 Cumalitive Avg Flow.csv", "name": "1991-2020 Average", "y": "Cache Creek at Yolo", "type": "area", "dashFromCurrentMonth": false},
-                { "csv": "../Data/Cache Creek Flow at Yolo Gauge.csv", "name": "Yolo WY {current year} Forecast", "y": "Baseline", "type": "bar"},
+                { "csv": "../Data/Cache Creek Flow at Yolo Gauge.csv", "name": "Yolo WY {current year} Forecast", "y": "Baseline", "type": "bar", "dashFromCurrentMonth": true},
                 { "csv": "../Data/50cfs Time Series.csv", "name": "50 cfs Recharge Threshold", "y": "", "type": "line", "dashFromCurrentMonth": false} 
             ]'
         ></div>

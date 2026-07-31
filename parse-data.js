@@ -226,6 +226,17 @@ function splitPastFuture(y, splitIdx) {
   return { past, future };
 }
 
+function findSplitIndexForLabels(labels, today = new Date()) {
+  const currentSerial = today.getFullYear() * 12 + today.getMonth();
+
+  const datedSplitIdx = labels.findIndex(label => {
+    const parsed = parseMonthYear(label);
+    return isValidMonthYear(parsed) && getMonthSerial(parsed) >= currentSerial;
+  });
+
+  return datedSplitIdx !== -1 ? datedSplitIdx : currentWyMonthIndex(today);
+}
+
 
 // ----------------------------------------------------------
 // ------------------------ UNITS ---------------------------
@@ -1919,15 +1930,13 @@ function renderChart(el) {
 
   let title = el.dataset.title || "Chart";
   let subtitle = el.dataset.subtitle || "";
-  const noteText = el.dataset.note || "";
+  const noteText = (el.dataset.note || "").replace(/<br\s*\/?>/gi, "\n");
   const xAxisLabelMode = (el.dataset.xAxisLabels || "").trim().toLowerCase();
   const xAxisDataMode = (el.dataset.xAxisData || "").trim().toLowerCase();
   const xAxisLabelRotate = Number.isFinite(Number(el.dataset.xAxisLabelRotate))
     ? Number(el.dataset.xAxisLabelRotate)
     : 0;
   const hasInlineValue = !!(el.id && document.querySelector(`.single-value[data-in-chart="#${el.id}"]`));
-  const legendBottom = hasInlineValue ? 102 : 30;
-  const gridBottom = hasInlineValue ? 220 : 160;
   let seriesConfig;
   try {
     seriesConfig = JSON.parse(el.dataset.series || "[]");
@@ -2134,7 +2143,9 @@ function renderChart(el) {
         return [makeSeries("full", chartData, { dashed: false })];
       }
 
-      const splitIdx = currentWyMonthIndex(new Date()); // Feb 18 => Feb index in WY
+      const splitIdx = isStitched
+        ? findSplitIndexForLabels(seriesData.labels, new Date())
+        : currentWyMonthIndex(new Date());
       const { past, future } = splitPastFuture(y, splitIdx);
 
 
@@ -2331,15 +2342,20 @@ function renderChart(el) {
         series.push(...buildConditionLegendSeries(xAxisLabels));
       }
 
-      const legendOptions = buildLegendOptions(series, legendBottom);
       const hasForecastSplit = series.some(s => s.lineStyle?.type === "dashed");
 
       // Note / graphic logic
       const graphicItems = [];
-      const graphicNotes = [
-        ...(hasForecastSplit ? ["Solid lines represent observed values; Dashed lines represent forecasted values"] : []),
-        ...(noteText ? [noteText] : [])
-      ];
+      const graphicNotes = noteText
+        ? [noteText]
+        : (hasForecastSplit ? ["Solid lines represent observed values; Dashed lines represent forecasted values"] : []);
+      const legendBottom = hasInlineValue
+        ? (graphicNotes.length ? 148 : 122)
+        : 30;
+      const gridBottom = hasInlineValue
+        ? (graphicNotes.length ? 268 : 238)
+        : 160;
+      const legendOptions = buildLegendOptions(series, legendBottom);
       const lowestLegendBottom = legendOptions.length
         ? Math.min(...legendOptions.map(legend => Number(legend.bottom) || 0))
         : legendBottom;
@@ -2352,6 +2368,8 @@ function renderChart(el) {
           bottom: graphicBottom,
           style: {
             text,
+            textAlign: "center",
+            align: "center",
             fontSize: 12,
             fill: "#898e98c4",
             fontWeight: 10

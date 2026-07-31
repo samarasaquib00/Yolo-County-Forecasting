@@ -824,7 +824,7 @@ h2 {
 .chart .chart-inline-values-row {
   position: absolute;
   left: 50%;
-  bottom: 8px;
+  bottom: 46px;
   transform: translateX(-50%);
   width: min(820px, calc(100% - 2rem));
   display: grid;
@@ -846,10 +846,6 @@ h2 {
   backdrop-filter: blur(2px);
 }
 
-#capay-dam .chart-inline-values-row {
-  bottom: 74px;
-}
-
 .chart .single-value-in-chart .single-value-label {
   font-size: 0.9rem;
   margin-bottom: .25rem;
@@ -861,23 +857,20 @@ h2 {
 }
 
 .chart.chart-has-inline-value {
-  height: 710px;
+  height: 730px;
   padding-bottom: 2rem;
 }
 
 @media (max-width: 768px) {
   .chart.chart-has-inline-value {
-    height: 480px;
+    height: 620px;
   }
 
   .chart .chart-inline-values-row {
     width: calc(100% - 1.5rem);
+    bottom: 32px;
     grid-template-columns: 1fr;
     gap: 0.5rem;
-  }
-
-  #capay-dam .chart-inline-values-row {
-    bottom: 62px;
   }
 }
 
