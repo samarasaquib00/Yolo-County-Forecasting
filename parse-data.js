@@ -1057,6 +1057,25 @@ function formatXAxisTickLabel(label, mode, index = 0, labels = []) {
   return index === 0 || parsed.year !== previousYear ? String(parsed.year) : "";
 }
 
+function inferXAxisName(labels = [], { explicitName = "", labelMode = "", dataMode = "" } = {}) {
+  const override = String(explicitName ?? "").trim();
+  if (override) return override;
+
+  if (labelMode === "year") return "Year";
+
+  if (labels.length) {
+    if (labels.every(label => isMonthOnlyLabel(label))) return "Month";
+    if (labels.every(label => isYearOnlyLabel(label) != null)) return "Year";
+
+    const datedLabelCount = labels.filter(label => isValidMonthYear(parseMonthYear(label))).length;
+    if (datedLabelCount > 0) return "Date";
+  }
+
+  if (dataMode === "points" || dataMode === "data-points") return "Date";
+
+  return "Month";
+}
+
 function getYearRangeFromLabels(labels = []) {
   const years = labels
     .map(label => getLabelWaterYear(label))
@@ -2271,6 +2290,11 @@ function renderChart(el) {
 
       title = applyChartDataPlaceholders(title, xAxisLabels);
       subtitle = applyChartDataPlaceholders(subtitle, xAxisLabels);
+      const xAxisName = inferXAxisName(xAxisLabels, {
+        explicitName: el.dataset.xAxisName,
+        labelMode: xAxisLabelMode,
+        dataMode: xAxisDataMode
+      });
 
       const chart = echarts.init(el);
       // Decide y-axis label:
@@ -2467,7 +2491,7 @@ function renderChart(el) {
 
         xAxis: {
           type: "category",
-          name: "Month",
+          name: xAxisName,
           nameLocation: "middle",
           nameGap: 45,
           boundaryGap: series.some(s => s.type === "bar") ? true : false,
