@@ -32,12 +32,14 @@
 
     <div class="layout">
       <div class="container page-content">
-        <!-- Plotly -->
 
+        
+        <!-- Plotly -->
         <div
           id="water-table-map"
           class="plotly-map"
           data-title="Water Table Elevation, Depth to Water, and Potentially Impacted Wells"
+          data-grid-allow-off="true"
           data-grid-geojson="../geojson files/Sep26.geojson"
           data-grid-layers='[
             { "value": "Sep 2026 WT", "label": "Water Table Elevation (ft)", "name": "Water Table Elevation" },
@@ -53,8 +55,8 @@
           class="chart"
           data-title="Monthly Change in Groundwater Storage"
           data-subtitle="Water Year: {wyRange}"
-          data-stacked="false"  
-          data-note="Displays the change in storage from previous month.<br>Solid lines represent simulated historical values. Dashed lines represent simulated forecasted values."          
+          data-stacked="false"
+          data-note="Displays the change in storage from previous month.<br>Solid lines represent simulated historical values. Dashed lines represent simulated forecasted values."
           data-series='[
                     { "csv": "../Data/Groundwater Storage.csv", "name": "Storage Change", "y": "Baseline", "type": "line", "dashFromCurrentMonth": true, "monthlyChange": true }
                 ]'
@@ -78,8 +80,7 @@
           data-note="Solid lines represent simulated historical values. Dashed lines represent simulated forecasted values."
           data-series='[
                 { "csvHistorical": "../Data/Historical RMW Avg DTW.csv", "csvForecast": "../Data/RMW Avg DTW.csv", "stitch": "back-to-back", "name": "Simulated Average Groundwater Level", "y": "Avg Depth to Water (ft)", "units": "ft", "sourceUnits": "ft", "type": "line", "dashFromCurrentMonth": true, "color": "red", "showSymbol": false, "connectNulls": true},
-                    { "csv": "../Data/Observed RMW Avg DTW.csv", "stitch": "back-to-back", "name": "Observed Average Groundwater Level", "y": "Avg Depth to Water (ft)", "units": "ft", "sourceUnits": "ft", "type": "points", "dashFromCurrentMonth": false, "color": "black", "symbolSize": 7 }
-                    
+                { "csv": "../Data/Observed RMW Avg DTW.csv", "stitch": "back-to-back", "name": "Observed Average Groundwater Level", "y": "Avg Depth to Water (ft)", "units": "ft", "sourceUnits": "ft", "type": "points", "dashFromCurrentMonth": false, "color": "black", "symbolSize": 7 }
                 ]'
         ></div>
 

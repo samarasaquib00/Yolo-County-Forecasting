@@ -1744,9 +1744,11 @@ function buildGridChoroplethTrace(gridGeojson, layer, index, totalGridLayers = 1
   };
 }
 
-function bindMapLegendControls(el, PlotlyLib, gridLayers, traces) {
+function bindMapLegendControls(el, PlotlyLib, gridLayers, traces, options = {}) {
   if (el.__mapLegendControlsBound) return;
   el.__mapLegendControlsBound = true;
+
+  const allowGridOff = options.allowGridOff === true;
 
   const legendTraceSelector = ".legend .traces, .legend2 .traces";
   const gridTraceIndexes = gridLayers.map((_, index) => index);
@@ -1775,19 +1777,28 @@ function bindMapLegendControls(el, PlotlyLib, gridLayers, traces) {
     syncLayerToggle();
   };
 
-  const activateGridLayer = (traceIndex) => {
+  const setGridLayerState = (activeTraceIndex = null) => {
     gridTraceIndexes.forEach((gridTraceIndex) => {
-      traceActive[gridTraceIndex] = gridTraceIndex === traceIndex;
+      traceActive[gridTraceIndex] = activeTraceIndex != null && gridTraceIndex === activeTraceIndex;
     });
 
     return PlotlyLib.restyle(el, {
-      "marker.opacity": gridTraceIndexes.map(gridTraceIndex => gridTraceIndex === traceIndex ? 0.58 : 0),
-      "showscale": gridTraceIndexes.map(gridTraceIndex => gridTraceIndex === traceIndex),
-      "hoverinfo": gridTraceIndexes.map(gridTraceIndex => gridTraceIndex === traceIndex ? "all" : "skip")
+      "marker.opacity": gridTraceIndexes.map(gridTraceIndex => activeTraceIndex != null && gridTraceIndex === activeTraceIndex ? 0.58 : 0),
+      "showscale": gridTraceIndexes.map(gridTraceIndex => activeTraceIndex != null && gridTraceIndex === activeTraceIndex),
+      "hoverinfo": gridTraceIndexes.map(gridTraceIndex => activeTraceIndex != null && gridTraceIndex === activeTraceIndex ? "all" : "skip")
     }, gridTraceIndexes).then(() => requestAnimationFrame(syncLegendStyles));
   };
 
-  if (gridLayers.length > 1) {
+  const activateGridLayer = (traceIndex) => {
+    const isAlreadyActive = traceActive[traceIndex] === true;
+    if (allowGridOff && isAlreadyActive) {
+      return setGridLayerState(null);
+    }
+
+    return setGridLayerState(traceIndex);
+  };
+
+  if (gridLayers.length > 1 || allowGridOff) {
     const existingToggle = el.querySelector(".map-layer-toggle");
     if (existingToggle) existingToggle.remove();
 
@@ -1845,6 +1856,7 @@ async function renderPlotlyMap(el) {
     const gridUrl = el.dataset.gridGeojson;
     const pointUrl = el.dataset.pointsGeojson;
     const gridLayers = parseGridLayers(el);
+    const allowGridOff = String(el.dataset.gridAllowOff || "").trim().toLowerCase() === "true";
     const pointName = el.dataset.pointName || "Potentially Impacted Wells";
 
     if (!gridUrl) throw new Error("Missing data-grid-geojson.");
@@ -1934,7 +1946,7 @@ async function renderPlotlyMap(el) {
     };
 
     await PlotlyLib.newPlot(el, traces, layout, config);
-    bindMapLegendControls(el, PlotlyLib, gridLayers, traces);
+    bindMapLegendControls(el, PlotlyLib, gridLayers, traces, { allowGridOff });
     requestAnimationFrame(() => PlotlyLib.Plots.resize(el));
   } catch (err) {
     console.error(err);
