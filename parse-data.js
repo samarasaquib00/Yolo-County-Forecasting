@@ -2039,6 +2039,7 @@ function renderChart(el) {
 
   let title = el.dataset.title || "Chart";
   let subtitle = el.dataset.subtitle || "";
+  const infoText = (el.dataset.info || "").trim();
   const noteText = (el.dataset.note || "").replace(/<br\s*\/?>/gi, "\n");
   const xAxisLabelMode = (el.dataset.xAxisLabels || "").trim().toLowerCase();
   const xAxisDataMode = (el.dataset.xAxisData || "").trim().toLowerCase();
@@ -2614,6 +2615,32 @@ function renderChart(el) {
 
         series
       });
+
+      if (infoText) {
+        let info = el.querySelector(".chart-info");
+
+        if (!info) {
+          const tooltipId = `${el.id || "chart"}-info-tooltip`;
+          info = document.createElement("div");
+          info.className = "chart-info";
+
+          const button = document.createElement("button");
+          button.className = "chart-info__button";
+          button.type = "button";
+          button.setAttribute("aria-label", `About ${title}`);
+          button.setAttribute("aria-describedby", tooltipId);
+          button.textContent = "i";
+
+          const tooltip = document.createElement("span");
+          tooltip.className = "chart-info__tooltip";
+          tooltip.id = tooltipId;
+          tooltip.setAttribute("role", "tooltip");
+          tooltip.textContent = infoText;
+
+          info.append(button, tooltip);
+          el.appendChild(info);
+        }
+      }
 
       window.addEventListener("resize", () => chart.resize());
     })

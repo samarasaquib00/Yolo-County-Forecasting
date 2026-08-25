@@ -610,6 +610,70 @@ h2 {
   border-color: rgba(59, 130, 246, 0.3);
 }
 
+.chart-info {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 10;
+}
+
+.chart-info__button {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid #94a3b8;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.96);
+  color: #475569;
+  font: 700 16px/1 Georgia, serif;
+  cursor: help;
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.1);
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.chart-info__button:hover,
+.chart-info__button:focus-visible {
+  border-color: #2563eb;
+  background: #eff6ff;
+  color: #1d4ed8;
+  outline: none;
+}
+
+.chart-info__button:focus-visible {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.22);
+}
+
+.chart-info__tooltip {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: min(330px, calc(100vw - var(--page-gutter) - var(--page-gutter) - 36px));
+  padding: 12px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #334155;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.16);
+  font-size: 0.84rem;
+  font-weight: 400;
+  line-height: 1.45;
+  text-align: left;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity 140ms ease, transform 140ms ease, visibility 140ms ease;
+}
+
+.chart-info:hover .chart-info__tooltip,
+.chart-info:focus-within .chart-info__tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .plotly-map {
   width: 100%;
   height: 720px;
