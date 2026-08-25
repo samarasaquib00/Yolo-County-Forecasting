@@ -31,9 +31,43 @@
     ></div> -->
 
     <div class="layout">
-      <div class="container page-content">
+        <!-- Change in GW Storage – use Forecast Outputs\Groundwater Storage – use Sep of forecast year minus Sep of year before forecast year  -->
+        <div id="summary-data" class="container">
+          <div class="single-value-grid">
+            <div
+              class="single-value"
+              data-key="GW_Current"
+              data-label="{year} End of Year Storage"
+              data-csv="../Data/Groundwater Storage.csv"
+              data-col="Baseline"
+              data-month="Sep"
+              data-year="current"
+              data-units="TAF"
+            ></div>
 
-        
+            <!-- Add Previous field for single values -->
+            <div
+              class="single-value"
+              data-key="GW_Previous"
+              data-label="{prevyear} End of Year Storage"
+              data-csv="../Data/Groundwater Storage.csv"
+              data-col="Baseline"
+              data-month="Sep"
+              data-year="previous"
+              data-units="TAF"
+            ></div>
+
+            <div
+              class="single-value"
+              data-key="diff"
+              data-label="Change in Storage"
+              data-diff="GW_Current,GW_Previous"
+              data-units="TAF"
+            ></div>
+          </div>
+        </div>
+      <div class="container">
+
         <!-- Plotly -->
         <div
           id="water-table-map"
@@ -179,42 +213,6 @@
       </div>
 
       <br /><br />
-
-      <!-- Change in GW Storage – use Forecast Outputs\Groundwater Storage – use Sep of forecast year minus Sep of year before forecast year  -->
-      <div class="container">
-        <div class="single-value-grid">
-          <div
-            class="single-value"
-            data-key="GW_Current"
-            data-label="{year} End of Year Storage"
-            data-csv="../Data/Groundwater Storage.csv"
-            data-col="Baseline"
-            data-month="Sep"
-            data-year="current"
-            data-units="TAF"
-          ></div>
-
-          <!-- Add Previous field for single values -->
-          <div
-            class="single-value"
-            data-key="GW_Previous"
-            data-label="{prevyear} End of Year Storage"
-            data-csv="../Data/Groundwater Storage.csv"
-            data-col="Baseline"
-            data-month="Sep"
-            data-year="previous"
-            data-units="TAF"
-          ></div>
-
-          <div
-            class="single-value"
-            data-key="diff"
-            data-label="Change in Storage"
-            data-diff="GW_Current,GW_Previous"
-            data-units="TAF"
-          ></div>
-        </div>
-      </div>
     </div>
 
     <br /><br />
