@@ -2160,6 +2160,9 @@ function renderChart(el) {
       const connectNulls = cfg.connectNulls === true || cfg.connectNulls === "true"
         ? true
         : (!isPointSeries && (isStitched ? false : chartType !== "bar"));
+      // Historical and forecast bars are separate ECharts series, but they
+      // represent one dataset and should occupy the same horizontal slot.
+      const barSlot = chartType === "bar" && !stacked ? `bar-slot-${idx}` : undefined;
 
       // ---- Base series factory ----
       const makeSeries = (name, data, { dashed } = {}) => ({
@@ -2191,7 +2194,7 @@ function renderChart(el) {
         // Fix for stacked bar charts
         stack: stacked && cfg.stack !== false
           ? (typeof cfg.stack === "string" ? cfg.stack : "total")
-          : undefined,
+          : barSlot,
 
         lineStyle: {
           ...(color ? { color } : {}),
@@ -2215,9 +2218,12 @@ function renderChart(el) {
           : (color ? { color } : undefined),
 
 
-        barWidth: chartType === "bar" ? 28 : undefined,
-        barGap: chartType === "bar" ? "-40%" : undefined,
-        barCategoryGap: chartType === "bar" ? "55%" : undefined,
+        // Keep datasets distinct within a month while leaving a clear visual
+        // break between month groups. maxWidth also prevents crowding on
+        // narrower screens.
+        barMaxWidth: chartType === "bar" ? 28 : undefined,
+        barGap: chartType === "bar" ? "20%" : undefined,
+        barCategoryGap: chartType === "bar" ? "30%" : undefined,
 
 
         // for your layering sorter
