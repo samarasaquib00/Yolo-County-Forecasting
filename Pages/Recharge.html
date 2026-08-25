@@ -19,7 +19,7 @@
     <div class="layout">
       <div class="container page-content">
         <!-- Clear Lake Cumulative Precipitation -->
-        <div
+        <!-- <div
           id="clear-lake-precip"
           class="chart"
           data-title="Clear Lake Cumulative Precipitation"
@@ -31,10 +31,10 @@
                 { "csv": "../Data/Cumulative Precipitation-Clear Lake.csv", "name": "Forecast", "y": "Baseline", "type": "line"},
                 { "csv": "../Data/1991-2020 Cumalitive Avg Precipitation.csv", "name": "1991-2020 Average", "y": "Clear Lake", "type": "area", "dashFromCurrentMonth": false}
             ]'
-        ></div>
+        ></div> -->
 
         <!-- Indian Valley Precipitation -->
-        <div
+        <!-- <div
           id="indian-valley-precip"
           class="chart"
           data-title="Indian Valley Cumulative Precipitation"
@@ -46,10 +46,10 @@
                 { "csv": "../Data/Cumulative Precipitation-Indian Valley.csv", "name": "Forecast", "y": "Baseline", "type": "line"},
                 { "csv": "../Data/1991-2020 Cumalitive Avg Precipitation.csv", "name": "1991-2020 Average", "y": "Middle Indian Valley", "type": "area", "dashFromCurrentMonth": false}
             ]'
-        ></div>
+        ></div> -->
 
         <!-- Davis Catch Precipitation -->
-        <div
+        <!-- <div
           id="davis-precip"
           class="chart"
           data-title="Davis Cumulative Precipitation"
@@ -61,7 +61,7 @@
                 { "csv": "../Data/Cumulative Precipitation-Davis Catch.csv", "name": "Forecast", "y": "Baseline", "type": "line"},
                 { "csv": "../Data/1991-2020 Cumalitive Avg Precipitation.csv", "name": "1991-2020 Average", "y": "Davis catch", "type": "area","dashFromCurrentMonth": false}
             ]'
-        ></div>
+        ></div> -->
 
         <!-- Monthly inflows to reservoirs and precipitation on same plot?  -->
         <div
@@ -119,6 +119,21 @@
                 { "csv": "../Data/50cfs Time Series.csv", "name": "50 cfs Recharge Threshold", "y": "", "type": "line", "dashFromCurrentMonth": false} 
             ]'
         ></div>
+
+        <div
+          id="reservoir-inflows"
+          class="chart"
+          data-title="Reservoir Inflows"
+          data-subtitle="Water Year: {wyRange}"
+          data-stacked="false"
+          data-note="Solid lines represent simulated historical values. Dashed lines represent simulated forecasted values."
+          data-series='[
+              { "csv": "../Data/Reservoir Inflow-Clear Lake.csv", "name": "Clear Lake", "y": "Baseline", "type": "bar" },
+              { "csv": "../Data/Reservoir Inflow-Indian Valley.csv", "name": "Indian Valley", "y": "Baseline", "type": "bar" }
+            ]'
+        ></div>
+
+
       </div>
     </div>
     <br /><br />

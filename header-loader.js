@@ -13,7 +13,7 @@
     .replaceAll('__SITE_ROOT__', siteRootPrefix)
     .replaceAll('__PAGES_ROOT__', pagesRootPrefix);
 
-  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  const currentPage = decodeURIComponent(window.location.pathname.split('/').pop() || 'index.html');
   document.querySelectorAll('.nav-btn').forEach((link) => {
     const target = link.getAttribute('data-nav-target');
     if (target && target === currentPage) {

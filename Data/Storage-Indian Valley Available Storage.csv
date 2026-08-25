@@ -1,8 +1,8 @@
-Key Assumptions
-"Scenario: Baseline, Branch: Key Assumptions\Forecast\Outputs\INV Available Storage"
- 
-Branch,"INV Available Storage (Thousand AF)"
-"Apr 2024",0
-"Apr 2025",0
-"Apr 2026",207.112
-Sum,207.112
+Key Assumptions,
+"Scenario: Baseline, Branch: Key Assumptions\Forecast\Outputs\INV Available Storage",
+ ,
+Branch,INV Available Storage (Thousand AF)
+Apr-24,0
+Apr-25,0
+Apr-26,260.76
+Sum,210.76

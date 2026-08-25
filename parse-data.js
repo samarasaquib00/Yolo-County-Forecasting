@@ -1591,47 +1591,15 @@ function buildPointStatusTraces(pointCoords, pointName) {
     .filter(Boolean);
 }
 
-function formatMonthYearSubtitle(monthAbbr, year) {
-  const monthIndex = MONTH_INDEX[monthAbbr];
-  const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
+function getSeasonalMapSubtitle(today = new Date()) {
+  // Use current WY year in the subtitle label.
+  const wy = getCurrentWaterYear();
+  const month = today.getMonth(); // 0=Jan ... 11=Dec
 
-  if (monthIndex == null || !Number.isFinite(year)) return "";
-  return `${monthNames[monthIndex]} ${year}`;
-}
-
-function parseDateFromFieldName(fieldName) {
-  const s = String(fieldName || "").trim().toLowerCase();
-  const monthWords = "(january|jan|february|feb|march|mar|april|apr|may|june|jun|july|jul|august|aug|september|sept|sep|october|oct|november|nov|december|dec)";
-
-  let match = s.match(new RegExp(`^${monthWords}[-_\\s]*(\\d{2,4})`, "i"));
-  if (match) {
-    const monthAbbr = normalizeMonth(match[1]);
-    const year = expandTwoDigitYear(match[2]);
-    return formatMonthYearSubtitle(monthAbbr, year);
-  }
-
-  match = s.match(new RegExp(`^(\\d{2,4})[-_\\s]*${monthWords}`, "i"));
-  if (match) {
-    const year = expandTwoDigitYear(match[1]);
-    const monthAbbr = normalizeMonth(match[2]);
-    return formatMonthYearSubtitle(monthAbbr, year);
-  }
-
-  return "";
-}
-
-function inferMapSubtitle(gridGeojson, valueField) {
-  const gridProperties = gridGeojson?.features
-    ?.map(feature => feature.properties || {})
-    ?.find(properties => Object.keys(properties).length) || {};
-
-  const gridDateField = Object.keys(gridProperties).find(field =>
-    field === valueField || parseDateFromFieldName(field)
-  );
-  return parseDateFromFieldName(gridDateField) || parseDateFromFieldName(valueField);
+  // Oct-Apr => "April {WY}", May-Sep => "September {WY}"
+  return (month >= 9 || month <= 3)
+    ? `April ${wy}`
+    : `September ${wy}`;
 }
 
 function getGridFeatureId(feature, index) {
@@ -1978,7 +1946,7 @@ async function renderPlotlyMap(el) {
     ]);
 
     if (!subtitle) {
-      subtitle = inferMapSubtitle(gridGeojson, gridLayers[0]?.value);
+      subtitle = getSeasonalMapSubtitle();
     }
 
     const pointCoords = getPointCoordinates(pointsGeojson);

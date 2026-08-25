@@ -28,7 +28,7 @@
           <div
             class="single-value"
             data-key="IV_Available"
-            data-label="Indian Valley Available Supply (May 1 {curr year})"
+            data-label="Indian Valley Available Supply (April 1 {curr year})"
             data-csv="../Data/Storage-Indian Valley Available Storage.csv"
             data-col="INV Available Storage (Thousand AF)"
             data-month="Apr"
@@ -38,7 +38,7 @@
           <div
             class="single-value"
             data-key="SD_Allowable"
-            data-label="Solano Decree Supply (May 1 {curryear})"
+            data-label="Clear Lake Supply (May 1 {curryear})"
             data-csv="../Data/Solano Decree-Allowable Seasoanal Withdrawal.csv"
             data-col="Allowable Seasonal Withdrawal (AF)"
             data-units="TAF"
@@ -47,7 +47,7 @@
           <div
             class="single-value"
             data-key="sum_IV_SD"
-            data-label="Sum of Solano Decree and Indian Valley Supply"
+            data-label="Sum of CLear Lake and Indian Valley Supply"
             data-sum="IV_Available,SD_Allowable"
             data-units="TAF"
           ></div>
@@ -58,7 +58,7 @@
 
       <div class="container page-content">
         <!-- Subtract 841000 from all values in clear lake only-->
-        <div
+        <!-- <div
           id="clear-lake"
           class="chart"
           data-title="Available Clear Lake Storage"
@@ -70,18 +70,18 @@
             { "csv": "../Data/Reservoir Storage Capacity.csv", "name": "Storage Capacity", "y": "Clear Lake", "type": "area",  "dashFromCurrentMonth": false },
             { "csv": "../Data/Storage-Clear Lake.csv", "name": "Previous Year ({prevyear})", "y": "Modeled", "type": "line", "waterYear": "previous", "adjust": -841000 } 
           ]'
-        ></div>
+        ></div> -->
 
         <!-- Solano Decree -->
         <div
           id="solano-decree"
           class="chart"
-          data-title="Solano Decree: Season Remaining Supply"
+          data-title="Available Clear Lake Water (Solano Decree)"
           data-subtitle="Water Year: {wyRange}"
           data-series='[
             { "csv": "../Data/Solano Decree-Season Remaining.csv", "name": "Solano Decree", "y": "Rev SeasonRemaining (AF)", "type": "area", "dashFromCurrentMonth": true, "units": "TAF", "yAxisIndex": 0 },
-            { "csv": "../Data/Rumsey Gage.csv", "name": "Rumsey Gauge", "y": "Rumsey Gage (ft)", "type": "line", "dashFromCurrentMonth": true, "units": "ft", "sourceUnits": "ft", "yAxisIndex": 1 },
-            { "csv": "../Data/Rumsey Gage Allocation Thresholds.csv", "name": "Rumsey Gage Full Allocation Threshold", "y": "Full Allocation (ft)", "type": "line", "dashFromCurrentMonth": false, "units": "ft", "sourceUnits": "ft", "yAxisIndex": 1 }
+            { "csv": "../Data/Rumsey Gage.csv", "name": "Clear Lake Elevation (as ft Rumsey)", "y": "Rumsey Gage (ft)", "type": "line", "dashFromCurrentMonth": true, "units": "ft", "sourceUnits": "ft", "yAxisIndex": 1 },
+            { "csv": "../Data/Rumsey Gage Allocation Thresholds.csv", "name": "Solano Decree Full Allocation (ft)", "y": "Full Allocation (ft)", "type": "line", "dashFromCurrentMonth": false, "units": "ft", "sourceUnits": "ft", "yAxisIndex": 1 }
             ]'
         ></div>
 
@@ -94,7 +94,7 @@
           data-series='[
             { "csv": "../Data/Storage-Indian Valley.csv", "name": "Indian Valley Forecast", "y": "Modeled", "type": "line" },
             { "csv": "../Data/Reservoir TOC.csv", "name": "Top of Conservation", "y": "Indian Valley", "type": "area","dashFromCurrentMonth": false },
-            { "csv": "../Data/1991-2020 Avg Storage.csv", "name": "1991-2020 Average", "y": "Indian Valley", "type": "area", "dashFromCurrentMonth": false},
+            { "csv": "../Data/1991-2020 Avg Storage.csv", "name": "Long-term Average", "y": "Indian Valley", "type": "area", "dashFromCurrentMonth": false},
             { "csv": "../Data/Storage-Indian Valley.csv", "name": "Previous Year ({prevyear})", "y": "Modeled", "type": "line", "waterYear": "previous" } 
 
         ]'
@@ -113,7 +113,7 @@
           ]'
         ></div>
 
-        <div
+        <!-- <div
           id="reservoir-inflows"
           class="chart"
           data-title="Reservoir Inflows"
@@ -124,7 +124,7 @@
               { "csv": "../Data/Reservoir Inflow-Clear Lake.csv", "name": "Clear Lake", "y": "Baseline", "type": "bar" },
               { "csv": "../Data/Reservoir Inflow-Indian Valley.csv", "name": "Indian Valley", "y": "Baseline", "type": "bar" }
             ]'
-        ></div>
+        ></div> -->
       </div>
     </div>
     <br /><br />

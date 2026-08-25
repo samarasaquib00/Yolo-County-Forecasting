@@ -903,6 +903,21 @@ h2 {
   line-height: 1.2;
 }
 
+/* Narrower card: sizes to its content instead of filling its grid column */
+.chart .single-value-in-chart.single-value-narrow {
+  width: fit-content;
+  min-width: 0;
+  justify-self: center;
+}
+
+.chart .single-value-in-chart.single-value-narrow .single-value-label {
+  font-size: 1.05rem;
+}
+
+.chart .single-value-in-chart.single-value-narrow .single-value-number {
+  font-size: 1.6rem;
+}
+
 .chart.chart-has-inline-value {
   height: 730px;
   padding-bottom: 2rem;
