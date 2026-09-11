@@ -1,0 +1,55 @@
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\1991-2020 Avg Storage.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\1991-2020 Cumalitive Avg Flow.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\1991-2020 Cumalitive Avg Precipitation.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\50cfs Time Series.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Ag GW Extraction.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Ag SW Diversions.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Cache Creek Flow at Yolo Gauge.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Cumulative Precipitation-Clear Lake.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Cumulative Precipitation-Davis catch.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Cumulative Precipitation-Indian Valley.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Diversions-Capay Dam Mar-Sep.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Diversions-Capay Dam.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Diversions-West Adams Canal.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Diversions-Winters Canal.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\ETActual (including irrigation).csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Groundwater Storage.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Historical Groundwater Storage.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Historical RMW Avg DTW.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\ImpactedWells.geojson
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\ImpactedWells-old.geojson
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\list.txt
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Observed RMW Avg DTW.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\plotly-2.35.2.min.js
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Precipitation-Clear Lake Monthly.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Precipitation-Davis catch Monthly.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Precipitation-Indian Valley Monthly.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Reservoir Inflow-Clear Lake.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Reservoir Inflow-Indian Valley.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Reservoir Release-Capay Dam.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Reservoir Release-Clear Lake.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Reservoir Release-Indian Valley.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Reservoir Release-Irrigation.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Reservoir Release-Spill.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Reservoir Storage Capacity.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Reservoir TOC.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Results Files Log.xlsx
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\RMW Avg DTW.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Rumsey Gage Allocation Thresholds.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Rumsey Gage.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Solano Decree-Allowable Seasoanal Withdrawal.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Solano Decree-Season Remaining.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Storage-Clear Lake.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Storage-Indian Valley Available Storage.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Storage-Indian Valley.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Total Ag Demand.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Total GW Extraction.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Total SW Diversions.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Urban GW Extraction.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Urban SW Diversions.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Water Year Types.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Winter Recharge.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\Woodland ASR Recharge.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\WTandDTW.geojson
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\YCFC Farmgate Deliveries Mar-Sep.csv
+Z:\Jack\OneDrive - SEI\Yolo_Website\Data\YCFC Farmgate Deliveries.csv

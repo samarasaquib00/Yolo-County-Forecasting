@@ -2040,7 +2040,6 @@ function renderChart(el) {
   let title = el.dataset.title || "Chart";
   let subtitle = el.dataset.subtitle || "";
   const infoText = (el.dataset.info || "").trim();
-  const tooltipInfoText = (el.dataset.tooltipInfo || "").trim();
   const noteText = (el.dataset.note || "").replace(/<br\s*\/?>/gi, "\n");
   const xAxisLabelMode = (el.dataset.xAxisLabels || "").trim().toLowerCase();
   const xAxisDataMode = (el.dataset.xAxisData || "").trim().toLowerCase();
@@ -2576,11 +2575,7 @@ function renderChart(el) {
               }
             }
 
-            const infoBlock = tooltipInfoText
-              ? `<div style="max-width:340px;margin-bottom:7px;padding-bottom:7px;border-bottom:1px solid #e2e8f0;color:#64748b;font-size:11px;line-height:1.35;white-space:normal;">${tooltipInfoText}</div>`
-              : "";
-
-            return `${infoBlock}<div><strong>${month}</strong></div>${rows.join("")}`;
+            return `<div><strong>${month}</strong></div>${rows.join("")}`;
           }
         },
 
