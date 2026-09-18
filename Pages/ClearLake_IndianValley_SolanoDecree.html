@@ -10,13 +10,27 @@
       name="viewport"
       content="width=device-width, initial-scale=1"
     />
-    <title>Yolo County Forecasting</title>
+    <title>Reservoir and Decree Overview | YCFC Forecasts</title>
   </head>
 
-  <body>
+  <body data-site-section="ycfc">
     <div data-site-header-placeholder></div>
 
     <div class="layout">
+      <div class="container page-header">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="../index.html">Home</a>
+          <span class="breadcrumb-separator" aria-hidden="true">›</span>
+          <a href="YCFC.html">YCFC</a>
+          <span class="breadcrumb-separator" aria-hidden="true">›</span>
+          <span aria-current="page">Clear Lake, Indian Valley, Solano Decree</span>
+        </nav>
+        <section class="page-intro">
+          <h2>Clear Lake, Indian Valley, Solano Decree</h2>
+          <p>Available supply, reservoir storage, lake elevation, and Solano Decree indicators for the current water year.</p>
+        </section>
+      </div>
+
       <!-- <br> -->
       <!-- Pull the specified value from 2026 from the file called ../Data/Storage-Indian Valley Available Storage.csv  -->
       <!-- If data-month is empty, it will pull the latest value in the current water year -->
@@ -124,6 +138,9 @@
             ]'
         ></div> -->
       </div>
+    </div>
+    <div class="container">
+      <a class="back-link" href="YCFC.html">← Back to YCFC overview</a>
     </div>
     <br /><br />
     <!-- </main> -->

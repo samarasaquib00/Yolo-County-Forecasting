@@ -13,12 +13,33 @@
     .replaceAll('__SITE_ROOT__', siteRootPrefix)
     .replaceAll('__PAGES_ROOT__', pagesRootPrefix);
 
+  const primaryNav = document.querySelector('.top-nav');
+  const updatePrimaryNavHeight = () => {
+    if (primaryNav) {
+      document.documentElement.style.setProperty('--primary-nav-height', `${primaryNav.offsetHeight}px`);
+    }
+  };
+  updatePrimaryNavHeight();
+  if (primaryNav && typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(updatePrimaryNavHeight).observe(primaryNav);
+  }
+
   const currentPage = decodeURIComponent(window.location.pathname.split('/').pop() || 'index.html');
-  document.querySelectorAll('.nav-btn').forEach((link) => {
+  const currentSection = document.body.dataset.siteSection || '';
+
+  document.querySelectorAll('[data-section-nav]').forEach((nav) => {
+    nav.hidden = nav.dataset.sectionNav !== currentSection;
+  });
+
+  document.querySelectorAll('.nav-btn, .section-nav-link').forEach((link) => {
     const target = link.getAttribute('data-nav-target');
+    const section = link.getAttribute('data-nav-section');
     if (target && target === currentPage) {
       link.classList.add('is-active');
       link.setAttribute('aria-current', 'page');
+    } else if (section && section === currentSection) {
+      link.classList.add('is-active');
+      link.setAttribute('aria-current', 'location');
     }
   });
 

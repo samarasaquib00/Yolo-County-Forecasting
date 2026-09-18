@@ -964,15 +964,67 @@ function computeMonthlyChange(values) {
 
 // -------------- FETCHING ---------------
 
+const SOURCE_LAST_MODIFIED = new Map();
+
+function normalizeSourceUrl(url) {
+  try {
+    return new URL(url, document.baseURI).href;
+  } catch {
+    return String(url || "");
+  }
+}
+
+function rememberSourceLastModified(url, response) {
+  const headerValue = response.headers.get("last-modified");
+  if (!headerValue) return;
+
+  const modified = new Date(headerValue);
+  if (!Number.isNaN(modified.getTime())) {
+    SOURCE_LAST_MODIFIED.set(normalizeSourceUrl(url), modified);
+  }
+}
+
+function getLastModifiedLabelText(sourceUrls) {
+  const modifiedDates = Array.from(new Set(sourceUrls.filter(Boolean)))
+    .map(url => SOURCE_LAST_MODIFIED.get(normalizeSourceUrl(url)))
+    .filter(date => date instanceof Date && !Number.isNaN(date.getTime()));
+
+  if (!modifiedDates.length) return "";
+
+  const latest = new Date(Math.max(...modifiedDates.map(date => date.getTime())));
+  const formattedDate = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  }).format(latest);
+
+  return `Last modified on ${formattedDate}`;
+}
+
+function addLastModifiedLabel(container, sourceUrls) {
+  const labelText = getLastModifiedLabelText(sourceUrls);
+  if (!labelText) return;
+
+  let label = container.querySelector(".chart-last-modified");
+  if (!label) {
+    label = document.createElement("div");
+    label.className = "chart-last-modified";
+    container.appendChild(label);
+  }
+  label.textContent = labelText;
+}
+
 async function fetchText(url) {
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error(`Failed to load ${url}`);
+  rememberSourceLastModified(url, res);
   return res.text();
 }
 
 async function fetchJson(url) {
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error(`Failed to load ${url}`);
+  rememberSourceLastModified(url, res);
   return res.json();
 }
 
@@ -1944,6 +1996,7 @@ async function renderPlotlyMap(el) {
       fetchJson(gridUrl),
       fetchJson(pointUrl)
     ]);
+    const lastModifiedText = getLastModifiedLabelText([gridUrl, pointUrl]);
 
     if (!subtitle) {
       subtitle = getSeasonalMapSubtitle();
@@ -2012,7 +2065,24 @@ async function renderPlotlyMap(el) {
           x: [0.035, gridLayers.length > 1 ? 0.84 : 0.9],
           y: [0.14, 1]
         }
-      }
+      },
+      annotations: lastModifiedText
+        ? [{
+            text: lastModifiedText,
+            xref: "paper",
+            yref: "paper",
+            x: 1,
+            y: 0,
+            xanchor: "right",
+            yanchor: "bottom",
+            showarrow: false,
+            font: {
+              family: "Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+              size: 11,
+              color: "#94a3b8"
+            }
+          }]
+        : []
     };
 
     const config = {
@@ -2621,6 +2691,12 @@ function renderChart(el) {
 
         series
       });
+
+      const chartSourceUrls = loadedSeries.flatMap(({ csvUrls }) => csvUrls);
+      if (showConditionBands && conditionBandsCsv) {
+        chartSourceUrls.push(conditionBandsCsv);
+      }
+      addLastModifiedLabel(el, chartSourceUrls);
 
       if (infoText) {
         let info = el.querySelector(".chart-info");
