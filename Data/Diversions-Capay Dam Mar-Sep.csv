@@ -2,7 +2,7 @@ Transmission Link Flow
 "Scenario: Baseline, Selected Months (7/12), Total selected months"
 Acre-foot
 "Transmission Link","Transmission Link from Withdrawal Node 12 to YCFC Hungry Hollow","Transmission Link from Withdrawal Node 15 to YCFC Dunnigan Hills","Transmission Link from Withdrawal Node 16 to YCFC Zamora","Transmission Link from Withdrawal Node 19 to YCFC East","Transmission Link from Withdrawal Node 26 to Dunnigan Hills Canal Seep","Transmission Link from Withdrawal Node 27 to Hungry Hollow Canal Seep","Transmission Link from Withdrawal Node 28 to YCFC West Canal Seep","Transmission Link from Withdrawal Node 29 to YCFC East Canal Seep","Transmission Link from Withdrawal Node 4 to YCFC West",Sum
-2024,5844.97,6017.53,49.2576,20657.1,667.946,1841.17,28968.2,2292.94,91962.5,158302
-2025,13656.5,10953.8,117.63,31299.4,1215.87,4301.8,27459.6,3474.24,87173.3,179652
-2026,11106,8794.02,73.8811,28166.4,976.137,3498.39,29295.2,3126.47,93000.7,178037
-Sum,30607.5,25765.3,240.769,80122.9,2859.95,9641.36,85723,8893.64,272136,515991
+2024,5907.22,6075.46,47.7976,27477.9,674.377,1860.77,28968.2,3050.04,91962.5,166024
+2025,13708.5,11009.1,86.9991,31299.4,1222,4318.17,27459.6,3474.24,87173.3,179751
+2026,7486.31,6338.38,36.3387,28158.4,703.56,2358.19,30032.8,3125.58,95342.1,173582
+Sum,27102,23422.9,171.135,86935.7,2599.94,8537.13,86460.5,9649.86,274478,519357

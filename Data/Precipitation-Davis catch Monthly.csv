@@ -1,5 +1,5 @@
 Precipitation
-"All Scenarios, Branch: Demand Sites and Catchments\Davis catch"
+Branch: Demand Sites and Catchments\Davis catch
 Inch
 Scenario,Baseline
 "Oct 2023",0.740189
@@ -37,5 +37,5 @@ Scenario,Baseline
 "Jun 2026",0
 "Jul 2026",0
 "Aug 2026",0
-"Sep 2026",0.374764
-Sum,57.2016
+"Sep 2026",0.419941
+Sum,57.2468
