@@ -998,7 +998,7 @@ function getLastModifiedLabelText(sourceUrls) {
     day: "numeric"
   }).format(latest);
 
-  return `Last modified on ${formattedDate}`;
+  return `Forecast as of ${formattedDate}`;
 }
 
 function addLastModifiedLabel(container, sourceUrls) {
