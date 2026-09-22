@@ -1,0 +1,47 @@
+
+Clear Lake, Indian Valley, Solano Decree
+
+Chart: Available Clear Lake Water 
+The water volume available from Clear Lake under the Solano Decree (blue), the simulated Clear Lake elevation at the Rumsey Gauge (green line, on the right vertical axis), and the full allocation Rumsey Gauge level (yellow line, on the right vertical axis). Note that values are for the last day of the month. Note that dashed lines and areas are based on forecasted meteorology, and solid lines and areas are based on observed meteorology and reservoir storage. 
+
+Chart: Indian Valley Storage 
+The volume of stored water in the Indian Valley Reservoir (green line), the volume of stored water from the previous water year (red line), the Top of Conservation (blue), and the long-term average storage (green). Long-term average is a mean of water years 1991-2020 observed monthly reservoir storage from CDEC. Note that dashed lines are based on forecasted meteorology, and solid lines and areas are based on observed meteorology and reservoir storage. 
+
+Chart: Combined Storage 
+The water volume available from Clear Lake under the Solano Decree (blue) and the volume of store water in Indian Valley Reservoir (green), as a stacked chart.  Note that dashed lines are based on forecasted meteorology, and solid lines and areas are based on observed meteorology and reservoir storage. 
+
+ 
+Irrigation Demand 
+
+Chart: Capay Dam Diversions 
+Simulated diversions from Cache Creek at the Capay Diversion Dam.  Simulated diversions to the West Adams Canal (blue) and the Winters Canal (green).  Simulated farmgate deliveries representing Cache Creek Diversions minus seepage losses (yellow line).  Note dashed lines and areas are based on forecasted meteorology, solid lines and areas are based on observed meteorology. 
+
+Chart: Reservoir Releases 
+Releases from Clear Lake and Indian Valley Reservoir for irrigation (blue) and for flood control (green). Note dashed areas are based on forecasted meteorology, solid areas are based on observed meteorology. 
+
+Recharge 
+
+Chart: Monthly Precipitation 
+Precipitation data obtained from the gridMET climate dataset at Clear Lake (blue), Indian Valley Reservoir (green), and Davis (yellow). Note dashed areas are forecasted values, solid areas are observed values. 
+
+Chart: Cache Creek Flow at Yolo 
+Simulated flow on Cache Creek at Yolo gage (green). The groundwater recharge flow threshold is 50 cfs (yellow line). Long-term average (blue) is a mean of water years 1991-2020 observed monthly discharge from USGS gage 11452500. Note dashed line is based on forecasted meteorology, solid line is based on observed meteorology. 
+
+Chart: Reservoir Inflows 
+Simulated inflows to Clear Lake (blue) and Indian Valley Reservoir (green). Note dashed areas are based on forecasted meteorology, and solid lines are based on observed meteorology.  
+
+Outputs for YSGA 
+
+Chart: Water Table Elevation, Depth to Water, and Potentially Impacted Wells 
+Simulated groundwater elevation data shown as water table elevation and depth to water. Impacted wells are (brief description from Sarah). Groundwater elevation at the location of the well was determined to be below (red dot) or above (green dot) each well’s threshold (depth + 30 ft). Points labeled no data (grey dot) are outside of model domain or have a depth that is beyond the model aquifer elevation. 
+All values are simulated and based on observed and forecasted meteorology.  
+
+Chart: Monthly Change in Groundwater Storage 
+Change in subbasin groundwater storage from the end of the previous month. Note dashed line is based on forecasted meteorology, solid line is based on observed meteorology. 
+
+Chart: Representative Monitoring Wells-Average Depth to Water 
+Average depth to water of the YSGA’S 62 Representative Monitoring Wells using observed data (red line) and simulated outputs (grey line). Values are for March and September of water years 1971-present. Sacramento Valley Water Year Type (40-30-30 Index) is shown as a chart background fill color. Note simulated dashed line and current water year type is based on forecasted meteorology, solid simulated line and historical water year type is based on observed meteorology.  
+
+ 
+
+ 

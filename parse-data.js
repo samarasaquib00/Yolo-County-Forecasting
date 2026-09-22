@@ -5,6 +5,128 @@
 const SINGLE_VALUE_STORE = new Map(); // key -> { value:number, units:string }
 const SINGLE_VALUE_DIM = new Map();   // key -> "volume" | "depth" | "flow"
 
+// Resolve the descriptions file relative to this script so it works from both
+// the site root and pages in the Pages/ directory.
+const CHART_DESCRIPTIONS_URL = new URL(
+  "chart-descriptions.txt",
+  document.currentScript?.src || document.baseURI
+).href;
+
+function decodeHtmlEntities(value) {
+  const textarea = document.createElement("textarea");
+  textarea.innerHTML = String(value ?? "");
+  return textarea.value;
+}
+
+function normalizeChartTitle(value) {
+  return decodeHtmlEntities(value)
+    .normalize("NFKD")
+    .toLowerCase()
+    .replace(/[\u2010-\u2015-]/g, " ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function parseChartDescriptions(text) {
+  const descriptions = new Map();
+  const lines = String(text ?? "").replace(/\r\n?/g, "\n").split("\n");
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const heading = lines[index].match(/^\s*Chart:\s*(.+?)\s*$/i);
+    if (!heading) continue;
+
+    const title = decodeHtmlEntities(heading[1]).trim();
+    const descriptionLines = [];
+
+    index += 1;
+    while (index < lines.length && !lines[index].trim()) index += 1;
+    while (
+      index < lines.length &&
+      lines[index].trim() &&
+      !/^\s*Chart:/i.test(lines[index])
+    ) {
+      descriptionLines.push(decodeHtmlEntities(lines[index]).trim());
+      index += 1;
+    }
+
+    // Let the for-loop process an immediately following Chart heading.
+    if (index < lines.length && /^\s*Chart:/i.test(lines[index])) index -= 1;
+
+    const description = descriptionLines.join(" ").trim();
+    if (title && description) {
+      descriptions.set(normalizeChartTitle(title), description);
+    }
+  }
+
+  return descriptions;
+}
+
+function findChartDescription(descriptions, chartTitle) {
+  const normalizedTitle = normalizeChartTitle(chartTitle);
+  if (!normalizedTitle) return "";
+
+  const exact = descriptions.get(normalizedTitle);
+  if (exact) return exact;
+
+  // Allow a displayed title to add a clarifying suffix, such as
+  // "Available Clear Lake Water (Solano Decree)".
+  const candidates = Array.from(descriptions.entries()).filter(([descriptionTitle]) =>
+    normalizedTitle.startsWith(`${descriptionTitle} `) ||
+    descriptionTitle.startsWith(`${normalizedTitle} `)
+  );
+
+  return candidates.length === 1 ? candidates[0][1] : "";
+}
+
+async function applyChartDescriptions(root = document) {
+  try {
+    const response = await fetch(CHART_DESCRIPTIONS_URL, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const descriptions = parseChartDescriptions(await response.text());
+    root.querySelectorAll(".chart, .plotly-map").forEach(el => {
+      const description = findChartDescription(descriptions, el.dataset.title);
+      if (description) el.dataset.info = description;
+    });
+  } catch (error) {
+    console.warn(`Could not load chart descriptions from ${CHART_DESCRIPTIONS_URL}:`, error);
+  }
+}
+
+function addChartInfo(el, title, infoText) {
+  if (!infoText) return;
+
+  const tooltipId = `${el.id || "chart"}-info-tooltip`;
+  let info = el.querySelector(".chart-info");
+
+  if (!info) {
+    info = document.createElement("div");
+    info.className = "chart-info";
+
+    const button = document.createElement("button");
+    button.className = "chart-info__button";
+    button.type = "button";
+    button.textContent = "i";
+
+    const tooltip = document.createElement("span");
+    tooltip.className = "chart-info__tooltip";
+    tooltip.setAttribute("role", "tooltip");
+
+    info.append(button, tooltip);
+    el.appendChild(info);
+  }
+
+  const button = info.querySelector(".chart-info__button");
+  const tooltip = info.querySelector(".chart-info__tooltip");
+  button.setAttribute("aria-label", `About ${title}`);
+  button.setAttribute("aria-describedby", tooltipId);
+  tooltip.id = tooltipId;
+  tooltip.textContent = infoText;
+}
+
 function resolveWaterYearFromSpec(yearSpec) {
   const s = String(yearSpec ?? "").trim().toLowerCase();
   const currentWY = getCurrentWaterYear();
@@ -919,12 +1041,14 @@ function applyWyPlaceholders(root = document) {
     el.dataset.subtitle = apply(el.dataset.subtitle);
     el.dataset.series = apply(el.dataset.series);
     el.dataset.note = apply(el.dataset.note);
+    el.dataset.info = apply(el.dataset.info);
 
   });
 
   root.querySelectorAll(".plotly-map").forEach(el => {
     el.dataset.title = apply(el.dataset.title);
     el.dataset.subtitle = apply(el.dataset.subtitle);
+    el.dataset.info = apply(el.dataset.info);
   });
 
   // 3) Single values: labels in HTML (global)
@@ -1984,6 +2108,7 @@ async function renderPlotlyMap(el) {
 
     const title = el.dataset.title || "Map";
     let subtitle = el.dataset.subtitle || "";
+    const infoText = (el.dataset.info || "").trim();
     const gridUrl = el.dataset.gridGeojson;
     const pointUrl = el.dataset.pointsGeojson;
     const gridLayers = parseGridLayers(el);
@@ -2095,6 +2220,7 @@ async function renderPlotlyMap(el) {
 
     await PlotlyLib.newPlot(el, traces, layout, config);
     bindMapLegendControls(el, PlotlyLib, gridLayers, traces, pointName);
+    addChartInfo(el, title, infoText);
     requestAnimationFrame(() => PlotlyLib.Plots.resize(el));
   } catch (err) {
     console.error(err);
@@ -2698,31 +2824,7 @@ function renderChart(el) {
       }
       addLastModifiedLabel(el, chartSourceUrls);
 
-      if (infoText) {
-        let info = el.querySelector(".chart-info");
-
-        if (!info) {
-          const tooltipId = `${el.id || "chart"}-info-tooltip`;
-          info = document.createElement("div");
-          info.className = "chart-info";
-
-          const button = document.createElement("button");
-          button.className = "chart-info__button";
-          button.type = "button";
-          button.setAttribute("aria-label", `About ${title}`);
-          button.setAttribute("aria-describedby", tooltipId);
-          button.textContent = "i";
-
-          const tooltip = document.createElement("span");
-          tooltip.className = "chart-info__tooltip";
-          tooltip.id = tooltipId;
-          tooltip.setAttribute("role", "tooltip");
-          tooltip.textContent = infoText;
-
-          info.append(button, tooltip);
-          el.appendChild(info);
-        }
-      }
+      addChartInfo(el, title, infoText);
 
       window.addEventListener("resize", () => chart.resize());
     })
@@ -2788,6 +2890,7 @@ function mountSingleValuesInCharts(root = document) {
 
 document.addEventListener("DOMContentLoaded", async () => {
 
+  await applyChartDescriptions();      // Information-icon descriptions
   applyWyPlaceholders();               // Water Year HTML
   document.querySelectorAll(".plotly-map").forEach(renderPlotlyMap);
   document.querySelectorAll(".chart").forEach(renderChart);

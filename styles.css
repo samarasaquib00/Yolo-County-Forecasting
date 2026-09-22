@@ -901,6 +901,16 @@ h2 {
   transform: translateY(0);
 }
 
+.plotly-map .chart-info {
+  left: 18px;
+  right: auto;
+}
+
+.plotly-map .chart-info__tooltip {
+  left: 0;
+  right: auto;
+}
+
 .plotly-map {
   width: 100%;
   height: 720px;

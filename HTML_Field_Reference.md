@@ -12,6 +12,7 @@
 | `data-units` | Chart-level default output units (e.g. `"TAF"`) — overridden by per-series `units` |
 | `data-source-units` | Chart-level input units override; overrides auto-detection from CSV |
 | `data-note` | Optional footnote/note text rendered below the chart |
+| `data-info` | Optional information-icon text. Values loaded from `chart-descriptions.txt` override this fallback when titles match. |
 | `data-x-axis-name` | Optional explicit x-axis title override; otherwise the chart infers `Month`, `Date`, or `Year` from the loaded x-axis labels |
 | `data-x-axis-data` | Set to `"points"` to include only dated x-axis positions where the data has rows |
 | `data-x-axis-label-rotate` | Degrees to rotate x-axis labels, such as `"45"` or `"90"` |
@@ -49,6 +50,8 @@
 | `data-grid-value` | Numeric grid property to color by, such as `"24-Sep"` |
 | `data-points-geojson` | GeoJSON point file to draw as impacted well markers |
 | `data-point-name` | Legend label for the point markers |
+
+Chart and map information icons are populated from `chart-descriptions.txt`. Each entry uses a `Chart: Title` line followed by a non-empty description paragraph. Titles are matched case-insensitively with punctuation and spacing normalized.
 
 The map UI includes two top-right checkboxes by default:
 - `Gridded Elevation Data` toggles polygon raster/gridded overlays.
