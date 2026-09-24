@@ -902,13 +902,13 @@ h2 {
 }
 
 .plotly-map .chart-info {
-  left: 18px;
-  right: auto;
+  left: auto;
+  right: 18px;
 }
 
 .plotly-map .chart-info__tooltip {
-  left: 0;
-  right: auto;
+  left: auto;
+  right: 0;
 }
 
 .plotly-map {
@@ -932,7 +932,7 @@ h2 {
 }
 
 .plotly-map .modebar {
-  right: 18px !important;
+  right: 58px !important;
   top: 18px !important;
 }
 
