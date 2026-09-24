@@ -1133,6 +1133,10 @@ h2 {
   transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
 }
 
+.single-value[hidden] {
+  display: none !important;
+}
+
 .single-value-label {
   font-size: 1rem;
   font-weight: 500;
