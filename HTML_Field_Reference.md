@@ -55,8 +55,19 @@
 | `data-title` | Map title text |
 | `data-grid-geojson` | GeoJSON polygon grid file to draw as water table elevation cells |
 | `data-grid-value` | Numeric grid property to color by, such as `"24-Sep"` |
+| `data-grid-layers` | JSON array of grid layers. Each layer supports `value`, `label`, `name`, `visible`, and the optional discrete-color fields below. |
 | `data-points-geojson` | GeoJSON point file to draw as impacted well markers |
 | `data-point-name` | Legend label for the point markers |
+
+Discrete grid-layer fields:
+
+| Field | What it does |
+|---|---|
+| `breaks` | Ascending numeric thresholds that divide values into ranges |
+| `rangeLabels` | Colorbar labels; provide exactly one more label than the number of breakpoints |
+| `colors` | Optional colors for the ranges; provide one color per label |
+
+For configured ranges, intermediate breakpoints belong to the range beginning at that value. The final breakpoint belongs to the preceding range, so a final label such as `>600` remains strictly greater than 600.
 
 Chart and map information icons are populated from `chart-descriptions.txt`. Each entry uses a `Chart: Title` line followed by a non-empty description paragraph. Titles are matched case-insensitively with punctuation and spacing normalized.
 

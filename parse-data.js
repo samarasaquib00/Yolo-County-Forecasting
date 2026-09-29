@@ -1797,12 +1797,47 @@ function parseGridLayers(el) {
         throw new Error("data-grid-layers must be a non-empty JSON array.");
       }
 
-      return layers.map(layer => ({
-        value: layer.value,
-        label: layer.label || layer.value,
-        name: layer.name || layer.label || layer.value,
-        visible: layer.visible
-      }));
+      return layers.map(layer => {
+        const breaks = layer.breaks == null
+          ? null
+          : layer.breaks.map(Number);
+        const rangeLabels = layer.rangeLabels == null
+          ? null
+          : layer.rangeLabels.map(String);
+        const colors = layer.colors == null
+          ? null
+          : layer.colors.map(String);
+
+        if (breaks && (
+          !Array.isArray(layer.breaks)
+          || !breaks.length
+          || breaks.some((value, index) => !Number.isFinite(value) || (index > 0 && value <= breaks[index - 1]))
+        )) {
+          throw new Error(`Layer "${layer.value}" breaks must be a non-empty array of ascending numbers.`);
+        }
+
+        if (breaks && (!rangeLabels || rangeLabels.length !== breaks.length + 1)) {
+          throw new Error(`Layer "${layer.value}" needs one more range label than breakpoints.`);
+        }
+
+        if (!breaks && (rangeLabels || colors)) {
+          throw new Error(`Layer "${layer.value}" needs breakpoints when range labels or colors are provided.`);
+        }
+
+        if (colors && colors.length !== rangeLabels.length) {
+          throw new Error(`Layer "${layer.value}" needs one color per range label.`);
+        }
+
+        return {
+          value: layer.value,
+          label: layer.label || layer.value,
+          name: layer.name || layer.label || layer.value,
+          visible: layer.visible,
+          breaks,
+          rangeLabels,
+          colors
+        };
+      });
     } catch (err) {
       throw new Error(`Invalid data-grid-layers: ${err.message}`);
     }
@@ -1833,9 +1868,38 @@ const ACTIVE_GRID_COLOR_SCALE = [
   [1, "#d7191c"]
 ];
 
+const DEFAULT_GRID_RANGE_COLORS = [
+  "#2c7bb6",
+  "#5aa9cf",
+  "#abd9e9",
+  "#e0f3f8",
+  "#ffffbf",
+  "#fdae61",
+  "#f46d43",
+  "#d7191c"
+];
+
+function getGridRangeIndex(value, breaks) {
+  const lastBreakIndex = breaks.length - 1;
+
+  for (let index = 0; index < lastBreakIndex; index += 1) {
+    if (value < breaks[index]) return index;
+  }
+
+  return value <= breaks[lastBreakIndex] ? lastBreakIndex : breaks.length;
+}
+
+function buildDiscreteColorScale(colors) {
+  return colors.flatMap((color, index) => [
+    [index / colors.length, color],
+    [(index + 1) / colors.length, color]
+  ]);
+}
+
 function buildGridChoroplethTrace(gridGeojson, layer, index, totalGridLayers = 1) {
   if (!layer.value) throw new Error("Each grid layer needs a value field.");
   const isActive = layer.visible !== "legendonly";
+  const usesRanges = Boolean(layer.breaks?.length);
 
   const gridFeatures = (gridGeojson.features || [])
     .map((feature, featureIndex) => ({
@@ -1848,6 +1912,34 @@ function buildGridChoroplethTrace(gridGeojson, layer, index, totalGridLayers = 1
     throw new Error(`No numeric grid values found for "${layer.value}".`);
   }
 
+  const gridValues = gridFeatures.map(feature => parseFiniteMapValue(feature.properties[layer.value]));
+  const rangeColors = usesRanges
+    ? layer.colors || DEFAULT_GRID_RANGE_COLORS.slice(0, layer.rangeLabels.length)
+    : null;
+
+  if (usesRanges && rangeColors.length !== layer.rangeLabels.length) {
+    throw new Error(`Layer "${layer.value}" needs one color per range label.`);
+  }
+
+  const colorbar = {
+    title: {
+      text: makeColorbarTitle(layer.label || layer.value),
+      side: "top",
+      font: { size: 14, color: "#3f3f46" }
+    },
+    tickfont: { size: 12, color: "#3f3f46" },
+    thickness: 22,
+    len: 0.64,
+    x: totalGridLayers > 1 ? 0.94 : 0.96,
+    xanchor: "center",
+    y: 0.57,
+    ...(usesRanges ? {
+      tickmode: "array",
+      tickvals: layer.rangeLabels.map((_, rangeIndex) => rangeIndex),
+      ticktext: layer.rangeLabels
+    } : {})
+  };
+
   return {
     type: "choroplethmapbox",
     name: layer.name || layer.label || layer.value,
@@ -1859,9 +1951,16 @@ function buildGridChoroplethTrace(gridGeojson, layer, index, totalGridLayers = 1
       features: gridFeatures
     },
     locations: gridFeatures.map(feature => feature.id),
-    z: gridFeatures.map(feature => parseFiniteMapValue(feature.properties[layer.value])),
+    z: usesRanges
+      ? gridValues.map(value => getGridRangeIndex(value, layer.breaks))
+      : gridValues,
+    customdata: gridValues,
     featureidkey: "id",
-    colorscale: ACTIVE_GRID_COLOR_SCALE,
+    colorscale: usesRanges ? buildDiscreteColorScale(rangeColors) : ACTIVE_GRID_COLOR_SCALE,
+    ...(usesRanges ? {
+      zmin: -0.5,
+      zmax: layer.rangeLabels.length - 0.5
+    } : {}),
     marker: {
       line: {
         color: "rgba(255,255,255,0.22)",
@@ -1869,21 +1968,9 @@ function buildGridChoroplethTrace(gridGeojson, layer, index, totalGridLayers = 1
       },
       opacity: isActive ? 0.58 : 0
     },
-    colorbar: {
-      title: {
-        text: makeColorbarTitle(layer.label || layer.value),
-        side: "top",
-        font: { size: 14, color: "#3f3f46" }
-      },
-      tickfont: { size: 12, color: "#3f3f46" },
-      thickness: 22,
-      len: 0.64,
-      x: totalGridLayers > 1 ? 0.94 : 0.96,
-      xanchor: "center",
-      y: 0.57
-    },
+    colorbar,
     hoverinfo: isActive ? "all" : "skip",
-    hovertemplate: `Grid: %{location}<br>${layer.label || layer.value}: %{z:.1f}<extra></extra>`,
+    hovertemplate: `Grid: %{location}<br>${layer.label || layer.value}: %{customdata:.1f}<extra></extra>`,
     legendrank: index
   };
 }

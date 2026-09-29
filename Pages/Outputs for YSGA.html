@@ -93,8 +93,23 @@
           data-title="Water Table Elevation, Depth to Water, and Potentially Impacted Wells"
           data-grid-geojson="../Data/WTandDTW.geojson"
           data-grid-layers='[
-            { "value": "WT", "label": "Water Table Elevation (ft)", "name": "Water Table Elevation" },
-            { "value": "DTW", "label": "Depth to Water (ft)", "name": "Depth to Water", "visible": "legendonly" }
+            {
+              "value": "WT",
+              "label": "Water Table Elevation (ft)",
+              "name": "Water Table Elevation",
+              "breaks": [0, 9, 14, 23, 53, 108, 600],
+              "rangeLabels": ["<0", "0-9", "9-14", "14-23", "23-53", "53-108", "108-600", ">600"],
+              "colors": ["#2c7bb6", "#5aa9cf", "#abd9e9", "#e0f3f8", "#ffffbf", "#fdae61", "#f46d43", "#d7191c"]
+            },
+            {
+              "value": "DTW",
+              "label": "Depth to Water (ft)",
+              "name": "Depth to Water",
+              "visible": "legendonly",
+              "breaks": [0, 10, 17, 31, 47, 60, 400],
+              "rangeLabels": ["<0", "0-10", "10-17", "17-31", "31-46", "47-60", "60-400", ">400"],
+              "colors": ["#2c7bb6", "#5aa9cf", "#abd9e9", "#e0f3f8", "#ffffbf", "#fdae61", "#f46d43", "#d7191c"]
+            }
           ]'
           data-points-geojson="../Data/ImpactedWells.geojson"
           data-point-name="Potentially Impacted Wells"
