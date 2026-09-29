@@ -48,7 +48,7 @@
             data-sumWY="true"
             data-units="TAF"
           ></div>
-
+          
           <div
             class="single-value"
             data-label="Irrigation Release: Indian Valley"
@@ -115,17 +115,20 @@
 
 
 
+        <!--    { "csv": "../Data/Reservoir Release-Irrigation.csv", "name": "Total Reservoir Releases for Irrigation", "y": "Baseline", "type": "bar", "stack": true },
+                { "csv": "../Data/Reservoir Release-Spill.csv", "name": "Total Reservoir Spills", "y": "Baseline", "type": "bar", "stack": true } -->
         <!-- Reservoir Releases -->
         <div
           id="reservoir-releases"
           class="chart"
-          data-title="Reservoir Releases"
+          data-title="Reservoir Releases for Irrigation"
           data-subtitle="Water Year: {wyRange}"
           data-stacked="true"
+          data-units="AF"
           data-note="Solid lines represent simulated historical values. Dashed lines represent simulated forecasted values."
           data-series='[
-                    { "csv": "../Data/Reservoir Release-Irrigation.csv", "name": "Total Reservoir Releases for Irrigation", "y": "Baseline", "type": "bar", "stack": true },
-                    { "csv": "../Data/Reservoir Release-Spill.csv", "name": "Total Reservoir Spills", "y": "Baseline", "type": "bar", "stack": true }
+            { "csv": "../Data/Irrigation Release-Clear Lake.csv", "name": "Clear Lake", "y": "Baseline", "type": "bar", "stack": true },
+            { "csv": "../Data/Irrigation Release-Indian Valley.csv", "name": "Indian Valley", "y": "Baseline", "type": "bar", "stack": true }
                 ]'
         ></div>
       </div>

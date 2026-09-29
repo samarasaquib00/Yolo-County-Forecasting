@@ -124,7 +124,20 @@ function addChartInfo(el, title, infoText) {
   button.setAttribute("aria-label", `About ${title}`);
   button.setAttribute("aria-describedby", tooltipId);
   tooltip.id = tooltipId;
-  tooltip.textContent = infoText;
+
+  const imageMatch = infoText.match(/\[image:\s*([^\]]+)\]/i);
+  const description = imageMatch
+    ? infoText.replace(imageMatch[0], "").trim()
+    : infoText;
+  tooltip.textContent = description;
+
+  if (imageMatch) {
+    const image = document.createElement("img");
+    image.className = "chart-info__image";
+    image.src = new URL(imageMatch[1].trim(), CHART_DESCRIPTIONS_URL).href;
+    image.alt = `${title} illustration`;
+    tooltip.appendChild(image);
+  }
 }
 
 function resolveWaterYearFromSpec(yearSpec) {
