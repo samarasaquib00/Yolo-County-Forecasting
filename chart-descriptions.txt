@@ -1,11 +1,11 @@
-
+﻿
 Clear Lake, Indian Valley, Solano Decree
 
 Chart: Available Clear Lake Water 
 The water volume available from Clear Lake under the Solano Decree (blue), the simulated Clear Lake elevation at the Rumsey Gauge (green line, on the right vertical axis), and the full allocation Rumsey Gauge level (yellow line, on the right vertical axis). Note that values are for the last day of the month. Note that dashed lines and areas are based on forecasted meteorology, and solid lines and areas are based on observed meteorology and reservoir storage. 
 
 Chart: Indian Valley Storage 
-The volume of stored water in the Indian Valley Reservoir (green line), the volume of stored water from the previous water year (red line), the Top of Conservation (blue), and the long-term average storage (green). Long-term average is a mean of water years 1991-2020 observed monthly reservoir storage from CDEC. Note that dashed lines are based on forecasted meteorology, and solid lines and areas are based on observed meteorology and reservoir storage. 
+The volume of stored water in the Indian Valley Reservoir (yellow line), the volume of stored water from the previous water year (red line), the Top of Conservation (blue), and the long-term average storage (green). Long-term average is a mean of water years 1991-2020 observed monthly reservoir storage from CDEC. Note that dashed lines are based on forecasted meteorology, and solid lines and areas are based on observed meteorology and reservoir storage. 
 
 Chart: Combined Storage 
 The water volume available from Clear Lake under the Solano Decree (blue) and the volume of store water in Indian Valley Reservoir (green), as a stacked chart.  Note that dashed lines are based on forecasted meteorology, and solid lines and areas are based on observed meteorology and reservoir storage. 

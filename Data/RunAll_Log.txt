@@ -1,0 +1,27 @@
+9/29/2026 9:58:20 AM  WARNING: WEAP calculation finished with 2 error(s). Proceeding with GW scripts anyway. See F:\Users\Jack\OneDrive - SEI\Yolo_Website\Data\WEAP_Errors.txt for details.
+9/29/2026 9:58:20 AM  === Running: WT and DTW.vbs ===
+9/29/2026 10:00:14 AM  === Finished: WT and DTW.vbs ===
+9/29/2026 10:00:14 AM  === Running: Impacted Wells.vbs ===
+9/29/2026 10:00:16 AM  === Finished: Impacted Wells.vbs ===
+9/29/2026 10:00:16 AM  === Running: Avg RMW DTW.vbs ===
+9/29/2026 10:00:17 AM  === Finished: Avg RMW DTW.vbs ===
+9/29/2026 10:00:17 AM  All scripts complete.
+9/29/2026 10:00:21 AM  Archived 59 file(s) from resDir into F:\Users\Jack\OneDrive - SEI\Yolo_Website\Data\2026-09-29.zip.
+9/29/2026 10:15:20 AM  WARNING: WEAP calculation finished with 2 error(s). Proceeding with GW scripts anyway. See F:\Users\Jack\OneDrive - SEI\Yolo_Website\Data\WEAP_Errors.txt for details.
+9/29/2026 10:15:20 AM  === Running: WT and DTW.vbs ===
+9/29/2026 10:21:02 AM  === Finished: WT and DTW.vbs ===
+9/29/2026 10:21:02 AM  === Running: Impacted Wells.vbs ===
+9/29/2026 10:21:32 AM  === Finished: Impacted Wells.vbs ===
+9/29/2026 10:21:32 AM  === Running: Avg RMW DTW.vbs ===
+9/29/2026 10:21:35 AM  === Finished: Avg RMW DTW.vbs ===
+9/29/2026 10:21:35 AM  All scripts complete.
+9/29/2026 10:21:35 AM  WARNING: F:\Users\Jack\OneDrive - SEI\Yolo_Website\Data\2026-09-29.zip already exists - skipping archive step to avoid overwriting an existing archive.
+9/29/2026 10:32:42 AM  WARNING: WEAP calculation finished with 2 error(s). Proceeding with GW scripts anyway. See F:\Users\Jack\OneDrive - SEI\Yolo_Website\Data\WEAP_Errors.txt for details.
+9/29/2026 10:32:43 AM  === Running: WT and DTW.vbs ===
+9/29/2026 10:39:55 AM  === Finished: WT and DTW.vbs ===
+9/29/2026 10:39:55 AM  === Running: Impacted Wells.vbs ===
+9/29/2026 10:40:18 AM  === Finished: Impacted Wells.vbs ===
+9/29/2026 10:40:18 AM  === Running: Avg RMW DTW.vbs ===
+9/29/2026 10:40:20 AM  === Finished: Avg RMW DTW.vbs ===
+9/29/2026 10:40:20 AM  All scripts complete.
+9/29/2026 10:40:21 AM  WARNING: F:\Users\Jack\OneDrive - SEI\Yolo_Website\Data\2026-09-29.zip already exists - skipping archive step to avoid overwriting an existing archive.

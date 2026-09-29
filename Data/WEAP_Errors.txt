@@ -1,0 +1,18 @@
+9/29/2026 9:56:22 AM (WEAP Version: 2026.0902, User: Viracocha, Stockholm Environment Institute, Area: Yolo_MF_2026_09_28_Forecast): 
+Scenario: Current Accounts, Year: 2023, month: October
+442 MODFLOW cells became Dry cells this timestep (Row, Column, Layer): (1,18,1), (1,19,1), (1,20,1), (1,21,1), (1,22,1), (2,17,1), (2,18,1), (2,19,1), (2,20,1), (2,21,1), (2,22,1), (3,18,1), (3,19,1), (3,20,1), (3,21,1), (3,22,1), (3,23,1), (4,18,1), (4,20,1), (4,21,1), (4,22,1), (5,18,1), (7,3,1), (17,22,1), (18,19,1), (18,22,1), (19,19,1), (19,20,1), (19,21,1), (24,19,1), (24,20,1), (24,21,1), (24,40,1), (25,19,1), (25,40,1), (26,19,1), (26,29,1), (26,41,1), (27,19,1), (27,28,1), and 402 more
+9/29/2026 9:57:38 AM (WEAP Version: 2026.0902, User: Viracocha, Stockholm Environment Institute, Area: Yolo_MF_2026_09_28_Forecast): 
+, Year: 2026, month: September
+2 MODFLOW cells became Dry cells this timestep (Row, Column, Layer): (30,13,1), (60,26,1)
+9/29/2026 10:13:18 AM (WEAP Version: 2026.0902, User: Viracocha, Stockholm Environment Institute, Area: Yolo_MF_2026_09_28_Forecast): 
+Scenario: Current Accounts, Year: 2023, month: October
+442 MODFLOW cells became Dry cells this timestep (Row, Column, Layer): (1,18,1), (1,19,1), (1,20,1), (1,21,1), (1,22,1), (2,17,1), (2,18,1), (2,19,1), (2,20,1), (2,21,1), (2,22,1), (3,18,1), (3,19,1), (3,20,1), (3,21,1), (3,22,1), (3,23,1), (4,18,1), (4,20,1), (4,21,1), (4,22,1), (5,18,1), (7,3,1), (17,22,1), (18,19,1), (18,22,1), (19,19,1), (19,20,1), (19,21,1), (24,19,1), (24,20,1), (24,21,1), (24,40,1), (25,19,1), (25,40,1), (26,19,1), (26,29,1), (26,41,1), (27,19,1), (27,28,1), and 402 more
+9/29/2026 10:14:33 AM (WEAP Version: 2026.0902, User: Viracocha, Stockholm Environment Institute, Area: Yolo_MF_2026_09_28_Forecast): 
+, Year: 2026, month: September
+2 MODFLOW cells became Dry cells this timestep (Row, Column, Layer): (30,13,1), (60,26,1)
+9/29/2026 10:30:44 AM (WEAP Version: 2026.0902, User: Viracocha, Stockholm Environment Institute, Area: Yolo_MF_2026_09_28_Forecast): 
+Scenario: Current Accounts, Year: 2023, month: October
+442 MODFLOW cells became Dry cells this timestep (Row, Column, Layer): (1,18,1), (1,19,1), (1,20,1), (1,21,1), (1,22,1), (2,17,1), (2,18,1), (2,19,1), (2,20,1), (2,21,1), (2,22,1), (3,18,1), (3,19,1), (3,20,1), (3,21,1), (3,22,1), (3,23,1), (4,18,1), (4,20,1), (4,21,1), (4,22,1), (5,18,1), (7,3,1), (17,22,1), (18,19,1), (18,22,1), (19,19,1), (19,20,1), (19,21,1), (24,19,1), (24,20,1), (24,21,1), (24,40,1), (25,19,1), (25,40,1), (26,19,1), (26,29,1), (26,41,1), (27,19,1), (27,28,1), and 402 more
+9/29/2026 10:32:00 AM (WEAP Version: 2026.0902, User: Viracocha, Stockholm Environment Institute, Area: Yolo_MF_2026_09_28_Forecast): 
+, Year: 2026, month: September
+2 MODFLOW cells became Dry cells this timestep (Row, Column, Layer): (30,13,1), (60,26,1)

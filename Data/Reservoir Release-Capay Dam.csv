@@ -1,7 +1,7 @@
 Key Assumptions
-Branch: Key Assumptions\Forecast\Outputs\Reservoir Release\Release for Irrigation
+"Scenario: Baseline, Branch: Key Assumptions\Forecast\Outputs\Reservoir Release\Release for Irrigation"
  
-Scenario,Baseline
+Branch,"Release for Irrigation (AF)"
 "Oct 2023",41.57
 "Nov 2023",60.2109
 "Dec 2023",60.8015
