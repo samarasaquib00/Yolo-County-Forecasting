@@ -39,9 +39,9 @@
           <div
             class="single-value"
             data-key="IV_Available"
-            data-label="Indian Valley Available Supply (April 1 {curr year})"
-            data-csv="../Data/Storage-Indian Valley Available Storage.csv"
-            data-col="INV Available Storage (Thousand AF)"
+            data-label="Indian Valley Available Supply (May 1 {curr year})"
+            data-csv="../Data/Storage-Indian Valley.csv"
+            data-col="Modeled"
             data-month="Apr"
             data-units="TAF"
           ></div>
@@ -58,7 +58,7 @@
           <div
             class="single-value"
             data-key="sum_IV_SD"
-            data-label="Sum of Clear Lake and Indian Valley Supply"
+            data-label="Sum of Clear Lake and Indian Valley Supply (May 1 {curr year})"
             data-sum="IV_Available,SD_Allowable"
             data-units="TAF"
           ></div>
@@ -126,7 +126,7 @@
           data-subtitle="Water Year: {wyRange}"
           data-stacked="true"
           data-series='[
-              { "csv": "../Data/Storage-Clear Lake.csv", "name": "Available Clear Lake Storage", "y": "Modeled", "type": "area", "adjust": -841000, "stack": true },
+              { "csv": "../Data/Solano Decree-Season Remaining.csv", "name": "Available Clear Lake Storage", "y": "Rev SeasonRemaining (AF)", "type": "area", "stack": true },
               { "csv": "../Data/Storage-Indian Valley.csv", "name": "Indian Valley Total Storage", "y": "Modeled", "type": "area" }
           ]'
         ></div>
