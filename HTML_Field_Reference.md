@@ -17,6 +17,13 @@
 | `data-x-axis-data` | Set to `"points"` to include only dated x-axis positions where the data has rows |
 | `data-x-axis-label-rotate` | Degrees to rotate x-axis labels, such as `"45"` or `"90"` |
 | `data-x-axis-labels` | Set to `"year"` to show only year labels on dated x-axes |
+| `data-y-axis-anchor-primary` | Left-axis value that must align with `data-y-axis-anchor-secondary` on a dual-axis chart |
+| `data-y-axis-anchor-secondary` | Right-axis value that must align with `data-y-axis-anchor-primary` |
+| `data-y-axis-min-primary` | Optional left-axis minimum used by an anchored dual-axis chart |
+| `data-y-axis-min-secondary` | Optional right-axis minimum; it must represent the same shared grid step as the left minimum |
+| `data-y-axis-interval-primary` | Left-axis tick interval when dual-axis anchors are configured |
+| `data-y-axis-interval-secondary` | Right-axis tick interval when dual-axis anchors are configured |
+| `data-y-axis-decimals-secondary` | Number of decimal places shown on an anchored right axis; use `"0"` for whole numbers |
 | `data-condition-bands` | `"true"` to show water year type background bands |
 | `data-condition-bands-csv` | CSV file to read condition bands from, such as `"../Data/Water Year Types.csv"` |
 

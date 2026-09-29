@@ -2615,6 +2615,65 @@ function renderChart(el) {
       const hasSecondaryAxis = secondarySeries.length > 0;  // boolean to check if we need to show secondary y-axis
       const inversePrimaryYAxis = (el.dataset.inverseYAxis || "").toLowerCase() === "true";
 
+      // Optional dual-axis alignment. The anchor values always occupy the same
+      // pixel row even when the data causes the displayed ranges to expand.
+      const primaryAxisAnchor = Number(el.dataset.yAxisAnchorPrimary);
+      const secondaryAxisAnchor = Number(el.dataset.yAxisAnchorSecondary);
+      const primaryAxisInterval = Number(el.dataset.yAxisIntervalPrimary);
+      const secondaryAxisInterval = Number(el.dataset.yAxisIntervalSecondary);
+      const primaryAxisMinimum = Number(el.dataset.yAxisMinPrimary);
+      const secondaryAxisMinimum = Number(el.dataset.yAxisMinSecondary);
+      const requestedSecondaryDecimals = Number(el.dataset.yAxisDecimalsSecondary);
+      const secondaryAxisDecimals = Number.isInteger(requestedSecondaryDecimals) &&
+        requestedSecondaryDecimals >= 0 && requestedSecondaryDecimals <= 10
+        ? requestedSecondaryDecimals
+        : 1;
+      const hasAnchoredYAxes = hasSecondaryAxis &&
+        Number.isFinite(primaryAxisAnchor) &&
+        Number.isFinite(secondaryAxisAnchor) &&
+        primaryAxisInterval > 0 &&
+        secondaryAxisInterval > 0;
+
+      const getAxisValues = axisSeries => axisSeries.flatMap(s =>
+        (s.data || [])
+          .map(datum => Array.isArray(datum) ? Number(datum[1]) : Number(datum))
+          .filter(Number.isFinite)
+      );
+
+      let anchoredAxisBounds = null;
+      if (hasAnchoredYAxes) {
+        const primaryValues = getAxisValues(primarySeries);
+        const secondaryValues = getAxisValues(secondarySeries);
+        const primaryMinimumOffset = (primaryAxisMinimum - primaryAxisAnchor) / primaryAxisInterval;
+        const secondaryMinimumOffset = (secondaryAxisMinimum - secondaryAxisAnchor) / secondaryAxisInterval;
+        const hasSharedMinimum = Number.isFinite(primaryAxisMinimum) &&
+          Number.isFinite(secondaryAxisMinimum) &&
+          Math.abs(primaryMinimumOffset - secondaryMinimumOffset) < 1e-9;
+        const gridOffsets = [
+          0,
+          ...primaryValues.map(value => (value - primaryAxisAnchor) / primaryAxisInterval),
+          ...secondaryValues.map(value => (value - secondaryAxisAnchor) / secondaryAxisInterval)
+        ];
+        const dataMinGridOffset = Math.floor(Math.min(...gridOffsets));
+        const useSharedMinimum = hasSharedMinimum && dataMinGridOffset >= primaryMinimumOffset;
+        const minGridOffset = useSharedMinimum ? primaryMinimumOffset : dataMinGridOffset;
+        let maxGridOffset = Math.ceil(Math.max(...gridOffsets));
+
+        // ECharts requires a non-zero range if every value equals an anchor.
+        if (maxGridOffset === minGridOffset) maxGridOffset += 1;
+
+        anchoredAxisBounds = {
+          primaryMin: useSharedMinimum
+            ? primaryAxisMinimum
+            : primaryAxisAnchor + minGridOffset * primaryAxisInterval,
+          primaryMax: primaryAxisAnchor + maxGridOffset * primaryAxisInterval,
+          secondaryMin: useSharedMinimum
+            ? secondaryAxisMinimum
+            : secondaryAxisAnchor + minGridOffset * secondaryAxisInterval,
+          secondaryMax: secondaryAxisAnchor + maxGridOffset * secondaryAxisInterval
+        };
+      }
+
       const yAxes = [
         {
           type: "value",
@@ -2622,6 +2681,9 @@ function renderChart(el) {
           nameLocation: "middle",
           nameGap: 65,
           inverse: inversePrimaryYAxis,
+          min: anchoredAxisBounds?.primaryMin,
+          max: anchoredAxisBounds?.primaryMax,
+          interval: hasAnchoredYAxes ? primaryAxisInterval : undefined,
         }
       ];
 
@@ -2632,9 +2694,15 @@ function renderChart(el) {
           nameLocation: "middle",
           nameGap: 65,
           position: "right",
+          min: anchoredAxisBounds?.secondaryMin,
+          max: anchoredAxisBounds?.secondaryMax,
+          interval: hasAnchoredYAxes ? secondaryAxisInterval : undefined,
+          axisLabel: hasAnchoredYAxes
+            ? { formatter: value => Number(value).toFixed(secondaryAxisDecimals) }
+            : undefined,
           // splitLine: { show: false }  // delete double horizontal grid lines
           splitLine: {
-            show: true,
+            show: false,
             lineStyle: {
               // color: "rgba(0, 0, 0, 0.03)",   // lighter gridlines
               width: 1,
