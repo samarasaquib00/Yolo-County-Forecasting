@@ -136,30 +136,6 @@
             ]'
         ></div>
 
-        <!-- Spills - REMOVE FOR NOW -->
-        <!-- <div
-            id="clear-lake-spill"
-            class="chart"
-            data-title="Clear Lake Spill"
-            data-subtitle="Water Year: {wyRange}"
-            data-stacked="false"
-            data-source-units="AF"
-            data-series='[
-                { "csv": "../Data/Reservoir Spills-Clear Lake.csv", "name": "Forecast", "y": "Clear Lake (/AF)", "type": "bar"}
-            ]'
-        ></div>
-
-        <div
-            id="indian-valley-spill"
-            class="chart"
-            data-title="Indian Valley Spill"
-            data-subtitle="Water Year: {wyRange}"
-            data-stacked="false"
-
-            data-series='[
-                { "csv": "../Data/Reservoir Spills-Indian Valley.csv", "name": "Forecast", "y": "Indian Valley (/AF)", "type": "bar"}
-            ]'
-        ></div> -->
 
         <!-- Flow at Yolo Gage in cfs and a line at 50 cfs -->
         <!-- Add the area chart with average -->
@@ -171,7 +147,6 @@
           data-stacked="false"
           data-units="cfs"
           data-source-units="cfs"
-          data-note="Solid lines represent simulated historical values. Dashed lines represent simulated forecasted values."
           data-series='[
                 { "csv": "../Data/1991-2020 Cumalitive Avg Flow.csv", "name": "Long-term Average", "y": "Cache Creek at Yolo", "type": "area", "dashFromCurrentMonth": false},
                 { "csv": "../Data/Cache Creek Flow at Yolo Gauge.csv", "name": "Forecast", "y": "Baseline", "type": "line", "dashFromCurrentMonth": true},
@@ -185,11 +160,24 @@
           data-title="Reservoir Inflows"
           data-subtitle="Water Year: {wyRange}"
           data-stacked="false"
-          data-note="Solid lines represent simulated historical values. Dashed lines represent simulated forecasted values."
           data-series='[
               { "csv": "../Data/Reservoir Inflow-Clear Lake.csv", "name": "Clear Lake", "y": "Baseline", "type": "bar" },
               { "csv": "../Data/Reservoir Inflow-Indian Valley.csv", "name": "Indian Valley", "y": "Baseline", "type": "bar" }
             ]'
+        ></div>
+
+
+        <!-- Spills  -->
+        <div
+          class="chart"
+          data-title="Reservoir Spills"
+          data-subtitle="Water Year: {wyRange}"
+          data-stacked="true"
+          data-units="AF"
+          data-series='[
+            { "csv": "../Data/Reservoir Spill-Clear Lake.csv", "name": "Clear Lake", "y": "Clear Lake Spill (AF)", "type": "bar", "stack": true },
+            { "csv": "../Data/Reservoir Spill-Indian Valley.csv", "name": "Indian Valley", "y": "Indian Valley Spill (AF)", "type": "bar", "stack": true }
+                ]'
         ></div>
 
 

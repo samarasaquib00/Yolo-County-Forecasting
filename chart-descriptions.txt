@@ -31,6 +31,11 @@ Simulated flow on Cache Creek at Yolo gage (green). The groundwater recharge flo
 Chart: Reservoir Inflows 
 Simulated inflows to Clear Lake (blue) and Indian Valley Reservoir (green). Note dashed areas are based on forecasted meteorology, and solid lines are based on observed meteorology.  
 
+
+Chart: Reservoir Spills
+Test Test Test
+ 
+
 Outputs for YSGA 
 
 Chart: Water Table Elevation, Depth to Water, and Potentially Impacted Wells 
@@ -43,6 +48,3 @@ Change in subbasin groundwater storage from the end of the previous month. Note 
 Chart: Representative Monitoring Wells-Average Depth to Water 
 Average depth to water of the YSGA’S 62 Representative Monitoring Wells using observed data (red line) and simulated outputs (grey line). Values are for March and September of water years 1971-present. Sacramento Valley Water Year Type (40-30-30 Index) is shown as a chart background fill color. Note simulated dashed line and current water year type is based on forecasted meteorology, solid simulated line and historical water year type is based on observed meteorology.  
 
- 
-
- 

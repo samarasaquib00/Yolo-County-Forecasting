@@ -1,41 +1,41 @@
-Key Assumptions
-Branch: Key Assumptions\Forecast\Outputs\Reservoir Release\Rev Total Reservoir Spill
- 
-Scenario,Baseline
-"Oct 2023",0
-"Nov 2023",0
-"Dec 2023",0
-"Jan 2024",0
-"Feb 2024",20749.9
-"Mar 2024",86730.4
-"Apr 2024",44305.5
-"May 2024",0
-"Jun 2024",0
-"Jul 2024",0
-"Aug 2024",0
-"Sep 2024",0
-"Oct 2024",0
-"Nov 2024",0
-"Dec 2024",286.615
-"Jan 2025",26387.3
-"Feb 2025",23526
-"Mar 2025",63499
-"Apr 2025",3373.43
-"May 2025",0
-"Jun 2025",0
-"Jul 2025",0
-"Aug 2025",0
-"Sep 2025",0
-"Oct 2025",0
-"Nov 2025",0
-"Dec 2025",0
-"Jan 2026",194.885
-"Feb 2026",3532.3
-"Mar 2026",29670.8
-"Apr 2026",10342.2
-"May 2026",0
-"Jun 2026",0
-"Jul 2026",0
-"Aug 2026",0
-"Sep 2026",0
-Sum,312598
+Key Assumptions,
+"Scenario: Baseline, Branch: Key Assumptions\Forecast\Outputs\res test\Clear Lake Irrigation",
+ ,
+Branch,Clear Lake Irrigation (AF)
+Oct-23,0
+Nov-23,28.6855
+Dec-23,15.7272
+Jan-24,0
+Feb-24,0
+Mar-24,0
+Apr-24,0
+May-24,27120.8
+Jun-24,22723.9
+Jul-24,24086.2
+Aug-24,21317.9
+Sep-24,14742.6
+Oct-24,81.2018
+Nov-24,0
+Dec-24,0
+Jan-25,0
+Feb-25,0
+Mar-25,0
+Apr-25,0
+May-25,9564.03
+Jun-25,15444.8
+Jul-25,20293.7
+Aug-25,24887.3
+Sep-25,12678.7
+Oct-25,175.21
+Nov-25,0
+Dec-25,0
+Jan-26,0
+Feb-26,0
+Mar-26,0
+Apr-26,0
+May-26,28532
+Jun-26,20212.8
+Jul-26,20815.9
+Aug-26,15841.7
+Sep-26,16306.5
+Sum,294870

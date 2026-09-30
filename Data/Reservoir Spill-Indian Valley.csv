@@ -1,14 +1,14 @@
 Key Assumptions,
-Branch: Key Assumptions\Forecast\Outputs\Reservoir Release\Rev Total Reservoir Spill,
+"Scenario: Baseline, Branch: Key Assumptions\Forecast\Outputs\res test\Indian Valley Spill",
  ,
-Scenario,Baseline
+Branch,Indian Valley Spill (AF)
 Oct-23,0
 Nov-23,0
 Dec-23,0
 Jan-24,0
-Feb-24,20749.9
-Mar-24,86730.4
-Apr-24,44305.5
+Feb-24,0
+Mar-24,0
+Apr-24,0
 May-24,0
 Jun-24,0
 Jul-24,0
@@ -16,11 +16,11 @@ Aug-24,0
 Sep-24,0
 Oct-24,0
 Nov-24,0
-Dec-24,286.615
+Dec-24,91.0848
 Jan-25,26387.3
-Feb-25,23526
-Mar-25,63499
-Apr-25,3373.43
+Feb-25,18732.3
+Mar-25,12910
+Apr-25,0
 May-25,0
 Jun-25,0
 Jul-25,0
@@ -38,4 +38,4 @@ Jun-26,0
 Jul-26,0
 Aug-26,0
 Sep-26,0
-Sum,312598
+Sum,58120.8

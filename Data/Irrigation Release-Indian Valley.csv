@@ -1,41 +1,41 @@
-Key Assumptions
-Branch: Key Assumptions\Forecast\Outputs\Reservoir Release\Rev Total Reservoir Spill
- 
-Scenario,Baseline
-"Oct 2023",0
-"Nov 2023",0
-"Dec 2023",0
-"Jan 2024",0
-"Feb 2024",20749.9
-"Mar 2024",86730.4
-"Apr 2024",44305.5
-"May 2024",0
-"Jun 2024",0
-"Jul 2024",0
-"Aug 2024",0
-"Sep 2024",0
-"Oct 2024",0
-"Nov 2024",0
-"Dec 2024",286.615
-"Jan 2025",26387.3
-"Feb 2025",23526
-"Mar 2025",63499
-"Apr 2025",3373.43
-"May 2025",0
-"Jun 2025",0
-"Jul 2025",0
-"Aug 2025",0
-"Sep 2025",0
-"Oct 2025",0
-"Nov 2025",0
-"Dec 2025",0
-"Jan 2026",194.885
-"Feb 2026",3532.3
-"Mar 2026",29670.8
-"Apr 2026",10342.2
-"May 2026",0
-"Jun 2026",0
-"Jul 2026",0
-"Aug 2026",0
-"Sep 2026",0
-Sum,312598
+Key Assumptions,
+"Scenario: Baseline, Branch: Key Assumptions\Forecast\Outputs\res test\Indian Valley Irrigation",
+ ,
+Branch,Indian Valley Irrigation (AF)
+Oct-23,0
+Nov-23,31.5253
+Dec-23,45.0743
+Jan-24,0
+Feb-24,0
+Mar-24,0
+Apr-24,3097.87
+May-24,1382
+Jun-24,12420.6
+Jul-24,13361.5
+Aug-24,11903.9
+Sep-24,970.791
+Oct-24,381.464
+Nov-24,0
+Dec-24,0
+Jan-25,0
+Feb-25,0
+Mar-25,0
+Apr-25,2954.32
+May-25,26113.2
+Jun-25,22202.8
+Jul-25,19661.7
+Aug-25,6403.04
+Sep-25,806.717
+Oct-25,43.5674
+Nov-25,0
+Dec-25,0
+Jan-26,0
+Feb-26,0
+Mar-26,0
+Apr-26,2144.93
+May-26,8299.44
+Jun-26,14300.4
+Jul-26,14583.1
+Aug-26,13889.6
+Sep-26,646.391
+Sum,175644

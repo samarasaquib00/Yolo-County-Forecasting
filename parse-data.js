@@ -2833,7 +2833,9 @@ function renderChart(el) {
       const graphicItems = [];
       const graphicNotes = noteText
         ? [noteText]
-        : (hasForecastSplit ? ["Solid lines represent observed values; Dashed lines represent forecasted values"] : []);
+        // Automatic observed/forecast split note temporarily disabled.
+        // : (hasForecastSplit ? ["Solid lines represent observed values; Dashed lines represent forecasted values"] : []);
+        : [];
       const legendBottom = hasInlineValue
         ? (graphicNotes.length ? 148 : 122)
         : 30;
