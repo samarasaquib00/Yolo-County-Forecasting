@@ -624,6 +624,8 @@ async function renderSingleValue(el) {
       const displayedSum = convertForDisplay(sum, { desiredUnits: units, sourceUnits, colName: col });
       if (displayedSum == null) throw new Error(`Sum is not numeric for WY ${wy}`);
 
+      console.log(`Value for ${label} for water year ${wy}: ${displayedSum}`);
+
       const key = (el.dataset.key || "").trim();
       if (key) {
         SINGLE_VALUE_STORE.set(key, { value: displayedSum, units });
@@ -648,28 +650,12 @@ async function renderSingleValue(el) {
     }
 
     if (!monthAbbr && idx === -1) {
-      // keep  existing year-only fallback for now (task #2 will strengthen this)
       const wyStr = String(wy);
 
       idx = labels.findIndex(l => String(l).trim() === wyStr);
 
       if (idx === -1) {
-        let bestYear = -Infinity;
-        let bestIdx = -1;
-
-        for (let i = 0; i < labels.length; i++) {
-          const y = isYearOnlyLabel(labels[i]);
-          if (y != null && y > bestYear) {
-            bestYear = y;
-            bestIdx = i;
-          }
-        }
-
-        idx = bestIdx;
-      }
-
-      if (idx === -1) {
-        throw new Error(`No monthly WY rows or year-only rows found for WY ${wy} in ${csv}`);
+        throw new Error(`No row found for WY ${wy} in ${csv}`);
       }
     }
 
@@ -683,6 +669,8 @@ async function renderSingleValue(el) {
         : `latest value (WY ${wy})`;
       throw new Error(`Value is not numeric for ${desc}`);
     }
+    console.log(`Value for ${label} for water year ${wy}: ${displayed}`);
+
     const key = (el.dataset.key || "").trim();
     if (key) {
       SINGLE_VALUE_STORE.set(key, { value: displayed, units });
