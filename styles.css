@@ -829,6 +829,13 @@ h2 {
   top: 18px;
   right: 18px;
   z-index: 10;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.chart-info__item {
+  position: relative;
 }
 
 .chart-info__button {
@@ -874,7 +881,7 @@ h2 {
 
 .chart-info__tooltip {
   position: absolute;
-  top: calc(100% + 10px);
+  top: 100%;
   right: 0;
   width: min(330px, calc(100vw - var(--page-gutter) - var(--page-gutter) - 36px));
   padding: 12px 14px;
@@ -894,6 +901,79 @@ h2 {
   transition: opacity 140ms ease, transform 140ms ease, visibility 140ms ease;
 }
 
+.chart-info__accuracy-button {
+  width: auto;
+  min-width: 76px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.chart-info__accuracy-tooltip {
+  width: min(430px, calc(100vw - var(--page-gutter) - var(--page-gutter) - 36px));
+}
+
+.chart-info__item--accuracy .chart-info__tooltip {
+  display: none;
+}
+
+.chart-info__accuracy-dialog {
+  position: fixed;
+  inset: 0;
+  width: min(720px, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100vh - 32px);
+  margin: auto;
+  padding: 24px;
+  overflow: auto;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #334155;
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.25);
+}
+
+.chart-info__accuracy-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(2px);
+}
+
+.chart-info__accuracy-dialog-title {
+  margin: 0 40px 16px 0;
+  color: #0f172a;
+  font-size: 1.1rem;
+}
+
+.chart-info__accuracy-dialog-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #334155;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.chart-info__accuracy-dialog-content .chart-info__image {
+  max-height: min(60vh, 520px);
+}
+
+.chart-info__accuracy-description {
+  margin: 0;
+}
+
 .chart-info__image {
   display: block;
   width: 100%;
@@ -902,10 +982,15 @@ h2 {
   object-fit: contain;
 }
 
-.chart-info:hover .chart-info__tooltip,
-.chart-info:focus-within .chart-info__tooltip {
+.chart-info__accuracy-tooltip .chart-info__image {
+  max-height: 320px;
+}
+
+.chart-info__item:hover .chart-info__tooltip,
+.chart-info__item:focus-within .chart-info__tooltip {
   visibility: visible;
   opacity: 1;
+  pointer-events: auto;
   transform: translateY(0);
 }
 

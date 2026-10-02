@@ -1,41 +1,41 @@
-Key Assumptions,
-"Scenario: Baseline, Branch: Key Assumptions\Forecast\Outputs\res test\Clear Lake Spill",
- ,
-Branch,Clear Lake Spill (AF)
-23-Oct,0
-23-Nov,0
-23-Dec,0
-24-Jan,0
-24-Feb,20749.9
-24-Mar,86730.4
-24-Apr,44305.5
-24-May,0
-24-Jun,0
-24-Jul,0
-24-Aug,0
-24-Sep,0
-24-Oct,0
-24-Nov,0
-24-Dec,195.531
-25-Jan,0
-25-Feb,4793.68
-25-Mar,50588.9
-25-Apr,3373.43
-25-May,0
-25-Jun,0
-25-Jul,0
-25-Aug,0
-25-Sep,0
-25-Oct,0
-25-Nov,0
-25-Dec,0
-26-Jan,194.885
-26-Feb,3532.37
-26-Mar,29734.2
-26-Apr,10980.4
-26-May,0
-26-Jun,0
-26-Jul,0
-26-Aug,0
-26-Sep,0
-Sum,255179
+Key Assumptions
+"Scenario: Baseline, Branch: Key Assumptions\Forecast\Outputs\Reservoir Releases\Clear Lake Spill"
+ 
+Branch,"Clear Lake Spill (AF)"
+"Oct 2023",0
+"Nov 2023",0
+"Dec 2023",0
+"Jan 2024",0
+"Feb 2024",20749.9
+"Mar 2024",86730.4
+"Apr 2024",38132.4
+"May 2024",0
+"Jun 2024",0
+"Jul 2024",0
+"Aug 2024",0
+"Sep 2024",0
+"Oct 2024",0
+"Nov 2024",0
+"Dec 2024",195.531
+"Jan 2025",0
+"Feb 2025",4793.68
+"Mar 2025",50588.9
+"Apr 2025",3373.43
+"May 2025",0
+"Jun 2025",0
+"Jul 2025",0
+"Aug 2025",0
+"Sep 2025",0
+"Oct 2025",0
+"Nov 2025",0
+"Dec 2025",0
+"Jan 2026",194.885
+"Feb 2026",3532.37
+"Mar 2026",29734.2
+"Apr 2026",3729.8
+"May 2026",0
+"Jun 2026",0
+"Jul 2026",0
+"Aug 2026",0
+"Sep 2026",0
+Sum,241756

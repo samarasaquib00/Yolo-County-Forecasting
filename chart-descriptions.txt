@@ -18,7 +18,7 @@ Chart: Capay Dam Diversions
 Simulated diversions from Cache Creek at the Capay Diversion Dam.  Simulated diversions to the West Adams Canal (blue) and the Winters Canal (green).  Simulated farmgate deliveries representing Cache Creek Diversions minus seepage losses (yellow line).  Note dashed lines and areas are based on forecasted meteorology, solid lines and areas are based on observed meteorology. 
 
 Chart: Reservoir Releases 
-Releases from Clear Lake and Indian Valley Reservoir for irrigation (blue) and for flood control (green). Note dashed areas are based on forecasted meteorology, solid areas are based on observed meteorology. 
+Releases for irrigation from Clear Lake (blue) and Indian Valley Reservoir (green). Note dashed areas are based on forecasted meteorology, solid areas are based on observed meteorology. 
 
 Recharge 
 
@@ -33,7 +33,7 @@ Simulated inflows to Clear Lake (blue) and Indian Valley Reservoir (green). Note
 
 
 Chart: Reservoir Spills
-Test Test Test
+Releases for flood control from Clear Lake (blue) and Indian Valley Reservoir (green). Note dashed areas are based on forecasted meteorology, solid areas are based on observed meteorology.
  
 
 Outputs for YSGA 

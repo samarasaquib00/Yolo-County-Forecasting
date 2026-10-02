@@ -1,41 +1,41 @@
-Key Assumptions,
-"Scenario: Baseline, Branch: Key Assumptions\Forecast\Outputs\res test\Indian Valley Spill",
- ,
-Branch,Indian Valley Spill (AF)
-Oct-23,0
-Nov-23,0
-Dec-23,0
-Jan-24,0
-Feb-24,0
-Mar-24,0
-Apr-24,0
-May-24,0
-Jun-24,0
-Jul-24,0
-Aug-24,0
-Sep-24,0
-Oct-24,0
-Nov-24,0
-Dec-24,91.0848
-Jan-25,26387.3
-Feb-25,18732.3
-Mar-25,12910
-Apr-25,0
-May-25,0
-Jun-25,0
-Jul-25,0
-Aug-25,0
-Sep-25,0
-Oct-25,0
-Nov-25,0
-Dec-25,0
-Jan-26,0
-Feb-26,0
-Mar-26,0
-Apr-26,0
-May-26,0
-Jun-26,0
-Jul-26,0
-Aug-26,0
-Sep-26,0
+Key Assumptions
+"Scenario: Baseline, Branch: Key Assumptions\Forecast\Outputs\Reservoir Releases\Indian Valley Spill"
+ 
+Branch,"Indian Valley Spill (AF)"
+"Oct 2023",0
+"Nov 2023",0
+"Dec 2023",0
+"Jan 2024",0
+"Feb 2024",0
+"Mar 2024",0
+"Apr 2024",0
+"May 2024",0
+"Jun 2024",0
+"Jul 2024",0
+"Aug 2024",0
+"Sep 2024",0
+"Oct 2024",0
+"Nov 2024",0
+"Dec 2024",91.0848
+"Jan 2025",26387.3
+"Feb 2025",18732.3
+"Mar 2025",12910
+"Apr 2025",0
+"May 2025",0
+"Jun 2025",0
+"Jul 2025",0
+"Aug 2025",0
+"Sep 2025",0
+"Oct 2025",0
+"Nov 2025",0
+"Dec 2025",0
+"Jan 2026",0
+"Feb 2026",0
+"Mar 2026",0
+"Apr 2026",0
+"May 2026",0
+"Jun 2026",0
+"Jul 2026",0
+"Aug 2026",0
+"Sep 2026",0
 Sum,58120.8
