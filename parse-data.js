@@ -97,46 +97,130 @@ async function applyChartDescriptions(root = document) {
 }
 
 function addChartInfo(el, title, infoText) {
-  if (!infoText) return;
+  const accuracyDescription = (el.dataset.accuracyDescription || "").trim();
+  const accuracyImagePath = (el.dataset.accuracyImage || "").trim();
+  if (!infoText && !accuracyDescription && !accuracyImagePath) return;
 
-  const tooltipId = `${el.id || "chart"}-info-tooltip`;
   let info = el.querySelector(".chart-info");
 
   if (!info) {
     info = document.createElement("div");
     info.className = "chart-info";
-
-    const button = document.createElement("button");
-    button.className = "chart-info__button";
-    button.type = "button";
-    button.textContent = "i";
-
-    const tooltip = document.createElement("span");
-    tooltip.className = "chart-info__tooltip";
-    tooltip.setAttribute("role", "tooltip");
-
-    info.append(button, tooltip);
     el.appendChild(info);
   }
 
-  const button = info.querySelector(".chart-info__button");
-  const tooltip = info.querySelector(".chart-info__tooltip");
-  button.setAttribute("aria-label", `About ${title}`);
-  button.setAttribute("aria-describedby", tooltipId);
-  tooltip.id = tooltipId;
+  const createControl = (kind, buttonText, ariaLabel) => {
+    const itemClass = `chart-info__item--${kind}`;
+    let item = info.querySelector(`.${itemClass}`);
 
-  const imageMatch = infoText.match(/\[image:\s*([^\]]+)\]/i);
-  const description = imageMatch
-    ? infoText.replace(imageMatch[0], "").trim()
-    : infoText;
-  tooltip.textContent = description;
+    if (!item) {
+      item = document.createElement("div");
+      item.className = `chart-info__item ${itemClass}`;
 
-  if (imageMatch) {
-    const image = document.createElement("img");
-    image.className = "chart-info__image";
-    image.src = new URL(imageMatch[1].trim(), CHART_DESCRIPTIONS_URL).href;
-    image.alt = `${title} illustration`;
-    tooltip.appendChild(image);
+      const button = document.createElement("button");
+      button.className = kind === "info"
+        ? "chart-info__button"
+        : "chart-info__button chart-info__accuracy-button";
+      button.type = "button";
+      button.textContent = buttonText;
+
+      const tooltip = document.createElement("div");
+      tooltip.className = `chart-info__tooltip chart-info__${kind}-tooltip`;
+      tooltip.setAttribute("role", "tooltip");
+
+      item.append(button, tooltip);
+      if (kind === "accuracy") {
+        info.insertBefore(item, info.firstChild);
+      } else {
+        info.appendChild(item);
+      }
+    }
+
+    const button = item.querySelector("button");
+    const tooltip = item.querySelector(".chart-info__tooltip");
+    const tooltipId = `${el.id || "chart"}-${kind}-tooltip`;
+    button.setAttribute("aria-label", ariaLabel);
+    button.setAttribute("aria-describedby", tooltipId);
+    tooltip.id = tooltipId;
+    tooltip.replaceChildren();
+    return tooltip;
+  };
+
+  if (infoText) {
+    const tooltip = createControl("info", "i", `About ${title}`);
+    const imageMatch = infoText.match(/\[image:\s*([^\]]+)\]/i);
+    const description = imageMatch
+      ? infoText.replace(imageMatch[0], "").trim()
+      : infoText;
+    tooltip.appendChild(document.createTextNode(description));
+
+    if (imageMatch) {
+      const image = document.createElement("img");
+      image.className = "chart-info__image";
+      image.src = new URL(imageMatch[1].trim(), CHART_DESCRIPTIONS_URL).href;
+      image.alt = `${title} illustration`;
+      tooltip.appendChild(image);
+    }
+  }
+
+  if (accuracyDescription || accuracyImagePath) {
+    const tooltip = createControl("accuracy", "Accuracy", `Accuracy information for ${title}`);
+    if (accuracyDescription) {
+      const description = document.createElement("p");
+      description.className = "chart-info__accuracy-description";
+      description.textContent = accuracyDescription;
+      tooltip.appendChild(description);
+    }
+
+    if (accuracyImagePath) {
+      const image = document.createElement("img");
+      image.className = "chart-info__image";
+      image.src = new URL(accuracyImagePath, document.baseURI).href;
+      image.alt = `Accuracy plot for ${title}`;
+      tooltip.appendChild(image);
+    }
+
+    const accuracyItem = info.querySelector(".chart-info__item--accuracy");
+    const accuracyButton = accuracyItem.querySelector(".chart-info__accuracy-button");
+    let dialog = accuracyItem.querySelector(".chart-info__accuracy-dialog");
+
+    if (!dialog) {
+      dialog = document.createElement("dialog");
+      dialog.className = "chart-info__accuracy-dialog";
+      dialog.id = `${el.id || "chart"}-accuracy-dialog`;
+      dialog.setAttribute("aria-labelledby", `${dialog.id}-title`);
+
+      const heading = document.createElement("h2");
+      heading.className = "chart-info__accuracy-dialog-title";
+      heading.id = `${dialog.id}-title`;
+      heading.textContent = "Accuracy";
+
+      const closeButton = document.createElement("button");
+      closeButton.className = "chart-info__accuracy-dialog-close";
+      closeButton.type = "button";
+      closeButton.setAttribute("aria-label", "Close accuracy information");
+      closeButton.textContent = "×";
+
+      const content = document.createElement("div");
+      content.className = "chart-info__accuracy-dialog-content";
+      Array.from(tooltip.childNodes).forEach(node => content.appendChild(node.cloneNode(true)));
+
+      dialog.append(heading, closeButton, content);
+      document.body.appendChild(dialog);
+      closeButton.addEventListener("click", () => dialog.close());
+      dialog.addEventListener("click", event => {
+        if (event.target === dialog) dialog.close();
+      });
+      dialog.addEventListener("close", () => accuracyButton.focus());
+    }
+
+    accuracyButton.setAttribute("aria-haspopup", "dialog");
+    accuracyButton.setAttribute("aria-controls", dialog.id);
+    accuracyButton.removeAttribute("aria-describedby");
+    if (!accuracyButton.dataset.dialogBound) {
+      accuracyButton.addEventListener("click", () => dialog.showModal());
+      accuracyButton.dataset.dialogBound = "true";
+    }
   }
 }
 
@@ -997,6 +1081,7 @@ function getCurrentWaterYear() {
   const today = new Date();
   const y = today.getFullYear();
   const m = today.getMonth(); // 0=Jan ... 9=Oct
+  console.log("Current Water Year Calculation:", { today, y, m });
   return (m >= 9) ? (y + 1) : y;
 }
 
