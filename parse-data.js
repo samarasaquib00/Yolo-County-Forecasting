@@ -2058,7 +2058,8 @@ function buildGridChoroplethTrace(gridGeojson, layer, index, totalGridLayers = 1
     name: layer.name || layer.label || layer.value,
     showlegend: totalGridLayers <= 1,
     showscale: isActive,
-    visible: true,
+    // Fix Plotly hover popup legend labels
+    visible: isActive,
     geojson: {
       type: "FeatureCollection",
       features: gridFeatures
@@ -2166,6 +2167,7 @@ function bindMapLegendControls(el, PlotlyLib, gridLayers, traces, pointName = "I
     });
 
     return PlotlyLib.restyle(el, {
+      "visible": gridTraceIndexes.map(gridTraceIndex => activeTraceIndex != null && gridTraceIndex === activeTraceIndex),
       "marker.opacity": gridTraceIndexes.map(gridTraceIndex => activeTraceIndex != null && gridTraceIndex === activeTraceIndex ? 0.58 : 0),
       "showscale": gridTraceIndexes.map(gridTraceIndex => activeTraceIndex != null && gridTraceIndex === activeTraceIndex),
       "hoverinfo": gridTraceIndexes.map(gridTraceIndex => activeTraceIndex != null && gridTraceIndex === activeTraceIndex ? "all" : "skip")
