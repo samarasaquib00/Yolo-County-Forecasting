@@ -1,30 +1,13 @@
-9/29/2026 9:58:20 AM  WARNING: WEAP calculation finished with 2 error(s). Proceeding with GW scripts anyway. See F:\Users\Jack\OneDrive - SEI\Yolo_Website\Data\WEAP_Errors.txt for details.
-9/29/2026 9:58:20 AM  === Running: WT and DTW.vbs ===
-9/29/2026 10:00:14 AM  === Finished: WT and DTW.vbs ===
-9/29/2026 10:00:14 AM  === Running: Impacted Wells.vbs ===
-9/29/2026 10:00:16 AM  === Finished: Impacted Wells.vbs ===
-9/29/2026 10:00:16 AM  === Running: Avg RMW DTW.vbs ===
-9/29/2026 10:00:17 AM  === Finished: Avg RMW DTW.vbs ===
-9/29/2026 10:00:17 AM  All scripts complete.
-9/29/2026 10:00:21 AM  Archived 59 file(s) from resDir into F:\Users\Jack\OneDrive - SEI\Yolo_Website\Data\2026-09-29.zip.
-9/29/2026 10:15:20 AM  WARNING: WEAP calculation finished with 2 error(s). Proceeding with GW scripts anyway. See F:\Users\Jack\OneDrive - SEI\Yolo_Website\Data\WEAP_Errors.txt for details.
-9/29/2026 10:15:20 AM  === Running: WT and DTW.vbs ===
-9/29/2026 10:21:02 AM  === Finished: WT and DTW.vbs ===
-9/29/2026 10:21:02 AM  === Running: Impacted Wells.vbs ===
-9/29/2026 10:21:32 AM  === Finished: Impacted Wells.vbs ===
-9/29/2026 10:21:32 AM  === Running: Avg RMW DTW.vbs ===
-9/29/2026 10:21:35 AM  === Finished: Avg RMW DTW.vbs ===
-9/29/2026 10:21:35 AM  All scripts complete.
-9/29/2026 10:21:35 AM  WARNING: F:\Users\Jack\OneDrive - SEI\Yolo_Website\Data\2026-09-29.zip already exists - skipping archive step to avoid overwriting an existing archive.
-9/29/2026 10:32:42 AM  WARNING: WEAP calculation finished with 2 error(s). Proceeding with GW scripts anyway. See F:\Users\Jack\OneDrive - SEI\Yolo_Website\Data\WEAP_Errors.txt for details.
-9/29/2026 10:32:43 AM  === Running: WT and DTW.vbs ===
-9/29/2026 10:39:55 AM  === Finished: WT and DTW.vbs ===
-9/29/2026 10:39:55 AM  === Running: Impacted Wells.vbs ===
-9/29/2026 10:40:18 AM  === Finished: Impacted Wells.vbs ===
-9/29/2026 10:40:18 AM  === Running: Avg RMW DTW.vbs ===
-9/29/2026 10:40:20 AM  === Finished: Avg RMW DTW.vbs ===
-9/29/2026 10:40:20 AM  All scripts complete.
-9/29/2026 10:40:21 AM  WARNING: F:\Users\Jack\OneDrive - SEI\Yolo_Website\Data\2026-09-29.zip already exists - skipping archive step to avoid overwriting an existing archive.
-9/30/2026 8:36:17 AM  [CDEC Data Not Available]  CDEC storage data for 9/2026 is not yet available for the following reservoir(s): CLA, INV,  -- The output CSV has been written with the data available so far, but RunAll.vbs is stopping before WEAP.Calculate so the model isn't run on incomplete data.
-10/1/2026 6:01:36 AM  [CDEC Data Not Available]  CDEC storage data for 9/2026 is not yet available for the following reservoir(s): CLA, INV,  -- The output CSV has been written with the data available so far, but RunAll.vbs is stopping before WEAP.Calculate so the model isn't run on incomplete data.
-10/2/2026 6:02:23 AM  [CDEC Data Not Available]  CDEC storage data for 9/2026 is not yet available for the following reservoir(s): INV,  -- The output CSV has been written with the data available so far, but RunAll.vbs is stopping before WEAP.Calculate so the model isn't run on incomplete data.
+10/9/2026 11:12:27 AM  === RunAll started ===
+10/9/2026 11:14:42 AM  WARNING: WEAP calculation finished with 2 error(s). Proceeding with GW scripts anyway. See F:\Users\Jack\OneDrive - SEI\Yolo_Website\Data\WEAP_Errors.txt for details.
+10/9/2026 11:14:42 AM  === Running: WT and DTW.vbs ===
+10/9/2026 11:16:31 AM  === Finished: WT and DTW.vbs ===
+10/9/2026 11:16:31 AM  === Running: Impacted Wells.vbs ===
+10/9/2026 11:16:33 AM  === Finished: Impacted Wells.vbs ===
+10/9/2026 11:16:33 AM  === Running: Avg RMW DTW.vbs ===
+10/9/2026 11:16:34 AM  === Finished: Avg RMW DTW.vbs ===
+10/9/2026 11:16:34 AM  === Running: May 1st Forecast Tracker.vbs ===
+10/9/2026 11:16:34 AM  [Tracker] Tracker row for 10/9/2026 already up to date -- nothing to change.
+10/9/2026 11:16:34 AM  === Finished: May 1st Forecast Tracker.vbs ===
+10/9/2026 11:16:34 AM  All scripts complete.
+10/9/2026 11:16:34 AM  Archived 86 file(s) from resDir and ClimateData into F:\Users\Jack\OneDrive - SEI\Yolo_Website\Data\2026-10-09.zip.

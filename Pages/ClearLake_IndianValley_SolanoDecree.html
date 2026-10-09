@@ -83,6 +83,8 @@
           ]'
         ></div> -->
 
+
+        
         <!-- Solano Decree -->
         <div
           id="solano-decree"
@@ -122,7 +124,6 @@
         ]'
         ></div>
 
-        <!-- Subtract 841000 from all values in clear lake only-->
         <div
           id="total-storage"
           class="chart"
@@ -134,6 +135,25 @@
               { "csv": "../Data/Storage-Indian Valley.csv", "name": "Indian Valley Total Storage", "y": "Modeled", "type": "area" }
           ]'
         ></div>
+
+        
+        <!-- Forecasted May 1st Reservoir Storage -->
+        <div
+          class="chart"
+          data-title="May 1 Forecast Tracker"
+          data-subtitle="Water Year: {wyRange}"
+          data-x-axis-name="Forecast Day"
+          data-x-axis-data="points"
+          data-y-axis-name="Storage (TAF)"
+          data-units="TAF"
+          data-source-units="TAF"
+          data-stacked="false"
+          data-series='[
+            { "csv": "../Data/May 1st Forecast Tracker.csv", "name": "Clear Lake", "y": "Clear Lake", "type": "scatter", "units": "TAF", "sourceUnits": "TAF" },
+            { "csv": "../Data/May 1st Forecast Tracker.csv", "name": "Indian Valley", "y": "Indian Valley", "type": "scatter", "units": "TAF", "sourceUnits": "TAF" }
+          ]'
+        ></div>
+
 
         <!-- <div
           id="reservoir-inflows"

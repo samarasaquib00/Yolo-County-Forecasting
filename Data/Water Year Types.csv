@@ -1,5 +1,5 @@
 user must manually update this file every year,,,,,
-****other notes****,,,,,
+add 3/1/ForecastYear and 9/1/ForecastYear and fill in 60 (arbitrary value) in approproate column,,,,,
 ,,,,,
 ,Wet,Above Normal,Below Normal,Dry,Critical
 3/1/1971,60,,,,
@@ -114,3 +114,5 @@ user must manually update this file every year,,,,,
 9/1/2025,,60,,,
 3/1/2026,,,60,,
 9/1/2026,,,60,,
+3/1/2027,60,,,,
+9/1/2027,60,,,,

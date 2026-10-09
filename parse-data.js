@@ -857,7 +857,7 @@ function renderComputedValue(el) {
 // ------------------ CSV PARSING ------------------
 // Contains logic to parse when cfg.y is empty/missing
 
-function parseFirstColumnAndNamedValue(text, valueColumnName) {
+function parseFirstColumnAndNamedValue(text, valueColumnName, { includeEmptyValues = false } = {}) {
 
   const lines = text
     .split(/\r?\n/)
@@ -977,9 +977,18 @@ function parseFirstColumnAndNamedValue(text, valueColumnName) {
 
     const xLabel = cols[0];
     const rawValue = cols[yIndex];
-    const value = Number(String(rawValue).replace(/,/g, ""));
+    const rawText = String(rawValue ?? "").replace(/,/g, "").trim();
+    if (!xLabel) continue;
+    if (!rawText) {
+      if (!includeEmptyValues) continue;
+      labels.push(xLabel);
+      values.push(null);
+      continue;
+    }
 
-    if (xLabel && Number.isFinite(value)) {
+    const value = Number(rawText);
+
+    if (Number.isFinite(value)) {
       labels.push(xLabel);
       values.push(value);
     }
@@ -1369,6 +1378,24 @@ function resolveTargetWaterYear(cfg, currentWY, previousWY) {
 }
 
 function buildWaterYearSeriesData({ labels, values, cfg, desiredUnits, sourceUnits, targetWY }) {
+  const isPointSeries = ["point", "points", "scatter"].includes(String(cfg.type || "").toLowerCase());
+  if (isPointSeries && labels.every(label => isValidMonthYear(parseMonthYear(label)))) {
+    const datedPoints = labels
+      .map((label, index) => ({ label, value: values[index] }))
+      .filter(point => getLabelWaterYear(point.label) === targetWY);
+
+    if (!datedPoints.length) return null;
+
+    return {
+      labels: datedPoints.map(point => point.label),
+      data: datedPoints.map(point => {
+        if (point.value == null) return null;
+        const adjustedValue = point.value + (cfg.adjust ? Number(cfg.adjust) : 0);
+        return convertForDisplay(adjustedValue, { desiredUnits, sourceUnits, colName: cfg.y });
+      })
+    };
+  }
+
   const filtered = labels
     .map((label, i) => ({
       label,
@@ -2461,7 +2488,11 @@ function renderChart(el) {
         : null;
 
       const series = loadedSeries.flatMap(({ cfg, csvUrls, csvTexts }, idx) => {
-      const parsedSegments = csvTexts.map(csvText => parseFirstColumnAndNamedValue(csvText, cfg.y));
+      const chartType = (cfg.type || "line").toLowerCase();
+      const isPointSeries = chartType === "points" || chartType === "point" || chartType === "scatter";
+      const parsedSegments = csvTexts.map(csvText =>
+        parseFirstColumnAndNamedValue(csvText, cfg.y, { includeEmptyValues: isPointSeries })
+      );
       const { labels, values, sourceUnits: csvUnits } = parsedSegments[0];
       // Desired units (output): per-series cfg.units OR chart-level data-units OR default TAF
       const desiredUnits = normalizeUnits(cfg.units ?? el.dataset.units, "TAF");
@@ -2509,14 +2540,11 @@ function renderChart(el) {
         seriesData.labels &&
         seriesData.labels !== xAxisLabels &&
         seriesData.labels.some(label => xAxisLabels.includes(label));
-      const chartData = hasExplicitXLabels
-        ? seriesData.labels.map((label, i) => [label, y[i]])
-        : y;
-
-      const chartType = (cfg.type || "line").toLowerCase();
       const isArea = chartType === "area";
-      const isPointSeries = chartType === "points" || chartType === "point" || chartType === "scatter";
       const echartsType = isArea ? "line" : (isPointSeries ? "scatter" : chartType);
+      const chartData = isPointSeries || hasExplicitXLabels
+        ? seriesData.labels.map((label, i) => y[i] == null ? null : [label, y[i]])
+        : y;
 
       const color = cfg.color;
       const fillColor = cfg.fillColor;
